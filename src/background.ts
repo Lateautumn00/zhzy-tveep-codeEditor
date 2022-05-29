@@ -25,14 +25,10 @@ async function createWindow() {
     frame: false, //无边框   不使用无边框模式 需要屏蔽掉  并将router/index.ts 路由中的替换  原始边框路由
     movable: true,
     webPreferences: {
-      // Required for Spectron testing
-      //enableRemoteModule: !!process.env.IS_TEST,
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env
-        .ELECTRON_NODE_INTEGRATION as unknown as boolean,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      preload: path.join(__dirname, 'preload.js'), //预加载
+        .ELECTRON_NODE_INTEGRATION as unknown as boolean, //true 使用node
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION, //false  为true会报require not found
+      preload: path.join(__dirname, 'preload.js'), //预加载 使用它 设置config.output.filename('background.js') 会报错
       webSecurity: false //解决跨域
     }
   })

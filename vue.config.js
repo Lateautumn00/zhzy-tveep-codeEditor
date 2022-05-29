@@ -14,11 +14,6 @@ module.exports = {
     electronBuilder: {
       preload: 'src/preload.ts',
       nodeIntegration: true,
-      //   chainWebpackMainProcess: (config) => {
-      //     config.output.filename('background.js') //解决 运行 yarn run electron:serve 报[DEP0128] DeprecationWarning: Invalid 'main' field in '\dist_electron\package.json' of 'background.js'.
-      //     // Please either fix that or report it to the module author (Use `electron --trace-deprecation ...` to show where the warning was created)
-      //     //config.output.globalObject = 'this'
-      //   },
       builderOptions: {
         productName: 'zhzy-tveep-codeEditor', //打包名称
         appId: 'cn.zhzy.tveep.app',

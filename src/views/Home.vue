@@ -32,8 +32,8 @@ import LeftComponent from '@/components/Left.vue'
 import RightComponent from '@/components/Right.vue'
 @Options({
   components: {
-    LeftComponent,
     HeaderComponent,
+    LeftComponent,
     RightComponent
   }
 })
