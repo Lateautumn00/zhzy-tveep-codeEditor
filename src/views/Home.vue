@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-05-29 11:54:17
+ * @LastEditTime: 2022-05-31 11:31:11
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -12,7 +12,7 @@
       <el-header v-if="isElectron">
         <HeaderComponent />
       </el-header>
-      <el-container>
+      <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
           <LeftComponent />
         </el-aside>
@@ -105,7 +105,10 @@ export default class HomeComponent extends Vue {
   //justify-content: flex-end;
   border-bottom: 1px #dcdfe6 solid;
 }
-.el-container {
+.eContainer {
+  height: calc(100vh - 51px);
+}
+.wContainer {
   height: 100vh;
 }
 .el-divider--vertical {
@@ -113,5 +116,8 @@ export default class HomeComponent extends Vue {
   border-left: 1px #dcdfe6 solid;
   border-right: 1px #dcdfe6 solid;
   cursor: e-resize;
+}
+.el-main {
+  --el-main-padding: 0;
 }
 </style>

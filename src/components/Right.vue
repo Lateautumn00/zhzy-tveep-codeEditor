@@ -2,95 +2,97 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-05-24 11:32:23
+ * @LastEditTime: 2022-05-31 11:13:18
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
-  <div class="right">
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column label="Date" width="180">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <el-icon><timer /></el-icon>
-            <span style="margin-left: 10px">{{ scope.row.date }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="Name" width="180">
-        <template #default="scope">
-          <el-popover
-            effect="light"
-            trigger="hover"
-            placement="top"
-            width="auto"
-          >
-            <template #default>
-              <div>name: {{ scope.row.name }}</div>
-              <div>address: {{ scope.row.address }}</div>
-            </template>
-            <template #reference>
-              <el-tag>{{ scope.row.name }}</el-tag>
-            </template>
-          </el-popover>
-        </template>
-      </el-table-column>
-      <el-table-column label="Operations">
-        <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-            >Edit</el-button
-          >
-          <el-button
-            size="small"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-            >Delete</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+  <el-tabs
+    v-model="editableTabsValue"
+    type="card"
+    class="demo-tabs"
+    closable
+    addable
+    @tab-remove="removeTab"
+    @tab-add="addTab"
+  >
+    <el-tab-pane
+      v-for="item in editableTabs"
+      :key="item.key"
+      :label="item.label"
+      :name="item.key"
+    >
+      <CodemirrorComponent />
+    </el-tab-pane>
+  </el-tabs>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-class-component'
-interface User {
-  date: string
-  name: string
-  address: string
-}
-export default class RightComponent extends Vue {
-  handleEdit = (index: number, row: User) => {
-    console.log(index, row)
-  }
-  handleDelete = (index: number, row: User) => {
-    console.log(index, row)
-  }
+import { Options, Vue } from 'vue-class-component'
+import CodemirrorComponent from '@/components/Codemirror.vue'
 
-  tableData: User[] = [
+@Options({
+  components: {
+    CodemirrorComponent
+  }
+})
+export default class RightComponent extends Vue {
+  editableTabsValue = '1' //当前展示的标签
+  editableTabs = [
     {
-      date: '2016-05-03',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles'
+      key: '1',
+      label: 'a.js'
     },
     {
-      date: '2016-05-02',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles'
+      key: '2',
+      label: 'b.js'
     },
     {
-      date: '2016-05-04',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles'
-    },
-    {
-      date: '2016-05-01',
-      name: 'Tom',
-      address: 'No. 189, Grove St, Los Angeles'
+      key: '3',
+      label: 'c.js'
     }
   ]
+  //新增tab
+  addTab() {
+    const newTabName = `${this.editableTabs.length + 1}`
+    this.editableTabs.push({
+      label: 'New Tab',
+      key: newTabName
+    })
+    this.editableTabsValue = newTabName
+  }
+  //删除tab
+  removeTab(targetName: string) {
+    const tabs = this.editableTabs
+    let activeName = this.editableTabsValue
+    if (activeName === targetName) {
+      tabs.forEach((tab, index) => {
+        if (tab.key === targetName) {
+          const nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = nextTab.key
+          }
+        }
+      })
+    }
+    this.editableTabsValue = activeName
+    this.editableTabs = tabs.filter((tab) => tab.key !== targetName)
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.demo-tabs {
+  height: 100%;
+}
+:deep(.el-tabs__header) {
+  margin: 0;
+}
+:deep(.el-tabs__content) {
+  height: calc(100% - 41px);
+}
+.el-tab-pane {
+  height: 100%;
+}
+</style>
