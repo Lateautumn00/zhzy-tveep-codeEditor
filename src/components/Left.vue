@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-05-20 17:14:13
+ * @LastEditTime: 2022-05-31 19:10:40
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -14,50 +14,51 @@
 
 <script lang="ts">
 import { Vue } from 'vue-class-component'
+import fs from 'fs'
+import path from 'path'
+
 export default class LeftComponent extends Vue {
-  defaultProps = {
-    children: 'children',
-    label: 'label'
+  mounted() {
+    this.$nextTick(() => {
+      const dd = this.getDirOfFiles('H:/data/me/github/zhzy-tveep-codeEditor')
+      this.data = dd.children
+    })
   }
-  data: any = [
-    {
-      label: '我的项目',
-      children: [
-        {
-          label: '项目一'
-        },
-        {
-          label: '项目二'
-        }
-      ]
-    },
-    {
-      label: '我的收藏',
-      children: [
-        {
-          label: '123',
-          children: [
-            {
-              label: 'Level three 2-1-1'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      label: '最近访问',
-      children: [
-        {
-          label: '1111',
-          children: [
-            {
-              label: 'Level three 3-1-1'
-            }
-          ]
-        }
-      ]
+  getDirOfFiles(dir: string) {
+    // eslint-disable-next-line no-undef
+    const list: TreeList = {
+      label: path.basename(dir),
+      src: dir,
+      children: []
     }
-  ]
+    let dirNum = 0 //下次放文件夹的位置
+    const dirs = fs.readdirSync(dir) //读文件
+    dirs.forEach((value) => {
+      const newDir = path.join(dir, value)
+      const stat = fs.statSync(newDir)
+      if (stat.isDirectory()) {
+        //如果是文件夹
+        // list.children.push(getDirOfFiles(newDir))
+        list.children.splice(dirNum, 0, this.getDirOfFiles(newDir))
+        dirNum++
+      } else if (stat.isFile()) {
+        //如果是文件
+        list.children.push({
+          label: value,
+          src: newDir,
+          children: []
+        })
+      }
+    })
+    return list
+  }
+  defaultProps = {
+    label: 'label',
+    src: 'src',
+    children: 'children'
+  }
+  // eslint-disable-next-line no-undef
+  data: any = []
   handleNodeClick = (data: any) => {
     console.log(data)
   }
