@@ -2,14 +2,13 @@
  * @Description:升级版本
  * @Author: lanchao
  * @Date: 2022-01-17 15:09:28
- * @LastEditTime: 2022-05-27 09:46:07
+ * @LastEditTime: 2022-06-01 18:46:27
  * @LastEditors: lanchao
  * @Reference:
  */
-import { ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
 let mainWindow: any = null
-export function upgradeHandle(window: any, feedUrl: any) {
+export function upgradeHandle(window: any, ipcMain: any, feedUrl: any) {
   const msg = {
     error: '检查更新出错 ...',
     checking: '正在检查更 ...',

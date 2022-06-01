@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-05-31 19:10:40
+ * @LastEditTime: 2022-06-01 20:05:56
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -18,12 +18,29 @@ import fs from 'fs'
 import path from 'path'
 
 export default class LeftComponent extends Vue {
+  // eslint-disable-next-line no-undef
+  data: any = []
+  dirLocal = '' //本地缓存文件夹地址
   mounted() {
     this.$nextTick(() => {
-      const dd = this.getDirOfFiles('H:/data/me/github/zhzy-tveep-codeEditor')
-      this.data = dd.children
+      this.dirLocal = (window as any).localStorage.getItem('menuOpenDirectory')
+      if (this.dirLocal) {
+        const defaultDir = this.getDirOfFiles(this.dirLocal)
+        this.data = defaultDir.children
+      }
+      //监听ipc消息
+      ;(window as any).ipcRenderer.on(
+        'menuOpenDirectory',
+        (event: any, result: any) => {
+          const dir = this.getDirOfFiles(result)
+          this.data = dir.children
+          this.dirLocal = result
+          ;(window as any).localStorage.setItem('menuOpenDirectory', result) //将本次的文件夹目录写入缓存
+        }
+      )
     })
   }
+  //获取目录下的所有文件
   getDirOfFiles(dir: string) {
     // eslint-disable-next-line no-undef
     const list: TreeList = {
@@ -57,8 +74,7 @@ export default class LeftComponent extends Vue {
     src: 'src',
     children: 'children'
   }
-  // eslint-disable-next-line no-undef
-  data: any = []
+
   handleNodeClick = (data: any) => {
     console.log(data)
   }

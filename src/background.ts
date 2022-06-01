@@ -1,6 +1,7 @@
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, Menu, dialog } from 'electron'
 import { upgradeHandle } from '@/upgrade'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { menu } from '@/menu'
 import path from 'path'
 //import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -21,8 +22,8 @@ async function createWindow() {
     //transparent: true, //窗口透明  设置后还原窗口win.restore()无效
     //backgroundColor: '#000', //背景颜色
     title: '知乎者也', //标题
-    autoHideMenuBar: true, //是否隐藏菜单栏
-    frame: false, //无边框   不使用无边框模式 需要屏蔽掉  并将router/index.ts 路由中的替换  原始边框路由
+    // autoHideMenuBar: true, //是否隐藏菜单栏
+    // frame: false, //无边框   不使用无边框模式 需要屏蔽掉
     movable: true,
     webPreferences: {
       nodeIntegration: process.env
@@ -37,7 +38,7 @@ async function createWindow() {
     createProtocol('app')
     win.loadURL('app://./index.html') // Load the index.html when not in development
     if (process.env.VUE_APP_UPLOAD !== '')
-      upgradeHandle(win, process.env.VUE_APP_UPLOAD) //检测版本更新
+      upgradeHandle(win, ipcMain, process.env.VUE_APP_UPLOAD) //检测版本更新
     //win.webContents.openDevTools()
   } else {
     //开发
@@ -45,6 +46,8 @@ async function createWindow() {
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   }
+  //设置自定义菜单
+  menu(win, Menu, dialog)
   // 当应用所有窗口关闭要做的事情
   win.on('closed', () => {
     win = null

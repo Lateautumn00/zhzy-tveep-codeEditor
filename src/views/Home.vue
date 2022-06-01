@@ -2,16 +2,16 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-05-31 11:31:11
+ * @LastEditTime: 2022-06-01 18:44:17
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header v-if="isElectron">
+      <!-- <el-header v-if="isElectron">
         <HeaderComponent />
-      </el-header>
+      </el-header> -->
       <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
           <LeftComponent />
@@ -27,12 +27,12 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import HeaderComponent from '@/components/Header.vue'
+//import HeaderComponent from '@/components/Header.vue'
 import LeftComponent from '@/components/Left.vue'
 import RightComponent from '@/components/Right.vue'
 @Options({
   components: {
-    HeaderComponent,
+    // HeaderComponent,
     LeftComponent,
     RightComponent
   }
@@ -59,21 +59,6 @@ export default class HomeComponent extends Vue {
       document.onmouseup = this.mouseUp
     }
   }
-  //方式二
-  //   mouseDownAndMove(dom: any) {
-  //     dom.addEventListener('mousedown', (e: any) => {
-  //       e = e || window.event
-  //       e.preventDefault() //阻止默认操作
-  //       //鼠标按下
-  //       document.addEventListener('mousemove', this.mouseMove)
-  //       document.addEventListener('mouseup', () => {
-  //         document.removeEventListener('mousemove', this.mouseMove)
-  //         document.removeEventListener('mouseup', () => {
-  //           console.log(...arguments)
-  //         })
-  //       })
-  //     })
-  //   }
 
   //鼠标移动
   mouseMove(e: any) {
@@ -106,7 +91,7 @@ export default class HomeComponent extends Vue {
   border-bottom: 1px #dcdfe6 solid;
 }
 .eContainer {
-  height: calc(100vh - 51px);
+  height: 100vh;
 }
 .wContainer {
   height: 100vh;
