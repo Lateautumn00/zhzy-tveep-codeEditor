@@ -14,11 +14,11 @@
       </el-header> -->
       <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
-          <LeftComponent />
+          <LeftComponent @addTab="addTab" />
         </el-aside>
         <el-divider direction="vertical" border-style="solid" id="divider" />
         <el-main>
-          <RightComponent />
+          <RightComponent ref="rightRef" />
         </el-main>
       </el-container>
     </el-container>
@@ -51,7 +51,7 @@ export default class HomeComponent extends Vue {
 
   //鼠标按下并移动
   //方式一
-  mouseDownAndMove(dom: any) {
+  mouseDownAndMove = (dom: any) => {
     dom.onmousedown = (e: any) => {
       e = e || window.event
       e.preventDefault() //阻止默认操作
@@ -61,7 +61,7 @@ export default class HomeComponent extends Vue {
   }
 
   //鼠标移动
-  mouseMove(e: any) {
+  mouseMove = (e: any) => {
     e = e || window.event
     let w = this.asideWidth + e.movementX //左侧栏宽度
     if (w < this.minWidth) {
@@ -74,9 +74,14 @@ export default class HomeComponent extends Vue {
     this.asideWidth = w
   }
   //鼠标抬起
-  mouseUp() {
+  mouseUp = () => {
     document.onmousemove = null
     document.onmouseup = null
+  }
+  //打开新标签
+  // eslint-disable-next-line no-undef
+  addTab(data: TreeList) {
+    ;(this.$refs.rightRef as any).addTab(data)
   }
 }
 </script>

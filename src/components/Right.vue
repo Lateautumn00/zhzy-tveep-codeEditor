@@ -12,9 +12,7 @@
     type="card"
     class="demo-tabs"
     closable
-    addable
     @tab-remove="removeTab"
-    @tab-add="addTab"
   >
     <el-tab-pane
       v-for="item in editableTabs"
@@ -22,7 +20,7 @@
       :label="item.label"
       :name="item.key"
     >
-      <CodemirrorComponent />
+      <CodemirrorComponent :src="item.src" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -38,35 +36,35 @@ import CodemirrorComponent from '@/components/Codemirror.vue'
 })
 export default class RightComponent extends Vue {
   editableTabsValue = '1' //当前展示的标签
-  editableTabs = [
-    {
-      key: '1',
-      label: 'a.js'
-    },
-    {
-      key: '2',
-      label: 'b.js'
-    },
-    {
-      key: '3',
-      label: 'c.js'
-    }
-  ]
+  // eslint-disable-next-line no-undef
+  editableTabs: any = []
+
   //新增tab
-  addTab() {
+  // eslint-disable-next-line no-undef
+  addTab = (data?: TreeList) => {
+    //判断文件是否已经打开
+    if (data) {
+      const value = this.editableTabs.filter((tab: any) => tab.src === data.src)
+      if (value.length) {
+        this.editableTabsValue = value[0].key
+        return false
+      }
+    }
+
     const newTabName = `${this.editableTabs.length + 1}`
     this.editableTabs.push({
-      label: 'New Tab',
-      key: newTabName
+      label: data ? data.label : 'New Tab',
+      key: newTabName,
+      src: data ? data.src : ''
     })
     this.editableTabsValue = newTabName
   }
   //删除tab
-  removeTab(targetName: string) {
+  removeTab = (targetName: string) => {
     const tabs = this.editableTabs
     let activeName = this.editableTabsValue
     if (activeName === targetName) {
-      tabs.forEach((tab, index) => {
+      tabs.forEach((tab: any, index: any) => {
         if (tab.key === targetName) {
           const nextTab = tabs[index + 1] || tabs[index - 1]
           if (nextTab) {
@@ -76,7 +74,7 @@ export default class RightComponent extends Vue {
       })
     }
     this.editableTabsValue = activeName
-    this.editableTabs = tabs.filter((tab) => tab.key !== targetName)
+    this.editableTabs = tabs.filter((tab: any) => tab.key !== targetName)
   }
 }
 </script>

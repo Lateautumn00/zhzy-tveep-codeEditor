@@ -27,17 +27,30 @@ import { Options, Vue } from 'vue-class-component'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { ref } from 'vue'
+import { getFileContent } from '@/modular/fsModular'
 @Options({
   components: {
     Codemirror
+  },
+  props: {
+    src: String
   }
 })
 export default class CodemirrorComponent extends Vue {
   // eslint-disable-next-line quotes
-  code = ref('')
+  code = ''
+  src = ''
   extensions = [javascript(), oneDark]
   log = console.log
+  mounted() {
+    this.$nextTick(() => {
+      if (this.src) this.getFile(this.src)
+    })
+  }
+  // 读取文件内容
+  getFile = async (src: string) => {
+    this.code = await getFileContent(src)
+  }
 }
 </script>
 

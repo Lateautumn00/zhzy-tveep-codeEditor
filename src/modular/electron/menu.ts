@@ -2,7 +2,7 @@
  * @Description:自定义菜单
  * @Author: lanchao
  * @Date: 2022-06-01 18:36:21
- * @LastEditTime: 2022-06-01 20:07:49
+ * @LastEditTime: 2022-06-02 11:32:17
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -69,20 +69,20 @@ export function menu(window: any, Menu: any, dialog: any) {
           }
         }
       ]
-    },
-    {
-      label: '编辑',
-      submenu: [
-        {
-          label: '复制',
-          role: 'copy'
-        },
-        {
-          label: '截切',
-          role: 'cut'
-        }
-      ]
     }
+    // {
+    //   label: '编辑',
+    //   submenu: [
+    //     {
+    //       label: '复制',
+    //       role: 'copy'
+    //     },
+    //     {
+    //       label: '截切',
+    //       role: 'cut'
+    //     }
+    //   ]
+    // }
   ]
   const m = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(m)
