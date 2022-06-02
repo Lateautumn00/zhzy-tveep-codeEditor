@@ -20,12 +20,16 @@ export default class LeftComponent extends Vue {
   // eslint-disable-next-line no-undef
   data: any = []
   dirLocal = '' //本地缓存文件夹地址
+  localStorageName = 'menuOpenDirectory'
   mounted() {
     this.$nextTick(async () => {
-      this.dirLocal = (window as any).localStorage.getItem('menuOpenDirectory')
-      if (this.dirLocal) {
-        const defaultDir = await getDirContent(this.dirLocal)
+      const dirLocal = (window as any).localStorage.getItem(
+        this.localStorageName
+      )
+      if (dirLocal) {
+        const defaultDir = await getDirContent(dirLocal)
         this.data = defaultDir.children
+        this.dirLocal = dirLocal
       }
       //监听ipc消息
       ;(window as any).ipcRenderer.on(
@@ -35,7 +39,8 @@ export default class LeftComponent extends Vue {
           this.data = []
           const dir = await getDirContent(result)
           this.data = dir.children
-          ;(window as any).localStorage.setItem('menuOpenDirectory', result) //将本次的文件夹目录写入缓存
+          ;(window as any).localStorage.setItem(this.localStorageName, result) //将本次的文件夹目录写入缓存
+          this.$emit('brotherEvents', { name: 'clearFiles' })
         }
       )
     })
@@ -51,7 +56,7 @@ export default class LeftComponent extends Vue {
   handleNodeClick = (value: TreeList) => {
     if (value.type === 1) {
       //去读取文件
-      this.$emit('addTab', value)
+      this.$emit('brotherEvents', { name: 'addTab', value: value })
     }
   }
 }

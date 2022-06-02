@@ -14,7 +14,7 @@
       </el-header> -->
       <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
-          <LeftComponent @addTab="addTab" />
+          <LeftComponent @brotherEvents="brotherEvents" />
         </el-aside>
         <el-divider direction="vertical" border-style="solid" id="divider" />
         <el-main>
@@ -78,10 +78,15 @@ export default class HomeComponent extends Vue {
     document.onmousemove = null
     document.onmouseup = null
   }
-  //打开新标签
-  // eslint-disable-next-line no-undef
-  addTab(data: TreeList) {
-    ;(this.$refs.rightRef as any).addTab(data)
+  //兄弟之间消息中专
+  brotherEvents(data: any) {
+    if (data.name === 'clearFiles') {
+      //清空所有一打开文件
+      ;(this.$refs.rightRef as any).clearFiles()
+    } else if (data.name === 'addTab') {
+      //打开新文件
+      ;(this.$refs.rightRef as any).addTab(data.value)
+    }
   }
 }
 </script>
