@@ -36,18 +36,18 @@ export function menu(window: any, Menu: any, dialog: any) {
         //       })
         //   }
         // },
-        // {
-        //   label: '打开文件',
-        //   click: function () {
-        //     dialog
-        //       .showOpenDialog({
-        //         properties: ['openFile']
-        //       })
-        //       .then((result: any) => {
-        //         console.log(result)
-        //       })
-        //   }
-        // },
+        {
+          label: '打开文件',
+          click: function () {
+            dialog
+              .showOpenDialog({
+                properties: ['openFile']
+              })
+              .then((result: any) => {
+                window.webContents.send('menuOpenFile', result.filePaths[0])
+              })
+          }
+        },
         {
           label: '打开文件夹',
           click: function () {
@@ -66,6 +66,13 @@ export function menu(window: any, Menu: any, dialog: any) {
                   result.filePaths[0]
                 )
               })
+          }
+        },
+        {
+          label: '保存',
+          accelerator: 'ctrl+c',
+          click: function () {
+            window.webContents.send('menuPreservation')
           }
         }
       ]
