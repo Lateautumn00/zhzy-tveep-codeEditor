@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-05-31 12:30:00
+ * @LastEditTime: 2022-06-03 12:48:23
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -15,10 +15,10 @@
     :indent-with-tab="true"
     :tabSize="4"
     :extensions="extensions"
-    @ready="log('ready', $event)"
-    @change="log('change', $event)"
-    @focus="log('focus', $event)"
-    @blur="log('blur', $event)"
+    @ready="readyFile"
+    @change="changeFile"
+    @focus="focusFile"
+    @blur="blurFile"
   />
 </template>
 
@@ -27,7 +27,7 @@ import { Options, Vue } from 'vue-class-component'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { getFileContent } from '@/modular/fsModular'
+import { getFileContent, setFileContent } from '@/modular/fsModular'
 @Options({
   components: {
     Codemirror
@@ -40,16 +40,47 @@ export default class CodemirrorComponent extends Vue {
   // eslint-disable-next-line quotes
   code = ''
   src = ''
+  state = -1 //状态 0 未有修改 1 有修改 1
   extensions = [javascript(), oneDark]
   log = console.log
   mounted() {
     this.$nextTick(() => {
-      if (this.src) this.getFile(this.src)
+      if (this.src) this.getFile()
     })
   }
   // 读取文件内容
-  getFile = async (src: string) => {
-    this.code = await getFileContent(src)
+  async getFile() {
+    this.code = await getFileContent(this.src)
+  }
+  //读取当前页中的内容   包含未提交的
+  //是用箭头函数无法获取props接受的值
+  async getFileDoc() {
+    if (this.state === 1) {
+      await setFileContent(this.src, this.code)
+      this.state = 0
+      this.$emit('updateFileEditState', this.src, 0)
+    }
+  }
+  //文件变动
+  changeFile() {
+    if (this.state === 0) {
+      this.state = 1
+      this.$emit('updateFileEditState', this.src, 1)
+    } else if (this.state === -1) {
+      this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记
+    }
+  }
+  //鼠标进入文件内
+  focusFile = (event: any) => {
+    console.log('focusFile', event)
+  }
+  //离开文件
+  blurFile = (event: any) => {
+    console.log('blurFile', event)
+  }
+  //准备好的文件
+  readyFile = (event: any) => {
+    console.log('readyFile', event)
   }
 }
 </script>

@@ -2,12 +2,11 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-02 11:24:47
+ * @LastEditTime: 2022-06-03 15:42:55
  * @LastEditors: lanchao
  * @Reference:
  */
-//import fs from 'fs'
-import { readFile, stat, readdir } from 'fs/promises'
+import { readFile, writeFile, stat, readdir } from 'fs/promises'
 import path from 'path'
 /**
  * 获取文件夹下所有子文件
@@ -20,6 +19,7 @@ export const getDirContent = async (_dir: string) => {
     label: path.basename(_dir),
     src: _dir,
     type: 0, //0文件夹1 文件
+    state: 0,
     children: []
   }
   let dirNum = 0 //下次放文件夹的位置
@@ -38,28 +38,11 @@ export const getDirContent = async (_dir: string) => {
         label: value,
         src: newDir,
         type: 1,
+        state: 0,
         children: []
       })
     }
   }
-  //   dirs.forEach(async (value) => {
-  //     const newDir = path.join(_dir, value)
-  //     const stats = await stat(newDir)
-  //     if (stats.isDirectory()) {
-  //       //如果是文件夹
-  //       // list.children.push(getDirOfFiles(newDir))
-  //       list.children.splice(dirNum, 0, await getDirContent(newDir))
-  //       dirNum++
-  //     } else if (stats.isFile()) {
-  //       //如果是文件
-  //       list.children.push({
-  //         label: value,
-  //         src: newDir,
-  //         type: 1,
-  //         children: []
-  //       })
-  //     }
-  //   })
   return list
 }
 /**
@@ -68,4 +51,7 @@ export const getDirContent = async (_dir: string) => {
  */
 export const getFileContent = async (fileDir: string) => {
   return await readFile(fileDir, 'utf-8')
+}
+export const setFileContent = async (fileDir: string, content: string) => {
+  return await writeFile(fileDir, content)
 }

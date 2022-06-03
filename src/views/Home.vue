@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-01 18:44:17
+ * @LastEditTime: 2022-06-03 12:12:41
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -14,11 +14,14 @@
       </el-header> -->
       <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
-          <LeftComponent @brotherEvents="brotherEvents" />
+          <LeftComponent ref="leftRef" @leftBrotherEvents="leftBrotherEvents" />
         </el-aside>
         <el-divider direction="vertical" border-style="solid" id="divider" />
         <el-main>
-          <RightComponent ref="rightRef" />
+          <RightComponent
+            ref="rightRef"
+            @rightBrotherEvents="rightBrotherEvents"
+          />
         </el-main>
       </el-container>
     </el-container>
@@ -78,15 +81,12 @@ export default class HomeComponent extends Vue {
     document.onmousemove = null
     document.onmouseup = null
   }
-  //兄弟之间消息中专
-  brotherEvents(data: any) {
-    if (data.name === 'clearFiles') {
-      //清空所有一打开文件
-      ;(this.$refs.rightRef as any).clearFiles()
-    } else if (data.name === 'addTab') {
-      //打开新文件
-      ;(this.$refs.rightRef as any).addTab(data.value)
-    }
+  //兄弟之间消息中专 左侧兄弟发给右侧
+  leftBrotherEvents(data: any) {
+    ;(this.$refs.rightRef as any).brotherEvents(data)
+  }
+  rightBrotherEvents(data: any) {
+    ;(this.$refs.leftRef as any).brotherEvents(data)
   }
 }
 </script>
