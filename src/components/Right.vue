@@ -31,6 +31,7 @@
         :src="item.src"
         :ref="'code' + item.key"
         @updateFileEditState="updateFileEditState"
+        @clearTab="clearTab"
       />
     </el-tab-pane>
   </el-tabs>
@@ -129,7 +130,11 @@ export default class RightComponent extends Vue {
     this.tabsValue = newTabName
     this.updateLocalStorage()
   }
-
+  //读取文件内容不存在路径 删除tab
+  clearTab = (src: string) => {
+    const value = this.tabs.filter((tab: any) => tab.src === src)
+    this.removeTab(value[0].key)
+  }
   //删除tab
   removeTab = (key: string) => {
     this.tabs.splice(Number(key) - 1, 1)
@@ -146,26 +151,6 @@ export default class RightComponent extends Vue {
     if (this.tabsValue > len) this.tabsValue = len
     this.updateLocalStorage()
   }
-  //这个有缺陷   要研究一下
-  //   removeTab = (targetName: string) => {
-  //     const tabs = this.tabs
-  //     let activeName = this.tabsValue //当前选中的key
-  //     if (activeName === targetName) {
-  //       //如果要删除的key是当前选中的key
-  //       tabs.forEach((tab: any, index: any) => {
-  //         //查询出下一个key
-  //         if (tab.key === targetName) {
-  //           const nextTab = tabs[index + 1] || tabs[index - 1]
-  //           if (nextTab) {
-  //             activeName = nextTab.key
-  //           }
-  //         }
-  //       })
-  //     }
-  //     this.tabsValue = activeName
-  //     this.tabs = tabs.filter((tab: any) => tab.key !== targetName) //过滤
-  //     this.updateLocalStorage()
-  //   }
   //点击tab
   clickTab = () => {
     this.updateLocalStorage()

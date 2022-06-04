@@ -50,7 +50,15 @@ export default class CodemirrorComponent extends Vue {
   }
   // 读取文件内容
   async getFile() {
-    this.code = await getFileContent(this.src)
+    getFileContent(this.src)
+      .then((res: any) => {
+        this.code = res
+      })
+      .catch((error: any) => {
+        //通知父级删除改tabs
+        this.$emit('clearTab', this.src)
+        console.error(error)
+      })
   }
   //读取当前页中的内容   包含未提交的
   //是用箭头函数无法获取props接受的值

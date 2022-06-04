@@ -45,38 +45,44 @@ export default class LeftComponent extends Vue {
       type: 0,
       state: 0,
       children: []
-    },
-    {
-      label: '项目目录',
-      src: '',
-      type: 0,
-      state: 0,
-      children: []
     }
   ]
   dirLocal = '' //本地缓存文件夹地址
   localStorageName = 'menuOpenDirectory' //目录地址缓存
   openStorageName = 'fileList' //一打开文件
   mounted() {
-    this.$nextTick(async () => {
+    this.$nextTick(() => {
       const dirLocal = (window as any).localStorage.getItem(
         this.localStorageName
       )
       if (dirLocal) {
-        const defaultDir = await getDirContent(dirLocal)
-        this.data[1] = defaultDir
-        this.dirLocal = dirLocal
+        getDirContent(dirLocal)
+          .then((res: any) => {
+            this.data[1] = res
+            this.dirLocal = dirLocal
+          })
+          .catch((error: any) => {
+            ;(window as any).localStorage.removeItem(this.localStorageName)
+            console.error(error)
+          })
       }
       //监听ipc消息
       ;(window as any).ipcRenderer.on(
         'menuOpenDirectory',
-        async (event: any, result: any) => {
-          this.data = []
-          const dir = await getDirContent(result)
-          this.data[1] = dir
-          this.dirLocal = result
-          ;(window as any).localStorage.setItem(this.localStorageName, result) //将本次的文件夹目录写入缓存
-          this.$emit('leftBrotherEvents', { name: 'clearFiles' })
+        (event: any, result: any) => {
+          getDirContent(result)
+            .then((res: any) => {
+              this.data[1] = res
+              this.dirLocal = result
+              ;(window as any).localStorage.setItem(
+                this.localStorageName,
+                result
+              ) //将本次的文件夹目录写入缓存
+              this.$emit('leftBrotherEvents', { name: 'clearFiles' })
+            })
+            .catch((error: any) => {
+              console.error(error)
+            })
         }
       )
     })
