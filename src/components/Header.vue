@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 15:42:12
- * @LastEditTime: 2022-06-01 18:09:34
+ * @LastEditTime: 2022-06-04 18:02:36
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -23,14 +23,6 @@
       </el-sub-menu>
       <el-menu-item index="b"> 编辑 </el-menu-item>
     </el-menu>
-    <input
-      type="file"
-      v-show="false"
-      @change="fileUpdate($event)"
-      ref="fileRef"
-      webkitdirectory
-      directory
-    />
   </div>
   <div class="right">
     <el-icon @click="semiWin"><SemiSelect /></el-icon>
@@ -52,23 +44,20 @@ export default class HeaderComponent extends Vue {
       ;(this.$refs.fileRef as any).dispatchEvent(new MouseEvent('click'))
     }
   }
-  //打开新的文件夹
-  fileUpdate(e: any) {
-    console.log('选择', e, (this.$refs.fileRef as any).files)
-  }
+
   closeWin() {
-    ;(window as any).ipcRenderer.send('app-close')
+    ;(window as any).$ipcRenderer.send('app-close')
   }
   semiWin() {
-    ;(window as any).ipcRenderer.send('app-min')
+    ;(window as any).$ipcRenderer.send('app-min')
   }
   fullWin() {
     this.isMax = false
-    ;(window as any).ipcRenderer.send('app-max')
+    ;(window as any).$ipcRenderer.send('app-max')
   }
   noFullWin() {
     this.isMax = true
-    ;(window as any).ipcRenderer.send('app-max')
+    ;(window as any).$ipcRenderer.send('app-max')
   }
 }
 </script>

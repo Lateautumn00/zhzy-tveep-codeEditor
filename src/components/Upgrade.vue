@@ -1,4 +1,11 @@
-<!--手动升级-->
+<!--
+ * @Description: 手动升级
+ * @Author: lanchao
+ * @Date: 2022-05-20 10:27:49
+ * @LastEditTime: 2022-06-04 17:32:08
+ * @LastEditors: lanchao
+ * @Reference: 
+-->
 <template>
   <div id="update">
     <el-dialog

@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-03 16:28:40
+ * @LastEditTime: 2022-06-04 19:34:46
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -22,10 +22,17 @@
       :name="item.key"
     >
       <template #label>
-        <span class="custom-tabs-label">
-          <span>{{ item.label }}</span>
-          <el-icon v-if="item.state === 1"><Edit /></el-icon>
-        </span>
+        <el-tooltip
+          class="box-item"
+          effect="light"
+          :content="item.src"
+          placement="bottom"
+        >
+          <span class="custom-tabs-label">
+            <span>{{ item.label }}</span>
+            <el-icon v-if="item.state === 1"><Edit /></el-icon>
+          </span>
+        </el-tooltip>
       </template>
       <CodemirrorComponent
         :src="item.src"
@@ -64,11 +71,11 @@ export default class RightComponent extends Vue {
       }
       //监听ipc消息
       //保存功能
-      ;(window as any).ipcRenderer.on('menuPreservation', () => {
+      ;(window as any).$ipcRenderer.on('menuPreservation', () => {
         this.saveFile()
       })
       //打开文件
-      ;(window as any).ipcRenderer.on(
+      ;(window as any).$ipcRenderer.on(
         'menuOpenFile',
         (event: any, result: any) => {
           this.addTab({

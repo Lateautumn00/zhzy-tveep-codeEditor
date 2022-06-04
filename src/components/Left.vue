@@ -1,9 +1,8 @@
-/* eslint-disable vue/no-unused-vars */
 <!--
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-03 16:16:55
+ * @LastEditTime: 2022-06-04 18:33:40
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -15,19 +14,33 @@
       highlight-current
       @node-click="handleNodeClick"
     >
-      <template #default="{ data }">
-        <span class="custom-tree-node">
-          <el-icon v-if="data.state === 1"><Edit /></el-icon>
-          <span>{{ data.label }}</span>
-        </span>
+      <template #default="{ node }">
+        <DropdownComponent
+          trigger="contextmenu"
+          :type="node.data.type"
+          placement="bottom-start"
+          size="large"
+          @handleNodeClick="handleNodeClick"
+        >
+          <span class="custom-tree-node">
+            <el-icon v-if="node.data.state === 1"><Edit /></el-icon>
+            <span>{{ node.data.label }}</span>
+          </span>
+        </DropdownComponent>
       </template>
     </el-tree>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-class-component'
+import { Options, Vue } from 'vue-class-component'
 import { getDirContent } from '@/modular/fsModular'
+import DropdownComponent from '@/components/Dropdown.vue'
+@Options({
+  components: {
+    DropdownComponent
+  }
+})
 export default class LeftComponent extends Vue {
   defaultProps = {
     label: 'label',
@@ -67,7 +80,7 @@ export default class LeftComponent extends Vue {
       }
 
       //监听ipc消息
-      ;(window as any).ipcRenderer.on(
+      ;(window as any).$ipcRenderer.on(
         'menuOpenDirectory',
         (event: any, result: any) => {
           getDirContent(result)
