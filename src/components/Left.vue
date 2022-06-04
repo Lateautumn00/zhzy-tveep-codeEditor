@@ -28,7 +28,6 @@
 <script lang="ts">
 import { Vue } from 'vue-class-component'
 import { getDirContent } from '@/modular/fsModular'
-
 export default class LeftComponent extends Vue {
   defaultProps = {
     label: 'label',
@@ -66,6 +65,7 @@ export default class LeftComponent extends Vue {
             console.error(error)
           })
       }
+
       //监听ipc消息
       ;(window as any).ipcRenderer.on(
         'menuOpenDirectory',
@@ -81,6 +81,7 @@ export default class LeftComponent extends Vue {
               this.$emit('leftBrotherEvents', { name: 'clearFiles' })
             })
             .catch((error: any) => {
+              ;(this as any).$message.error(error)
               console.error(error)
             })
         }

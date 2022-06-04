@@ -131,7 +131,8 @@ export default class RightComponent extends Vue {
     this.updateLocalStorage()
   }
   //读取文件内容不存在路径 删除tab
-  clearTab = (src: string) => {
+  clearTab = (src: string, error: any) => {
+    ;(this as any).$message.error(error)
     const value = this.tabs.filter((tab: any) => tab.src === src)
     this.removeTab(value[0].key)
   }

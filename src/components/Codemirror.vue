@@ -56,7 +56,7 @@ export default class CodemirrorComponent extends Vue {
       })
       .catch((error: any) => {
         //通知父级删除改tabs
-        this.$emit('clearTab', this.src)
+        this.$emit('clearTab', this.src, error)
         console.error(error)
       })
   }
