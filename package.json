@@ -32,6 +32,7 @@
         "vuex": "^4.0.0-0"
     },
     "devDependencies": {
+        "@electron/remote": "^2.0.8",
         "@types/chai": "^4.2.11",
         "@types/electron-devtools-installer": "^2.2.0",
         "@types/mocha": "^5.2.4",

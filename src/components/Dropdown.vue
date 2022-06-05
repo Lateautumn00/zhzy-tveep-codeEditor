@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-04 18:32:11
+ * @LastEditTime: 2022-06-05 10:39:01
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -52,8 +52,9 @@ export default class DropdownComponent extends Vue {
   }
   //复制路径
   copyFile() {
-    ;(window as any).$clipboard.writeText((this as any).$parent.node.data.src)
-    ;(this as any).$message.success('复制成功')
+    ;(window as any).$electron.clipboard.writeText(
+      (this as any).$parent.node.data.src
+    )
   }
 }
 </script>

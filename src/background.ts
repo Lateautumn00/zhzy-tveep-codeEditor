@@ -46,6 +46,7 @@ async function createWindow() {
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   }
+
   //设置自定义菜单
   menu(win, Menu, dialog)
   // 当应用所有窗口关闭要做的事情

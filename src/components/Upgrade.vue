@@ -2,7 +2,7 @@
  * @Description: 手动升级
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-04 17:32:08
+ * @LastEditTime: 2022-06-05 10:34:28
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -36,7 +36,6 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import { ipcRenderer } from 'electron'
 @Options({
   components: {}
 })
@@ -62,28 +61,31 @@ export default class UpgradeComponent extends Vue {
    * 开始更新
    */
   upgrade() {
-    ipcRenderer.send('downloadUpdate')
+    ;(window as any).$electron.ipcRenderer.send('downloadUpdate')
     this.btnStatus = false
   }
   mounted() {
-    ipcRenderer.send('checkForUpdate') //检查版本更新
+    ;(window as any).$electron.ipcRenderer.send('checkForUpdate') //检查版本更新
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let _this = this
     //接收主进程版本更新消息
-    ipcRenderer.on('message', (event: any, arg: any) => {
-      _this.title = arg.title
-      if ('update-available' === arg.cmd) {
-        _this.btnStatus = true
-        _this.dialogVisible = true //显示升级对话框
-      } else if ('download-progress' === arg.cmd) {
-        const percent = Math.round(parseFloat(arg.message.percent))
-        _this.percentage = percent
-      } else if ('update-downloaded' === arg.cmd) {
-        _this.dialogVisible = false
-      } else if ('error' === arg.cmd) {
-        _this.dialogVisible = false
+    ;(window as any).$electron.ipcRenderer.on(
+      'message',
+      (event: any, arg: any) => {
+        _this.title = arg.title
+        if ('update-available' === arg.cmd) {
+          _this.btnStatus = true
+          _this.dialogVisible = true //显示升级对话框
+        } else if ('download-progress' === arg.cmd) {
+          const percent = Math.round(parseFloat(arg.message.percent))
+          _this.percentage = percent
+        } else if ('update-downloaded' === arg.cmd) {
+          _this.dialogVisible = false
+        } else if ('error' === arg.cmd) {
+          _this.dialogVisible = false
+        }
       }
-    })
+    )
   }
 }
 </script>

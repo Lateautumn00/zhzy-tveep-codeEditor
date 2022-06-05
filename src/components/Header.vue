@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 15:42:12
- * @LastEditTime: 2022-06-04 18:02:36
+ * @LastEditTime: 2022-06-05 10:33:14
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -46,18 +46,18 @@ export default class HeaderComponent extends Vue {
   }
 
   closeWin() {
-    ;(window as any).$ipcRenderer.send('app-close')
+    ;(window as any).$electron.ipcRenderer.send('app-close')
   }
   semiWin() {
-    ;(window as any).$ipcRenderer.send('app-min')
+    ;(window as any).$electron.ipcRenderer.send('app-min')
   }
   fullWin() {
     this.isMax = false
-    ;(window as any).$ipcRenderer.send('app-max')
+    ;(window as any).$electron.ipcRenderer.send('app-max')
   }
   noFullWin() {
     this.isMax = true
-    ;(window as any).$ipcRenderer.send('app-max')
+    ;(window as any).$electron.ipcRenderer.send('app-max')
   }
 }
 </script>

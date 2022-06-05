@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-04 18:33:40
+ * @LastEditTime: 2022-06-05 11:27:56
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -80,7 +80,7 @@ export default class LeftComponent extends Vue {
       }
 
       //监听ipc消息
-      ;(window as any).$ipcRenderer.on(
+      ;(window as any).$electron.ipcRenderer.on(
         'menuOpenDirectory',
         (event: any, result: any) => {
           getDirContent(result)

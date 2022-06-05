@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-04 18:56:43
+ * @LastEditTime: 2022-06-05 12:14:43
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -40,7 +40,7 @@ export default class CodemirrorComponent extends Vue {
   // eslint-disable-next-line quotes
   code = ''
   src = ''
-  state = -1 //状态 0 未有修改 1 有修改 1
+  state = 0 //状态 0 未有修改 1 有修改 1
   extensions = [javascript(), oneDark]
   log = console.log
   mounted() {
@@ -74,9 +74,10 @@ export default class CodemirrorComponent extends Vue {
     if (this.state === 0) {
       this.state = 1
       this.$emit('updateFileEditState', this.src, 1)
-    } else if (this.state === -1) {
-      this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记
     }
+    // else if (this.state === -1) {
+    //   this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记
+    // }
   }
   //鼠标进入文件内
   focusFile = (event: any) => {

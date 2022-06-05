@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-04 19:34:46
+ * @LastEditTime: 2022-06-05 12:07:16
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -48,6 +48,7 @@
 import { Options, Vue } from 'vue-class-component'
 import CodemirrorComponent from '@/components/Codemirror.vue'
 import path from 'path'
+import { ElMessageBox } from 'element-plus'
 @Options({
   components: {
     CodemirrorComponent
@@ -71,11 +72,11 @@ export default class RightComponent extends Vue {
       }
       //监听ipc消息
       //保存功能
-      ;(window as any).$ipcRenderer.on('menuPreservation', () => {
+      ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
         this.saveFile()
       })
       //打开文件
-      ;(window as any).$ipcRenderer.on(
+      ;(window as any).$electron.ipcRenderer.on(
         'menuOpenFile',
         (event: any, result: any) => {
           this.addTab({
@@ -110,7 +111,7 @@ export default class RightComponent extends Vue {
     this.tabs.forEach((tab: any) => {
       if (tab.src === src) tab.state = state
     })
-    this.updateLocalStorage()
+    // this.updateLocalStorage()
   }
   //新增tab
   // eslint-disable-next-line no-undef
@@ -138,13 +139,32 @@ export default class RightComponent extends Vue {
     this.updateLocalStorage()
   }
   //读取文件内容不存在路径 删除tab
+  // eslint-disable-next-line no-unused-vars
   clearTab = (src: string, error: any) => {
     ;(this as any).$message.error(error)
     const value = this.tabs.filter((tab: any) => tab.src === src)
-    this.removeTab(value[0].key)
+    this.removeTabOk(value[0].key)
   }
   //删除tab
   removeTab = (key: string) => {
+    const v = this.tabs[Number(key) - 1]
+    if (v.state === 0) {
+      this.removeTabOk(key)
+    } else if (v.state === 1) {
+      ElMessageBox.confirm('当前编辑内容还未保存，确定关闭？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      })
+        .then(() => {
+          this.removeTabOk(key)
+        })
+        .catch(() => {
+          // catch error
+        })
+    }
+  }
+  //确认删除
+  removeTabOk(key: string) {
     this.tabs.splice(Number(key) - 1, 1)
     this.tabs.forEach((value: any) => {
       if (value.key > key) {
