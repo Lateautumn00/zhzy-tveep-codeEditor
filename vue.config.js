@@ -16,7 +16,7 @@ module.exports = {
       nodeIntegration: true,
       builderOptions: {
         productName: 'zhzy-tveep-codeEditor', //打包名称
-        appId: 'cn.zhzy.tveep.app',
+        appId: 'cn.zhzy.tveep.codeEditor.app',
         copyright: 'Copyright © 2022',
         publish: [
           {

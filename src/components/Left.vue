@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-05 11:27:56
+ * @LastEditTime: 2022-06-05 15:43:39
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -14,17 +14,18 @@
       highlight-current
       @node-click="handleNodeClick"
     >
-      <template #default="{ node }">
+      <template #default="{ data }">
         <DropdownComponent
           trigger="contextmenu"
-          :type="node.data.type"
-          placement="bottom-start"
+          :type="data.type"
+          placement="bottom"
           size="large"
+          :data="data"
           @handleNodeClick="handleNodeClick"
         >
           <span class="custom-tree-node">
-            <el-icon v-if="node.data.state === 1"><Edit /></el-icon>
-            <span>{{ node.data.label }}</span>
+            <el-icon v-if="data.state === 1"><Edit /></el-icon>
+            <span>{{ data.label }}</span>
           </span>
         </DropdownComponent>
       </template>
@@ -105,8 +106,8 @@ export default class LeftComponent extends Vue {
   brotherEvents(data: any) {
     if (data.name === 'clearFiles') {
       //清空所有一打开文件
-      this.data[0].children = []
-    } else if (data.name === 'addTab') {
+      if (data.k === 1) this.data[0].children = []
+    } else if (data.name === 'updateTab') {
       //打开新文件
       this.data[0].children = data.value.tabs
     }

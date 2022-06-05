@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-05 12:07:16
+ * @LastEditTime: 2022-06-05 15:43:05
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -11,7 +11,6 @@
     v-model="tabsValue"
     type="card"
     class="demo-tabs"
-    closable
     @tab-remove="removeTab"
     @tab-click="clickTab"
   >
@@ -20,6 +19,7 @@
       :key="item.key"
       :label="item.label"
       :name="item.key"
+      :closable="!item.state"
     >
       <template #label>
         <el-tooltip
@@ -28,10 +28,21 @@
           :content="item.src"
           placement="bottom"
         >
-          <span class="custom-tabs-label">
-            <span>{{ item.label }}</span>
-            <el-icon v-if="item.state === 1"><Edit /></el-icon>
-          </span>
+          <DropdownComponent
+            trigger="contextmenu"
+            :type="2"
+            placement="bottom"
+            size="large"
+            :data="item"
+            @saveFile="saveFile"
+            @removeTab="removeTab"
+            @closeFileAll="closeFileAll"
+          >
+            <span class="custom-tabs-label">
+              <span>{{ item.label }}</span>
+              <el-icon v-if="item.state === 1"><Edit /></el-icon>
+            </span>
+          </DropdownComponent>
         </el-tooltip>
       </template>
       <CodemirrorComponent
@@ -47,11 +58,13 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import CodemirrorComponent from '@/components/Codemirror.vue'
+import DropdownComponent from '@/components/Dropdown.vue'
 import path from 'path'
 import { ElMessageBox } from 'element-plus'
 @Options({
   components: {
-    CodemirrorComponent
+    CodemirrorComponent,
+    DropdownComponent
   }
 })
 export default class RightComponent extends Vue {
@@ -66,14 +79,14 @@ export default class RightComponent extends Vue {
       )
       if (dirLocal) {
         const data = JSON.parse(dirLocal)
-        this.$emit('rightBrotherEvents', { name: 'addTab', value: data }) //回传给左侧树
+        this.$emit('rightBrotherEvents', { name: 'updateTab', value: data }) //回传给左侧树
         this.tabs = data.tabs
         this.tabsValue = data.tabsValue
       }
       //监听ipc消息
       //保存功能
       ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
-        this.saveFile()
+        this.saveFile(this.tabsValue) //当前打开并展示的tab
       })
       //打开文件
       ;(window as any).$electron.ipcRenderer.on(
@@ -91,17 +104,14 @@ export default class RightComponent extends Vue {
     })
   }
   //保存文件
-  saveFile() {
-    ;(this.$refs[`code${this.tabsValue}`] as any)[0].getFileDoc()
+  saveFile(tabsValue: string) {
+    ;(this.$refs[`code${tabsValue}`] as any)[0].getFileDoc()
   }
+
   //其他兄弟节点发来的消息
   brotherEvents(data: any) {
     if (data.name === 'clearFiles') {
-      //清空所有一打开文件
-      this.tabs = []
-      this.tabsValue = '0'
-      ;(window as any).localStorage.removeItem(this.openStorageName)
-      this.$emit('rightBrotherEvents', { name: 'clearFiles' }) //回传给左侧树
+      this.closeFileAll(0) //清空所有一打开文件
     } else if (data.name === 'addTab') {
       //打开新文件
       this.addTab(data.value)
@@ -111,7 +121,7 @@ export default class RightComponent extends Vue {
     this.tabs.forEach((tab: any) => {
       if (tab.src === src) tab.state = state
     })
-    // this.updateLocalStorage()
+    this.updateLocalStorage()
   }
   //新增tab
   // eslint-disable-next-line no-undef
@@ -145,7 +155,7 @@ export default class RightComponent extends Vue {
     const value = this.tabs.filter((tab: any) => tab.src === src)
     this.removeTabOk(value[0].key)
   }
-  //删除tab
+  //关闭+
   removeTab = (key: string) => {
     const v = this.tabs[Number(key) - 1]
     if (v.state === 0) {
@@ -163,7 +173,8 @@ export default class RightComponent extends Vue {
         })
     }
   }
-  //确认删除
+
+  //确认关闭
   removeTabOk(key: string) {
     this.tabs.splice(Number(key) - 1, 1)
     this.tabs.forEach((value: any) => {
@@ -178,6 +189,26 @@ export default class RightComponent extends Vue {
     const len = `${this.tabs.length}`
     if (this.tabsValue > len) this.tabsValue = len
     this.updateLocalStorage()
+  }
+  //关闭文件
+  /**
+   * k 0 关闭全部 1 关闭其它
+   * key 当前的key
+   */
+  closeFileAll(k: number, key?: string) {
+    if (k === 0) {
+      // 关闭全部已打开文件
+      this.tabs = []
+      this.tabsValue = '0'
+      ;(window as any).localStorage.removeItem(this.openStorageName)
+      this.$emit('rightBrotherEvents', { name: 'clearFiles', k }) //回传给左侧树
+    } else if (k === 1) {
+      //关闭其它
+      this.tabs = this.tabs.filter((value: any) => value.key === key)
+      this.tabsValue = '1'
+      this.tabs[0].key = '1'
+      this.updateLocalStorage()
+    }
   }
   //点击tab
   clickTab = () => {
@@ -194,7 +225,7 @@ export default class RightComponent extends Vue {
       JSON.stringify(data)
     )
     this.$emit('rightBrotherEvents', {
-      name: 'addTab',
+      name: 'updateTab',
       value: data
     }) //回传给左侧树
   }

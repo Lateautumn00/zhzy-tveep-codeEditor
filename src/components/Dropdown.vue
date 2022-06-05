@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-05 10:39:01
+ * @LastEditTime: 2022-06-05 15:41:28
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -28,6 +28,20 @@
         <el-dropdown-item>重命名</el-dropdown-item>
         <el-dropdown-item>删除</el-dropdown-item>
       </el-dropdown-menu>
+      <el-dropdown-menu v-if="type === 2">
+        <el-dropdown-item @click="saveFile" :disabled="!data.state"
+          >保存</el-dropdown-item
+        >
+        <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
+        <el-dropdown-item @click="closeFile" :disabled="data.state"
+          >关闭</el-dropdown-item
+        >
+        <el-dropdown-item>关闭已保存</el-dropdown-item>
+        <el-dropdown-item @click="closeFileAll(1)">关闭其他</el-dropdown-item>
+        <el-dropdown-item :disabled="data.state" @click="closeFileAll(0)"
+          >关闭全部</el-dropdown-item
+        >
+      </el-dropdown-menu>
     </template>
   </el-dropdown>
 </template>
@@ -39,22 +53,52 @@ import { Options, Vue } from 'vue-class-component'
     trigger: String,
     placement: String,
     type: Number,
-    size: String
+    size: String,
+    data: Object
   }
+  //   watch: {
+  //     data: [
+  //       {
+  //         handler: 'dataWatch',
+  //         immediate: true,
+  //         deep: true
+  //       }
+  //     ]
+  //   }
 })
 export default class DropdownComponent extends Vue {
   trigger = 'click' //触发方式 click/focus/hover/contextmenu
-  placement = 'bottom-start' //位置 top/top-start/top-end/bottom/bottom-start/bottom-end
+  placement = 'bottom' //位置 top/top-start/top-end/bottom/bottom-start/bottom-end
   type = 0 //0目录1文件
   size = 'default' //large / default / small
+  data: any
+  //   dataWatch(newValue: any, oldValue: any) {
+  //     console.log('监听到222....', this.type, newValue, oldValue)
+  //   }
+  //打开文件 tree
   openFile() {
-    this.$emit('handleNodeClick', (this as any).$parent.node.data)
+    this.$emit('handleNodeClick', this.data)
   }
-  //复制路径
+  //复制路径 all
   copyFile() {
-    ;(window as any).$electron.clipboard.writeText(
-      (this as any).$parent.node.data.src
-    )
+    ;(window as any).$electron.clipboard.writeText(this.data.src)
+  }
+  //保存文件 tabs
+  saveFile() {
+    this.$emit('saveFile', this.data.key)
+  }
+  //关闭文件 tabs
+  closeFile() {
+    this.$emit('removeTab', this.data.key)
+  }
+  //关闭全部文件 tabs
+  closeFileAll(k: number) {
+    this.$emit('closeFileAll', k, this.data.key)
   }
 }
 </script>
+<style scoped lang="scss">
+.el-dropdown {
+  line-height: unset;
+}
+</style>

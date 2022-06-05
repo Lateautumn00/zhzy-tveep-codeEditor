@@ -49,7 +49,7 @@ export default class CodemirrorComponent extends Vue {
     })
   }
   // 读取文件内容
-  async getFile() {
+  getFile() {
     getFileContent(this.src)
       .then((res: any) => {
         this.code = res
@@ -62,15 +62,16 @@ export default class CodemirrorComponent extends Vue {
   }
   //读取当前页中的内容   包含未提交的
   //是用箭头函数无法获取props接受的值
-  async getFileDoc() {
-    if (this.state === 1) {
-      await setFileContent(this.src, this.code)
-      this.state = 0
-      this.$emit('updateFileEditState', this.src, 0)
-    }
+  getFileDoc() {
+    //if (this.state === 1) {
+    setFileContent(this.src, this.code)
+    this.state = 0
+    this.$emit('updateFileEditState', this.src, 0)
+    //}
   }
   //文件变动
   changeFile() {
+    console.log('热热热热他----')
     if (this.state === 0) {
       this.state = 1
       this.$emit('updateFileEditState', this.src, 1)
