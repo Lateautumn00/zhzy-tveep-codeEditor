@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-05 15:41:28
+ * @LastEditTime: 2022-06-06 18:57:32
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -11,8 +11,8 @@
     <slot />
     <template #dropdown>
       <el-dropdown-menu v-if="type === -1 || type === 0">
-        <el-dropdown-item @click="createFile">新建文件</el-dropdown-item>
-        <el-dropdown-item>新建文件夹</el-dropdown-item>
+        <el-dropdown-item @click="createDialog(1)">新建文件</el-dropdown-item>
+        <el-dropdown-item @click="createDialog(0)">新建文件夹</el-dropdown-item>
         <el-dropdown-item v-if="type === 0 ? true : false"
           >复制</el-dropdown-item
         >
@@ -35,7 +35,7 @@
         <el-dropdown-item>复制</el-dropdown-item>
         <el-dropdown-item>剪裁</el-dropdown-item>
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item>重命名</el-dropdown-item>
+        <el-dropdown-item @click="createDialog(2)">重命名</el-dropdown-item>
         <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 2">
@@ -93,10 +93,10 @@ export default class DropdownComponent extends Vue {
   //   }
   //打开文件 tree
   openFile() {
-    this.$emit('handleNodeClick', this.data)
+    this.$emit('handleNodeClick', (this.$parent as any).node.data)
   }
-  createFile() {
-    this.$emit('createFile', this.data, (this.$parent as any).node)
+  createDialog(type: number) {
+    this.$emit('createDialog', type, (this.$parent as any).node)
   }
   //删除
   removeNode() {

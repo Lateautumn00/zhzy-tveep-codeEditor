@@ -3,46 +3,49 @@
 const { readFile, readdir, stat, writeFile } = require('fs/promises')
 //eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
-// const getDirContent = async (_dir) => {
-//   // eslint-disable-next-line no-undef
-//   const list = {
-//     label: path.basename(_dir),
-//     src: _dir,
-//     type: 0, //0文件夹1 文件
-//     state: 0,
-//     children: []
-//   }
-//   let dirNum = 0 //下次放文件夹的位置
-//   const dirs = await readdir(_dir) //读文件
+let d = 0
+const getDirContent = async (_dir) => {
+  // eslint-disable-next-line no-undef
+  const list = {
+    id: ++d,
+    label: path.basename(_dir),
+    src: _dir,
+    type: 0, //0文件夹1 文件
+    state: 0,
+    children: []
+  }
+  let dirNum = 0 //下次放文件夹的位置
+  const dirs = await readdir(_dir) //读文件
 
-//   for (const value of dirs) {
-//     const newDir = path.join(_dir, value)
-//     const stats = await stat(newDir)
-//     if (stats.isDirectory()) {
-//       //如果是文件夹
-//       // list.children.push(getDirOfFiles(newDir))
-//       list.children.splice(dirNum, 0, await getDirContent(newDir))
-//       dirNum++
-//     } else if (stats.isFile()) {
-//       //如果是文件
-//       list.children.push({
-//         label: value,
-//         src: newDir,
-//         type: 1,
-//         state: 0,
-//         children: []
-//       })
-//     }
-//   }
-//   return list
-// }
-// getDirContent('H:/data/me/github/zhzy-tveep-codeEditor/src')
-//   .then((res) => {
-//     console.log(res)
-//   })
-//   .catch((err) => {
-//     console.error('错误', err)
-//   })
+  for (const value of dirs) {
+    const newDir = path.join(_dir, value)
+    const stats = await stat(newDir)
+    if (stats.isDirectory()) {
+      //如果是文件夹
+      // list.children.push(getDirOfFiles(newDir))
+      list.children.splice(dirNum, 0, await getDirContent(newDir))
+      dirNum++
+    } else if (stats.isFile()) {
+      //如果是文件
+      list.children.push({
+        id: ++d,
+        label: value,
+        src: newDir,
+        type: 1,
+        state: 0,
+        children: []
+      })
+    }
+  }
+  return list
+}
+getDirContent('H:/data/me/github/zhzy-tveep-codeEditor/src')
+  .then((res) => {
+    console.log(res)
+  })
+  .catch((err) => {
+    console.error('错误', err)
+  })
 
 //读取文件
 // const getFile = async (fileDir) => {
@@ -84,17 +87,17 @@ const path = require('path')
 //   console.log(tabsValue, tabs)
 // }
 // removeTab('1')
-let a = {
-  label: '已打开文件',
-  src: '',
-  type: 0,
-  state: 0,
-  children: []
-}
-Object.defineProperty(a, 'k', {
-  value: 1,
-  enumerable: true,
-  configurable: false,
-  writable: false
-})
-console.log(a)
+// let a = {
+//   label: '已打开文件',
+//   src: '',
+//   type: 0,
+//   state: 0,
+//   children: []
+// }
+// Object.defineProperty(a, 'k', {
+//   value: 1,
+//   enumerable: true,
+//   configurable: false,
+//   writable: false
+// })
+// console.log(a)

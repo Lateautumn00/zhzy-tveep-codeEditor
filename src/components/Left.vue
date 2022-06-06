@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-05 15:43:39
+ * @LastEditTime: 2022-06-06 19:36:18
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -14,6 +14,7 @@
       :props="defaultProps"
       highlight-current
       @node-click="handleNodeClick"
+      node-key="id"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -23,7 +24,7 @@
           size="large"
           :data="data"
           @handleNodeClick="handleNodeClick"
-          @createFile="createFile"
+          @createDialog="createDialog"
           @removeNode="removeNode"
         >
           <span class="custom-tree-node">
@@ -33,6 +34,7 @@
         </DropdownComponent>
       </template>
     </el-tree>
+    <DialogComponent ref="dialog" @createFile="createFile" />
   </div>
 </template>
 
@@ -40,10 +42,18 @@
 import { Options, Vue } from 'vue-class-component'
 import { getDirContent } from '@/modular/fsModular'
 import DropdownComponent from '@/components/Dropdown.vue'
-import { deleteFile } from '@/modular/fsModular'
+import { deleteFile, createFilePath, renameFile } from '@/modular/fsModular'
+import DialogComponent from '@/components/Dialog.vue'
+interface DialogData {
+  title: string
+  type: number
+  src: string
+  name: string
+}
 @Options({
   components: {
-    DropdownComponent
+    DropdownComponent,
+    DialogComponent
   }
 })
 export default class LeftComponent extends Vue {
@@ -67,6 +77,7 @@ export default class LeftComponent extends Vue {
   dirLocal = '' //本地缓存文件夹地址
   localStorageName = 'menuOpenDirectory' //目录地址缓存
   openStorageName = 'fileList' //一打开文件
+  xNode: any //当前操作的
   mounted() {
     this.$nextTick(() => {
       const dirLocal = (window as any).localStorage.getItem(
@@ -132,8 +143,54 @@ export default class LeftComponent extends Vue {
   }
   //创建文件
   // eslint-disable-next-line no-undef
-  createFile = (value: TreeList, node: any) => {
-    console.log('gg===', value, node)
+  createDialog(type: number, node: any) {
+    this.xNode = node
+    const title = type === 1 ? '创建文件' : type === 0 ? '创建文件夹' : '重命名'
+    const name = type === 2 || type === 3 ? node.data.label : ''
+    ;(this.$refs.dialog as any).openDialog({
+      title,
+      type: type,
+      src: node.data.src,
+      name
+    })
+  }
+  //创建
+  createFile(data: DialogData) {
+    if (data.type === 2 || data.type === 3) {
+      //重命名
+      renameFile(data.src, data.name)
+        .then((res: string) => {
+          ;(this.$refs.tree as any).updateKeyChildren(this.xNode, {
+            label: data.name,
+            src: res,
+            type: 1,
+            state: 0,
+            children: []
+          })
+        })
+        .catch((error: any) => {
+          console.log(error)
+          ;(this as any).$message.error('错误')
+        })
+    } else {
+      //创建文件 文件夹
+      createFilePath(data.type, data.src, data.name)
+        .then((res: any) => {
+          const v = {
+            label: data.name,
+            src: res,
+            type: data.type,
+            state: 0,
+            children: []
+          }
+          ;(this.$refs.tree as any).append(v, this.xNode)
+          if (data.type === 1) this.handleNodeClick(v)
+        })
+        .catch((error: any) => {
+          console.log(error)
+          ;(this as any).$message.error('错误')
+        })
+    }
   }
   removeNode(node: any) {
     deleteFile(node.data.src)

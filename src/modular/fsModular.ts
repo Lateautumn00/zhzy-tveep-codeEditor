@@ -2,13 +2,21 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-03 15:42:55
+ * @LastEditTime: 2022-06-06 19:30:35
  * @LastEditors: lanchao
  * @Reference:
  */
-import { readFile, writeFile, stat, readdir, unlink, rmdir } from 'fs/promises'
+import {
+  readFile,
+  writeFile,
+  stat,
+  readdir,
+  unlink,
+  rmdir,
+  mkdir,
+  rename
+} from 'fs/promises'
 import path from 'path'
-import fs from 'fs'
 /**
  * 获取文件夹下所有子文件
  * @param _dir 文件夹路径
@@ -53,6 +61,23 @@ export const getDirContent = async (_dir: string) => {
  */
 export const getFileContent = async (fileDir: string) => {
   return await readFile(fileDir, 'utf-8')
+}
+//目录下创建文件 文件夹
+export const createFilePath = async (
+  type: number,
+  fileDir: string,
+  name: string
+) => {
+  const newPath = path.join(fileDir, name)
+  type === 0 ? await mkdir(newPath) : await writeFile(newPath, ' ')
+  return newPath
+}
+//重命名
+export const renameFile = async (oldDir: string, name: string) => {
+  const fileDir = path.dirname(oldDir)
+  const newDir = path.join(fileDir, name)
+  await rename(oldDir, newDir)
+  return newDir
 }
 //写入文件
 export const setFileContent = async (fileDir: string, content: string) => {
