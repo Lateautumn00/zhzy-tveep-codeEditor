@@ -9,6 +9,7 @@
 <template>
   <div class="left">
     <el-tree
+      ref="tree"
       :data="data"
       :props="defaultProps"
       highlight-current
@@ -22,6 +23,8 @@
           size="large"
           :data="data"
           @handleNodeClick="handleNodeClick"
+          @createFile="createFile"
+          @removeNode="removeNode"
         >
           <span class="custom-tree-node">
             <el-icon v-if="data.state === 1"><Edit /></el-icon>
@@ -37,6 +40,7 @@
 import { Options, Vue } from 'vue-class-component'
 import { getDirContent } from '@/modular/fsModular'
 import DropdownComponent from '@/components/Dropdown.vue'
+import { deleteFile } from '@/modular/fsModular'
 @Options({
   components: {
     DropdownComponent
@@ -55,7 +59,7 @@ export default class LeftComponent extends Vue {
     {
       label: '已打开文件',
       src: '',
-      type: 0,
+      type: -2,
       state: 0,
       children: []
     }
@@ -71,6 +75,7 @@ export default class LeftComponent extends Vue {
       if (dirLocal) {
         getDirContent(dirLocal)
           .then((res: any) => {
+            res.type = -1
             this.data[1] = res
             this.dirLocal = dirLocal
           })
@@ -86,13 +91,18 @@ export default class LeftComponent extends Vue {
         (event: any, result: any) => {
           getDirContent(result)
             .then((res: any) => {
+              res.type = -1
               this.data[1] = res
               this.dirLocal = result
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
                 result
               ) //将本次的文件夹目录写入缓存
-              this.$emit('leftBrotherEvents', { name: 'clearFiles' })
+              this.$emit('leftBrotherEvents', {
+                name: 'clearFiles',
+                k: 0,
+                value: ''
+              })
             })
             .catch((error: any) => {
               ;(this as any).$message.error(error)
@@ -119,6 +129,26 @@ export default class LeftComponent extends Vue {
       //去读取文件
       this.$emit('leftBrotherEvents', { name: 'addTab', value: value })
     }
+  }
+  //创建文件
+  // eslint-disable-next-line no-undef
+  createFile = (value: TreeList, node: any) => {
+    console.log('gg===', value, node)
+  }
+  removeNode(node: any) {
+    deleteFile(node.data.src)
+      .then(() => {
+        ;(this.$refs.tree as any).remove(node)
+        this.$emit('leftBrotherEvents', {
+          name: 'clearFiles',
+          k: 3,
+          value: node.data.key
+        })
+      })
+      .catch((error: any) => {
+        console.error(error)
+        ;(this as any).$message.error('删除失败')
+      })
   }
 }
 </script>

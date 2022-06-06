@@ -10,15 +10,25 @@
   <el-dropdown :trigger="trigger" :placement="placement" :size="size">
     <slot />
     <template #dropdown>
-      <el-dropdown-menu v-if="type === 0">
-        <el-dropdown-item>新建文件</el-dropdown-item>
+      <el-dropdown-menu v-if="type === -1 || type === 0">
+        <el-dropdown-item @click="createFile">新建文件</el-dropdown-item>
         <el-dropdown-item>新建文件夹</el-dropdown-item>
-        <el-dropdown-item>复制</el-dropdown-item>
-        <el-dropdown-item>粘贴</el-dropdown-item>
-        <el-dropdown-item>剪裁</el-dropdown-item>
+        <el-dropdown-item v-if="type === 0 ? true : false"
+          >复制</el-dropdown-item
+        >
+        <el-dropdown-item v-if="type === 0 ? true : false"
+          >粘贴</el-dropdown-item
+        >
+        <el-dropdown-item v-if="type === 0 ? true : false"
+          >剪裁</el-dropdown-item
+        >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item>重命名</el-dropdown-item>
-        <el-dropdown-item>删除</el-dropdown-item>
+        <el-dropdown-item v-if="type === 0 ? true : false"
+          >重命名</el-dropdown-item
+        >
+        <el-dropdown-item v-if="type === 0 ? true : false" @click="removeNode"
+          >删除</el-dropdown-item
+        >
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 1">
         <el-dropdown-item @click="openFile">打开</el-dropdown-item>
@@ -26,7 +36,7 @@
         <el-dropdown-item>剪裁</el-dropdown-item>
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item>重命名</el-dropdown-item>
-        <el-dropdown-item>删除</el-dropdown-item>
+        <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 2">
         <el-dropdown-item
@@ -84,6 +94,13 @@ export default class DropdownComponent extends Vue {
   //打开文件 tree
   openFile() {
     this.$emit('handleNodeClick', this.data)
+  }
+  createFile() {
+    this.$emit('createFile', this.data, (this.$parent as any).node)
+  }
+  //删除
+  removeNode() {
+    this.$emit('removeNode', (this.$parent as any).node)
   }
   //复制路径 all
   copyFile() {

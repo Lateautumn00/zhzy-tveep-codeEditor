@@ -56,16 +56,16 @@ const path = require('path')
 //   .catch((error) => {
 //     console.error('错误', error)
 //   })
-const setFileContent = async (fileDir, content) => {
-  return await writeFile(fileDir, content)
-}
-setFileContent('H:/data/me/github/zhzy-tveep-codeEditor/vue1.config.js', '222')
-  .then((res) => {
-    console.log(res)
-  })
-  .catch((error) => {
-    console.error(error)
-  })
+// const setFileContent = async (fileDir, content) => {
+//   return await writeFile(fileDir, content)
+// }
+// setFileContent('H:/data/me/github/zhzy-tveep-codeEditor/vue1.config.js', '222')
+//   .then((res) => {
+//     console.log(res)
+//   })
+//   .catch((error) => {
+//     console.error(error)
+//   })
 //删除节点 重排key
 // let tabsValue = '1'
 // let tabs = [{ key: '1', name: 'a1' }]
@@ -84,3 +84,17 @@ setFileContent('H:/data/me/github/zhzy-tveep-codeEditor/vue1.config.js', '222')
 //   console.log(tabsValue, tabs)
 // }
 // removeTab('1')
+let a = {
+  label: '已打开文件',
+  src: '',
+  type: 0,
+  state: 0,
+  children: []
+}
+Object.defineProperty(a, 'k', {
+  value: 1,
+  enumerable: true,
+  configurable: false,
+  writable: false
+})
+console.log(a)

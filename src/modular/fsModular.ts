@@ -6,8 +6,9 @@
  * @LastEditors: lanchao
  * @Reference:
  */
-import { readFile, writeFile, stat, readdir } from 'fs/promises'
+import { readFile, writeFile, stat, readdir, unlink, rmdir } from 'fs/promises'
 import path from 'path'
+import fs from 'fs'
 /**
  * 获取文件夹下所有子文件
  * @param _dir 文件夹路径
@@ -53,6 +54,20 @@ export const getDirContent = async (_dir: string) => {
 export const getFileContent = async (fileDir: string) => {
   return await readFile(fileDir, 'utf-8')
 }
+//写入文件
 export const setFileContent = async (fileDir: string, content: string) => {
   return await writeFile(fileDir, content)
+}
+//删除文件\文件夹
+export const deleteFile = async (fileDir: string) => {
+  const stats = await stat(fileDir)
+  if (stats.isDirectory()) {
+    return await deleteDir(fileDir)
+  } else if (stats.isFile()) {
+    return await unlink(fileDir)
+  }
+}
+//删除文件夹 (待完成)
+const deleteDir = async (fileDir: string) => {
+  console.log('未完')
 }

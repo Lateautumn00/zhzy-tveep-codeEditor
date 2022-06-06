@@ -105,7 +105,7 @@ export default class RightComponent extends Vue {
   //其他兄弟节点发来的消息
   brotherEvents(data: any) {
     if (data.name === 'clearFiles') {
-      this.closeFileAll(this.tabsValue, 0) //清空所有一打开文件
+      this.closeFileAll(data.value, data.k) //清空所有一打开文件
     } else if (data.name === 'addTab') {
       //打开新文件
       this.addTab(data.value)
