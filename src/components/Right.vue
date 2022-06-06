@@ -22,20 +22,22 @@
       :closable="!item.state"
     >
       <template #label>
-        <DropdownComponent
-          trigger="contextmenu"
-          :type="2"
-          placement="bottom"
-          size="large"
-          :data="item"
-          @saveFile="saveFile"
-          @removeTab="removeTab"
-        >
-          <span class="custom-tabs-label">
-            <span>{{ item.label }}</span>
-            <el-icon v-if="item.state === 1"><Edit /></el-icon>
-          </span>
-        </DropdownComponent>
+        <el-tooltip class="box-item" effect="light" :content="item.src">
+          <DropdownComponent
+            trigger="contextmenu"
+            :type="2"
+            placement="bottom"
+            size="large"
+            :data="item"
+            @saveFile="saveFile"
+            @removeTab="removeTab"
+          >
+            <span class="custom-tabs-label">
+              <span>{{ item.label }}</span>
+              <el-icon v-if="item.state === 1"><Edit /></el-icon>
+            </span>
+          </DropdownComponent>
+        </el-tooltip>
       </template>
       <CodemirrorComponent
         :data="item"
@@ -143,8 +145,6 @@ export default class RightComponent extends Vue {
 
   //关闭+
   removeTab(key: string, k = 3) {
-    console.log(key, k)
-
     let state = 0 //是否有未保存的
     if (k === 0) {
       const data = this.tabs.filter((value: any) => value.state === 1) //未保存的
