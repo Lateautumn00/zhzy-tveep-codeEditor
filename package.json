@@ -29,7 +29,8 @@
         "vue-class-component": "^8.0.0-0",
         "vue-codemirror": "^5.0.1",
         "vue-router": "^4.0.0-0",
-        "vuex": "^4.0.0-0"
+        "vuex": "^4.0.0-0",
+        "xterm": "^4.18.0"
     },
     "devDependencies": {
         "@electron/remote": "^2.0.8",

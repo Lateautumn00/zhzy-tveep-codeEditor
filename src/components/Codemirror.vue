@@ -33,48 +33,45 @@ import { getFileContent, setFileContent } from '@/modular/fsModular'
     Codemirror
   },
   props: {
-    src: String
+    data: Object
   }
 })
 export default class CodemirrorComponent extends Vue {
   // eslint-disable-next-line quotes
   code = ''
-  src = ''
-  state = 0 //状态 0 未有修改 1 有修改 1
+  data: any
   extensions = [javascript(), oneDark]
   log = console.log
   mounted() {
     this.$nextTick(() => {
-      if (this.src) this.getFile()
+      if (this.data.src) this.getFile()
     })
   }
   // 读取文件内容
   getFile() {
-    getFileContent(this.src)
+    getFileContent(this.data.src)
       .then((res: any) => {
         this.code = res
       })
       .catch((error: any) => {
         //通知父级删除改tabs
-        this.$emit('clearTab', this.src, error)
+        ;(this as any).$message.error(error)
+        this.$emit('closeFileAll', this.data.key, 3)
         console.error(error)
       })
   }
   //读取当前页中的内容   包含未提交的
   //是用箭头函数无法获取props接受的值
   getFileDoc() {
-    //if (this.state === 1) {
-    setFileContent(this.src, this.code)
-    this.state = 0
-    this.$emit('updateFileEditState', this.src, 0)
+    //if (this.data.state  === 1) {
+    setFileContent(this.data.src, this.code)
+    this.$emit('updateFileEditState', this.data.src, 0)
     //}
   }
   //文件变动
   changeFile() {
-    console.log('热热热热他----')
-    if (this.state === 0) {
-      this.state = 1
-      this.$emit('updateFileEditState', this.src, 1)
+    if (this.data.state === 0) {
+      this.$emit('updateFileEditState', this.data.src, 1)
     }
     // else if (this.state === -1) {
     //   this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记

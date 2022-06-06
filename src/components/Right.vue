@@ -22,34 +22,26 @@
       :closable="!item.state"
     >
       <template #label>
-        <el-tooltip
-          class="box-item"
-          effect="light"
-          :content="item.src"
+        <DropdownComponent
+          trigger="contextmenu"
+          :type="2"
           placement="bottom"
+          size="large"
+          :data="item"
+          @saveFile="saveFile"
+          @removeTab="removeTab"
         >
-          <DropdownComponent
-            trigger="contextmenu"
-            :type="2"
-            placement="bottom"
-            size="large"
-            :data="item"
-            @saveFile="saveFile"
-            @removeTab="removeTab"
-            @closeFileAll="closeFileAll"
-          >
-            <span class="custom-tabs-label">
-              <span>{{ item.label }}</span>
-              <el-icon v-if="item.state === 1"><Edit /></el-icon>
-            </span>
-          </DropdownComponent>
-        </el-tooltip>
+          <span class="custom-tabs-label">
+            <span>{{ item.label }}</span>
+            <el-icon v-if="item.state === 1"><Edit /></el-icon>
+          </span>
+        </DropdownComponent>
       </template>
       <CodemirrorComponent
-        :src="item.src"
+        :data="item"
         :ref="'code' + item.key"
         @updateFileEditState="updateFileEditState"
-        @clearTab="clearTab"
+        @closeFileAll="closeFileAll"
       />
     </el-tab-pane>
   </el-tabs>
@@ -111,7 +103,7 @@ export default class RightComponent extends Vue {
   //其他兄弟节点发来的消息
   brotherEvents(data: any) {
     if (data.name === 'clearFiles') {
-      this.closeFileAll(0) //清空所有一打开文件
+      this.closeFileAll(this.tabsValue, 0) //清空所有一打开文件
     } else if (data.name === 'addTab') {
       //打开新文件
       this.addTab(data.value)
@@ -148,54 +140,45 @@ export default class RightComponent extends Vue {
     this.tabsValue = newTabName
     this.updateLocalStorage()
   }
-  //读取文件内容不存在路径 删除tab
-  // eslint-disable-next-line no-unused-vars
-  clearTab = (src: string, error: any) => {
-    ;(this as any).$message.error(error)
-    const value = this.tabs.filter((tab: any) => tab.src === src)
-    this.removeTabOk(value[0].key)
-  }
+
   //关闭+
-  removeTab = (key: string) => {
-    const v = this.tabs[Number(key) - 1]
-    if (v.state === 0) {
-      this.removeTabOk(key)
-    } else if (v.state === 1) {
+  removeTab(key: string, k = 3) {
+    console.log(key, k)
+
+    let state = 0 //是否有未保存的
+    if (k === 0) {
+      const data = this.tabs.filter((value: any) => value.state === 1) //未保存的
+      state = data.length
+    } else if (k === 1) {
+      const data = this.tabs.filter(
+        (value: any) => value.state === 1 && value.key !== key
+      ) //未保存的
+      state = data.length
+    } else if (k === 3) {
+      const data = this.tabs[Number(key) - 1]
+      state = data.state
+    }
+    if (state === 0) {
+      this.closeFileAll(key, k)
+    } else if (state > 0) {
       ElMessageBox.confirm('当前编辑内容还未保存，确定关闭？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       })
         .then(() => {
-          this.removeTabOk(key)
+          this.closeFileAll(key, k)
         })
         .catch(() => {
           // catch error
         })
     }
   }
-
-  //确认关闭
-  removeTabOk(key: string) {
-    this.tabs.splice(Number(key) - 1, 1)
-    this.tabs.forEach((value: any) => {
-      if (value.key > key) {
-        const newKey = `${Number(value.key) - 1}`
-        if (value.key === this.tabsValue) {
-          this.tabsValue = newKey
-        }
-        value.key = newKey
-      }
-    })
-    const len = `${this.tabs.length}`
-    if (this.tabsValue > len) this.tabsValue = len
-    this.updateLocalStorage()
-  }
   //关闭文件
   /**
-   * k 0 关闭全部 1 关闭其它
+   * k 0 关闭全部 1 关闭其它 2关闭已保存 3 关闭当前
    * key 当前的key
    */
-  closeFileAll(k: number, key?: string) {
+  closeFileAll(key: string, k: number) {
     if (k === 0) {
       // 关闭全部已打开文件
       this.tabs = []
@@ -207,6 +190,32 @@ export default class RightComponent extends Vue {
       this.tabs = this.tabs.filter((value: any) => value.key === key)
       this.tabsValue = '1'
       this.tabs[0].key = '1'
+      this.updateLocalStorage()
+    } else if (k === 2) {
+      //关闭已保存
+      this.tabs = this.tabs.filter((value: any) => value.state === 1) //未保存的
+      this.tabs.forEach((value: any, index: string) => {
+        const newKey = `${Number(index)}+1`
+        if (value.key === this.tabsValue) this.tabsValue = newKey
+        value.key = newKey
+      })
+      const len = `${this.tabs.length}`
+      if (this.tabsValue > len) this.tabsValue = len
+      this.updateLocalStorage()
+    } else if (k === 3) {
+      //关闭当前tab
+      this.tabs.splice(Number(key) - 1, 1)
+      this.tabs.forEach((value: any) => {
+        if (value.key > key) {
+          const newKey = `${Number(value.key) - 1}`
+          if (value.key === this.tabsValue) {
+            this.tabsValue = newKey
+          }
+          value.key = newKey
+        }
+      })
+      const len = `${this.tabs.length}`
+      if (this.tabsValue > len) this.tabsValue = len
       this.updateLocalStorage()
     }
   }

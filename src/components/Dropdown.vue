@@ -29,16 +29,22 @@
         <el-dropdown-item>删除</el-dropdown-item>
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 2">
-        <el-dropdown-item @click="saveFile" :disabled="!data.state"
+        <el-dropdown-item
+          @click="saveFile"
+          :disabled="!data.state ? true : false"
           >保存</el-dropdown-item
         >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item @click="closeFile" :disabled="data.state"
+        <el-dropdown-item
+          @click="removeTab(3)"
+          :disabled="data.state ? true : false"
           >关闭</el-dropdown-item
         >
-        <el-dropdown-item>关闭已保存</el-dropdown-item>
-        <el-dropdown-item @click="closeFileAll(1)">关闭其他</el-dropdown-item>
-        <el-dropdown-item :disabled="data.state" @click="closeFileAll(0)"
+        <el-dropdown-item @click="removeTab(2)">关闭已保存</el-dropdown-item>
+        <el-dropdown-item @click="removeTab(1)">关闭其他</el-dropdown-item>
+        <el-dropdown-item
+          :disabled="data.state ? true : false"
+          @click="removeTab(0)"
           >关闭全部</el-dropdown-item
         >
       </el-dropdown-menu>
@@ -88,12 +94,8 @@ export default class DropdownComponent extends Vue {
     this.$emit('saveFile', this.data.key)
   }
   //关闭文件 tabs
-  closeFile() {
-    this.$emit('removeTab', this.data.key)
-  }
-  //关闭全部文件 tabs
-  closeFileAll(k: number) {
-    this.$emit('closeFileAll', k, this.data.key)
+  removeTab(k: number) {
+    this.$emit('removeTab', this.data.key, k)
   }
 }
 </script>
