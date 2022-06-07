@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-05 12:14:43
+ * @LastEditTime: 2022-06-07 20:20:55
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -41,7 +41,7 @@ export default class CodemirrorComponent extends Vue {
   code = ''
   data: any
   extensions = [javascript(), oneDark]
-  log = console.log
+  fileStatus = false //是否加载完成
   mounted() {
     this.$nextTick(() => {
       if (this.data.src) this.getFile()
@@ -70,12 +70,13 @@ export default class CodemirrorComponent extends Vue {
   }
   //文件变动
   changeFile() {
+    if (!this.fileStatus) {
+      this.fileStatus = true
+      return false
+    }
     if (this.data.state === 0) {
       this.$emit('updateFileEditState', this.data.key, 1)
     }
-    // else if (this.state === -1) {
-    //   this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记
-    // }
   }
   //鼠标进入文件内
   focusFile = (event: any) => {

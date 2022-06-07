@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-07 15:41:38
+ * @LastEditTime: 2022-06-07 21:10:33
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -86,16 +86,18 @@ export default class RightComponent extends Vue {
       //打开文件
       ;(window as any).$electron.ipcRenderer.on(
         'menuOpenFile',
-        async (event: any, result: any) => {
+        async (event: any, result: string) => {
           const stat = await getStat(result)
-          this.addTab({
+          // eslint-disable-next-line no-undef
+          const tab: TreeList = {
             key: `${stat.ino}`,
             label: path.basename(result),
             src: result,
             type: 1,
             state: 0,
             children: []
-          })
+          }
+          this.addTab(tab)
         }
       )
     })
@@ -106,9 +108,10 @@ export default class RightComponent extends Vue {
   }
 
   //其他兄弟节点发来的消息
-  brotherEvents(data: any) {
+  // eslint-disable-next-line no-undef
+  brotherEvents(data: LeftBrotherEvents) {
     if (data.name === 'clearFiles') {
-      this.closeFileAll(data.value, data.k) //删掉tab
+      this.closeFileAll(data.value.key, data.value.k) //删掉tab
     } else if (data.name === 'addTab') {
       //打开新tab
       this.addTab(data.value)
@@ -207,8 +210,7 @@ export default class RightComponent extends Vue {
       // 关闭全部已打开文件
       this.tabs = []
       this.tabsValue = '0'
-      ;(window as any).localStorage.removeItem(this.openStorageName)
-      this.$emit('rightBrotherEvents', { name: 'clearFiles', k }) //回传给左侧树
+      this.updateLocalStorage()
     } else if (k === 1) {
       //关闭其它
       this.tabs = this.tabs.filter((value: any) => value.key === key)
@@ -236,7 +238,8 @@ export default class RightComponent extends Vue {
   }
   //更新缓存
   updateLocalStorage = () => {
-    const data = {
+    // eslint-disable-next-line no-undef
+    const data: EventsBrother = {
       tabsValue: this.tabsValue,
       tabs: this.tabs
     }

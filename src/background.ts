@@ -20,7 +20,7 @@ async function createWindow() {
     minWidth: 1280,
     minHeight: 720,
     //transparent: true, //窗口透明  设置后还原窗口win.restore()无效
-    //backgroundColor: '#000', //背景颜色
+    //backgroundColor: '#2c313a', //背景颜色
     title: '知乎者也', //标题
     // autoHideMenuBar: true, //是否隐藏菜单栏
     // frame: false, //无边框   不使用无边框模式 需要屏蔽掉

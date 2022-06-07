@@ -2,7 +2,7 @@
  * @Description: 弹框
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-06 18:33:48
+ * @LastEditTime: 2022-06-07 21:29:17
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -52,7 +52,7 @@ export default class DialogComponent extends Vue {
     this.dialogVisible = false
   }
   submitForm() {
-    this.$emit('createFile', this.data)
+    ;(this.$parent as any).operationFile(this.data)
     this.handleClose()
   }
 }

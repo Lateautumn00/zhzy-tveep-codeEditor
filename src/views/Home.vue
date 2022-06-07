@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-03 12:12:41
+ * @LastEditTime: 2022-06-07 21:09:41
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -82,10 +82,12 @@ export default class HomeComponent extends Vue {
     document.onmouseup = null
   }
   //兄弟之间消息中专 左侧兄弟发给右侧
-  leftBrotherEvents(data: any) {
+  // eslint-disable-next-line no-undef
+  leftBrotherEvents(data: LeftBrotherEvents) {
     ;(this.$refs.rightRef as any).brotherEvents(data)
   }
-  rightBrotherEvents(data: any) {
+  // eslint-disable-next-line no-undef
+  rightBrotherEvents(data: RightBrotherEvents) {
     ;(this.$refs.leftRef as any).brotherEvents(data)
   }
 }
