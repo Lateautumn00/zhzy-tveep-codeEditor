@@ -44,6 +44,8 @@ export function menu(window: any, Menu: any, dialog: any) {
                 properties: ['openFile']
               })
               .then((result: any) => {
+                console.log(result)
+
                 window.webContents.send('menuOpenFile', result.filePaths[0])
               })
           }

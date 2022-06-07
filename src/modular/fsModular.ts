@@ -25,6 +25,7 @@ import path from 'path'
 export const getDirContent = async (_dir: string) => {
   // eslint-disable-next-line no-undef
   const list: TreeList = {
+    key: '-1',
     label: path.basename(_dir),
     src: _dir,
     type: 0, //0文件夹1 文件
@@ -36,15 +37,17 @@ export const getDirContent = async (_dir: string) => {
 
   for (const value of dirs) {
     const newDir = path.join(_dir, value)
-    const stats = await stat(newDir)
+    const stats = await getStat(newDir)
+
     if (stats.isDirectory()) {
       //如果是文件夹
-      // list.children.push(getDirOfFiles(newDir))
+      list.key = `${stats.ino}`
       list.children.splice(dirNum, 0, await getDirContent(newDir))
       dirNum++
     } else if (stats.isFile()) {
       //如果是文件
       list.children.push({
+        key: `${stats.ino}`,
         label: value,
         src: newDir,
         type: 1,
@@ -54,6 +57,10 @@ export const getDirContent = async (_dir: string) => {
     }
   }
   return list
+}
+//获取stat
+export const getStat = async (dir: string) => {
+  return await stat(dir)
 }
 /**
  * 读取文件内容
@@ -85,7 +92,7 @@ export const setFileContent = async (fileDir: string, content: string) => {
 }
 //删除文件\文件夹
 export const deleteFile = async (fileDir: string) => {
-  const stats = await stat(fileDir)
+  const stats = await getStat(fileDir)
   if (stats.isDirectory()) {
     return await deleteDir(fileDir)
   } else if (stats.isFile()) {

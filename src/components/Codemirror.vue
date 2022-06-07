@@ -65,13 +65,13 @@ export default class CodemirrorComponent extends Vue {
   getFileDoc() {
     //if (this.data.state  === 1) {
     setFileContent(this.data.src, this.code)
-    this.$emit('updateFileEditState', this.data.src, 0)
+    this.$emit('updateFileEditState', this.data.key, 0)
     //}
   }
   //文件变动
   changeFile() {
     if (this.data.state === 0) {
-      this.$emit('updateFileEditState', this.data.src, 1)
+      this.$emit('updateFileEditState', this.data.key, 1)
     }
     // else if (this.state === -1) {
     //   this.state = 0 //第一次加载内容会触发一次 不做编辑状态标记

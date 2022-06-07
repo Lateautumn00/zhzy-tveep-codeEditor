@@ -55,6 +55,7 @@ import CodemirrorComponent from '@/components/Codemirror.vue'
 import DropdownComponent from '@/components/Dropdown.vue'
 import path from 'path'
 import { ElMessageBox } from 'element-plus'
+import { getStat } from '@/modular/fsModular'
 @Options({
   components: {
     CodemirrorComponent,
@@ -85,8 +86,10 @@ export default class RightComponent extends Vue {
       //打开文件
       ;(window as any).$electron.ipcRenderer.on(
         'menuOpenFile',
-        (event: any, result: any) => {
+        async (event: any, result: any) => {
+          const stat = await getStat(result)
           this.addTab({
+            key: `${stat.ino}`,
             label: path.basename(result),
             src: result,
             type: 1,
@@ -111,9 +114,9 @@ export default class RightComponent extends Vue {
       this.addTab(data.value)
     }
   }
-  updateFileEditState(src: string, state: number) {
+  updateFileEditState(key: string, state: number) {
     this.tabs.forEach((tab: any) => {
-      if (tab.src === src) tab.state = state
+      if (tab.key === key) tab.state = state
     })
     this.updateLocalStorage()
   }
@@ -124,22 +127,13 @@ export default class RightComponent extends Vue {
     if (data) {
       const value = this.tabs.filter((tab: any) => tab.src === data.src)
       if (value.length) {
-        this.tabsValue = value[0].key
+        this.tabsValue = `${value[0].key}`
         this.updateLocalStorage()
         return false
       }
     }
-    const newTabName = `${this.tabs.length + 1}`
-    //const newTabName = `${Number(this.tabsValue) + 1}`
-    this.tabs.push({
-      label: data.label,
-      key: newTabName,
-      src: data.src,
-      type: data.type,
-      state: data.state,
-      children: data.children
-    })
-    this.tabsValue = newTabName
+    this.tabs.push(data)
+    this.tabsValue = `${data.key}`
     this.updateLocalStorage()
   }
 
@@ -147,16 +141,21 @@ export default class RightComponent extends Vue {
   removeTab(key: string, k = 3) {
     let state = 0 //是否有未保存的
     if (k === 0) {
+      //全部
       const data = this.tabs.filter((value: any) => value.state === 1) //未保存的
       state = data.length
     } else if (k === 1) {
+      //其它
       const data = this.tabs.filter(
         (value: any) => value.state === 1 && value.key !== key
       ) //未保存的
       state = data.length
     } else if (k === 3) {
-      const data = this.tabs[Number(key) - 1]
-      state = data.state
+      //自己
+      const data = this.tabs.filter(
+        (value: any) => value.key === key && value.state === 1
+      )
+      state = data.length
     }
     if (state === 0) {
       this.closeFileAll(key, k)
@@ -188,34 +187,21 @@ export default class RightComponent extends Vue {
     } else if (k === 1) {
       //关闭其它
       this.tabs = this.tabs.filter((value: any) => value.key === key)
-      this.tabsValue = '1'
-      this.tabs[0].key = '1'
+      this.tabsValue = this.tabs[0].key
       this.updateLocalStorage()
     } else if (k === 2) {
       //关闭已保存
-      this.tabs = this.tabs.filter((value: any) => value.state === 1) //未保存的
-      this.tabs.forEach((value: any, index: string) => {
-        const newKey = `${Number(index)}+1`
-        if (value.key === this.tabsValue) this.tabsValue = newKey
-        value.key = newKey
-      })
-      const len = `${this.tabs.length}`
-      if (this.tabsValue > len) this.tabsValue = len
+      const tabs = this.tabs
+      this.tabs = tabs.filter((value: any) => value.state === 1) //未保存的
+      if (key === this.tabsValue)
+        this.tabsValue = this.tabs.length ? this.tabs[0].key : '0'
       this.updateLocalStorage()
     } else if (k === 3) {
       //关闭当前tab
-      this.tabs.splice(Number(key) - 1, 1)
-      this.tabs.forEach((value: any) => {
-        if (value.key > key) {
-          const newKey = `${Number(value.key) - 1}`
-          if (value.key === this.tabsValue) {
-            this.tabsValue = newKey
-          }
-          value.key = newKey
-        }
-      })
-      const len = `${this.tabs.length}`
-      if (this.tabsValue > len) this.tabsValue = len
+      const tabs = this.tabs
+      this.tabs = tabs.filter((value: any) => value.key !== key)
+      if (key === this.tabsValue)
+        this.tabsValue = this.tabs.length ? this.tabs[0].key : '0'
       this.updateLocalStorage()
     }
   }

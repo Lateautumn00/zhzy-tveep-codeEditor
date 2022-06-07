@@ -14,7 +14,7 @@
       :props="defaultProps"
       highlight-current
       @node-click="handleNodeClick"
-      node-key="id"
+      node-key="key"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -40,9 +40,14 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
-import { getDirContent } from '@/modular/fsModular'
 import DropdownComponent from '@/components/Dropdown.vue'
-import { deleteFile, createFilePath, renameFile } from '@/modular/fsModular'
+import {
+  getDirContent,
+  deleteFile,
+  createFilePath,
+  renameFile,
+  getStat
+} from '@/modular/fsModular'
 import DialogComponent from '@/components/Dialog.vue'
 interface DialogData {
   title: string
@@ -58,6 +63,7 @@ interface DialogData {
 })
 export default class LeftComponent extends Vue {
   defaultProps = {
+    key: 'ino',
     label: 'label',
     src: 'src',
     children: 'children',
@@ -67,6 +73,7 @@ export default class LeftComponent extends Vue {
   // eslint-disable-next-line no-undef
   data: any = [
     {
+      key: '-2',
       label: '已打开文件',
       src: '',
       type: -2,
@@ -159,8 +166,10 @@ export default class LeftComponent extends Vue {
     if (data.type === 2 || data.type === 3) {
       //重命名
       renameFile(data.src, data.name)
-        .then((res: string) => {
+        .then(async (res: any) => {
+          const stat = await getStat(res)
           ;(this.$refs.tree as any).updateKeyChildren(this.xNode, {
+            key: `${stat.ino}`,
             label: data.name,
             src: res,
             type: 1,
@@ -175,8 +184,10 @@ export default class LeftComponent extends Vue {
     } else {
       //创建文件 文件夹
       createFilePath(data.type, data.src, data.name)
-        .then((res: any) => {
+        .then(async (res: any) => {
+          const stat = await getStat(res)
           const v = {
+            key: `${stat.ino}`,
             label: data.name,
             src: res,
             type: data.type,

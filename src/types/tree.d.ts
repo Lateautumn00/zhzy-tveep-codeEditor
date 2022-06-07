@@ -8,6 +8,7 @@
  */
 //左侧 侧边栏树
 interface TreeList {
+  key: string
   label: string
   src: string
   type: number //是否为文件  0 文件夹 1文件
