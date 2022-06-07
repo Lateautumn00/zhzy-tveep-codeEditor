@@ -2,7 +2,7 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-06 19:30:35
+ * @LastEditTime: 2022-06-07 15:13:13
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -41,8 +41,10 @@ export const getDirContent = async (_dir: string) => {
 
     if (stats.isDirectory()) {
       //如果是文件夹
-      list.key = `${stats.ino}`
-      list.children.splice(dirNum, 0, await getDirContent(newDir))
+      //list.key = `${stats.ino}`
+      const dirData = await getDirContent(newDir)
+      dirData.key = `${stats.ino}`
+      list.children.splice(dirNum, 0, dirData)
       dirNum++
     } else if (stats.isFile()) {
       //如果是文件

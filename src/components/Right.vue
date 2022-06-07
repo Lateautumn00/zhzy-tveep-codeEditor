@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-07 13:12:05
+ * @LastEditTime: 2022-06-07 15:41:38
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -141,14 +141,26 @@ export default class RightComponent extends Vue {
   }
   //更新tab
   // eslint-disable-next-line no-undef
-  updateTab = (data: TreeList) => {
-    this.tabs.forEach((tab: any) => {
-      if (tab.key === data.key) {
-        tab.src = data.src
-        tab.label = data.label
-        this.updateLocalStorage()
-      }
-    })
+  updateTab = (data: any) => {
+    if (data.type === 2) {
+      this.tabs.forEach((tab: any) => {
+        if (tab.key === data.xNode.key) {
+          tab.src = data.xNode.src
+          tab.label = data.xNode.label
+          this.updateLocalStorage()
+        }
+      })
+    } else if (data.type === 3) {
+      let num = 0
+      const len = data.oldSrc.length
+      this.tabs.forEach((tab: any) => {
+        if (tab.src.substr(0, len) === data.oldSrc) {
+          tab.src = data.xNode.src + tab.src.substr(len)
+          ++num
+        }
+      })
+      if (num > 0) this.updateLocalStorage()
+    }
   }
   //关闭+
   removeTab(key: string, k = 3) {

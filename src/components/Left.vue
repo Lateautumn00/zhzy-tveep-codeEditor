@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-07 13:06:25
+ * @LastEditTime: 2022-06-07 16:08:15
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -23,6 +23,7 @@
           placement="bottom"
           size="large"
           :data="data"
+          :pasteData="pasteData"
           @handleNodeClick="handleNodeClick"
           @createDialog="createDialog"
           @removeNode="removeNode"
@@ -84,6 +85,10 @@ export default class LeftComponent extends Vue {
   dirLocal = '' //本地缓存文件夹地址
   localStorageName = 'menuOpenDirectory' //目录地址缓存
   openStorageName = 'fileList' //一打开文件
+  pasteData = {
+    type: 0, //1复制文件 2复制文件夹 3剪裁文件 4 剪裁文件夹
+    src: ''
+  } //是否可粘贴
   xNodeKey = '' //当前操作的
   mounted() {
     this.$nextTick(() => {
@@ -168,11 +173,33 @@ export default class LeftComponent extends Vue {
       renameFile(data.src, data.name)
         .then(async (res: any) => {
           const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
+          const oldSrc = xNode.data.src
           xNode.data.label = data.name
           xNode.data.src = res
+          if (data.type === 3) {
+            getDirContent(res)
+              .then(async (result: any) => {
+                // const stat = await getStat(res)
+                // console.log(
+                //   'v====',
+                //   (this.$refs.tree as any).getNode(this.xNodeKey)
+                // )
+                ;(this.$refs.tree as any).updateKeyChildren(
+                  this.xNodeKey,
+                  result.children
+                )
+              })
+              .catch((error: any) => {
+                console.error(error)
+              })
+          }
           this.$emit('leftBrotherEvents', {
             name: 'updateTab',
-            value: xNode.data
+            value: {
+              xNode: xNode.data,
+              type: data.type,
+              oldSrc
+            }
           }) //通知right
         })
         .catch((error: any) => {

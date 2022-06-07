@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-07 12:44:29
+ * @LastEditTime: 2022-06-07 14:51:05
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -23,17 +23,22 @@
           >剪裁</el-dropdown-item
         >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item v-if="type === 0 ? true : false"
+        <el-dropdown-item
+          v-if="type === 0 ? true : false"
+          @click="createDialog(3)"
           >重命名</el-dropdown-item
         >
-        <el-dropdown-item v-if="type === 0 ? true : false" @click="removeNode"
+        <!-- <el-dropdown-item v-if="type === 0 ? true : false" @click="removeNode"
           >删除</el-dropdown-item
-        >
+        > -->
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 1">
         <el-dropdown-item @click="openFile">打开</el-dropdown-item>
         <el-dropdown-item>复制</el-dropdown-item>
         <el-dropdown-item>剪裁</el-dropdown-item>
+        <el-dropdown-item :disabled="!pasteData.src ? true : false"
+          >粘贴</el-dropdown-item
+        >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item @click="createDialog(2)">重命名</el-dropdown-item>
         <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
@@ -44,6 +49,8 @@
           :disabled="!data.state ? true : false"
           >保存</el-dropdown-item
         >
+        <el-dropdown-item>复制</el-dropdown-item>
+        <el-dropdown-item>剪裁</el-dropdown-item>
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
           @click="removeTab(3)"
@@ -70,7 +77,8 @@ import { Options, Vue } from 'vue-class-component'
     placement: String,
     type: Number,
     size: String,
-    data: Object
+    data: Object,
+    pasteData: Object
   }
   //   watch: {
   //     data: [
@@ -88,6 +96,7 @@ export default class DropdownComponent extends Vue {
   type = 0 //0目录1文件
   size = 'default' //large / default / small
   data: any
+  pasteData: any //是否可粘贴
   //   dataWatch(newValue: any, oldValue: any) {
   //     console.log('监听到222....', this.type, newValue, oldValue)
   //   }
