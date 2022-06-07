@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-07 14:51:05
+ * @LastEditTime: 2022-06-07 17:02:23
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -13,10 +13,14 @@
       <el-dropdown-menu v-if="type === -1 || type === 0">
         <el-dropdown-item @click="createDialog(1)">新建文件</el-dropdown-item>
         <el-dropdown-item @click="createDialog(0)">新建文件夹</el-dropdown-item>
-        <el-dropdown-item v-if="type === 0 ? true : false"
+        <el-dropdown-item
+          v-if="type === 0 ? true : false"
+          @click="copyOrMove(0)"
           >复制</el-dropdown-item
         >
-        <el-dropdown-item v-if="type === 0 ? true : false"
+        <el-dropdown-item
+          :disabled="!pasteData.src ? true : false"
+          @click="paste"
           >粘贴</el-dropdown-item
         >
         <el-dropdown-item v-if="type === 0 ? true : false"
@@ -34,11 +38,8 @@
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 1">
         <el-dropdown-item @click="openFile">打开</el-dropdown-item>
-        <el-dropdown-item>复制</el-dropdown-item>
+        <el-dropdown-item @click="copyOrMove(1)">复制</el-dropdown-item>
         <el-dropdown-item>剪裁</el-dropdown-item>
-        <el-dropdown-item :disabled="!pasteData.src ? true : false"
-          >粘贴</el-dropdown-item
-        >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item @click="createDialog(2)">重命名</el-dropdown-item>
         <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
@@ -49,8 +50,6 @@
           :disabled="!data.state ? true : false"
           >保存</el-dropdown-item
         >
-        <el-dropdown-item>复制</el-dropdown-item>
-        <el-dropdown-item>剪裁</el-dropdown-item>
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
           @click="removeTab(3)"
@@ -110,6 +109,17 @@ export default class DropdownComponent extends Vue {
   //删除
   removeNode() {
     this.$emit('removeNode', this.data)
+  }
+  //复制文件
+  copyOrMove(type: number) {
+    this.$emit('copyOrMove', {
+      type,
+      src: this.data.src
+    })
+  }
+  //粘贴
+  paste() {
+    this.$emit('paste', this.data)
   }
   //复制路径 all
   copyFile() {

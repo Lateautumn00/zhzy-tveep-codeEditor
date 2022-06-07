@@ -2,7 +2,7 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-07 15:13:13
+ * @LastEditTime: 2022-06-07 18:05:12
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -14,9 +14,11 @@ import {
   unlink,
   rmdir,
   mkdir,
-  rename
+  rename,
+  copyFile
 } from 'fs/promises'
 import path from 'path'
+import fs from 'fs'
 /**
  * 获取文件夹下所有子文件
  * @param _dir 文件夹路径
@@ -69,6 +71,7 @@ export const getStat = async (dir: string) => {
  * @param fileDir
  */
 export const getFileContent = async (fileDir: string) => {
+  // if (!fs.existsSync(fileDir)) return false //如果源文件不存在
   return await readFile(fileDir, 'utf-8')
 }
 //目录下创建文件 文件夹
@@ -77,12 +80,14 @@ export const createFilePath = async (
   fileDir: string,
   name: string
 ) => {
+  if (!fs.existsSync(fileDir)) return false //如果源文件不存在 z
   const newPath = path.join(fileDir, name)
   type === 0 ? await mkdir(newPath) : await writeFile(newPath, ' ')
   return newPath
 }
 //重命名
 export const renameFile = async (oldDir: string, name: string) => {
+  if (!fs.existsSync(oldDir)) return false //如果源文件不存在
   const fileDir = path.dirname(oldDir)
   const newDir = path.join(fileDir, name)
   await rename(oldDir, newDir)
@@ -94,6 +99,7 @@ export const setFileContent = async (fileDir: string, content: string) => {
 }
 //删除文件\文件夹
 export const deleteFile = async (fileDir: string) => {
+  if (!fs.existsSync(fileDir)) return false //如果源文件不存在
   const stats = await getStat(fileDir)
   if (stats.isDirectory()) {
     return await deleteDir(fileDir)
@@ -102,6 +108,54 @@ export const deleteFile = async (fileDir: string) => {
   }
 }
 //删除文件夹 (待完成)
-const deleteDir = async (fileDir: string) => {
+export const deleteDir = async (fileDir: string) => {
   console.log('未完')
+  if (!fs.existsSync(fileDir)) return false //如果源文件不存在
+  const files = await readdir(fileDir)
+  files.forEach(async (item: any) => {
+    const item_path = path.join(fileDir, item)
+    const stats = await getStat(item_path)
+    if (stats.isDirectory()) {
+      deleteDir(item_path)
+    } else {
+      await unlink(item_path)
+    }
+  })
+  await rmdir(fileDir)
+}
+//拷贝文件
+/**
+ * source 源文件
+ * target 目标地址
+ */
+export const copyFiles = async (
+  type: number,
+  source: string,
+  target: string
+) => {
+  if (!fs.existsSync(source)) return false //如果源文件不存在
+  const name = path.basename(source)
+  const targetDir = path.join(target, name)
+  type === 0
+    ? await copyDirectory(source, targetDir)
+    : await copyFile(source, targetDir, 1)
+  return true
+}
+//拷贝目录
+export const copyDirectory = async (source: string, target: string) => {
+  if (!fs.existsSync(target) === false) await mkdir(target) //如果目标文件不存在创建
+  if (!fs.existsSync(source) === false) return false //如果源文件不存在
+  const dirs = await readdir(source)
+  dirs.forEach(async (item: any) => {
+    const item_path = path.join(source, item)
+    const stats = await getStat(item_path)
+    if (stats.isFile()) {
+      // 是文件
+      copyFile(item_path, path.join(target, item))
+    } else if (stats.isDirectory()) {
+      // 是目录
+      copyDirectory(item_path, path.join(target, item))
+    }
+  })
+  return true
 }

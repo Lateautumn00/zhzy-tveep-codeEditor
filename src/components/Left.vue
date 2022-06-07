@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-07 16:08:15
+ * @LastEditTime: 2022-06-07 17:54:42
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -27,6 +27,8 @@
           @handleNodeClick="handleNodeClick"
           @createDialog="createDialog"
           @removeNode="removeNode"
+          @copyOrMove="copyOrMove"
+          @paste="paste"
         >
           <span class="custom-tree-node">
             <el-icon v-if="data.state === 1"><Edit /></el-icon>
@@ -47,7 +49,8 @@ import {
   deleteFile,
   createFilePath,
   renameFile,
-  getStat
+  getStat,
+  copyFiles
 } from '@/modular/fsModular'
 import DialogComponent from '@/components/Dialog.vue'
 interface DialogData {
@@ -86,7 +89,7 @@ export default class LeftComponent extends Vue {
   localStorageName = 'menuOpenDirectory' //目录地址缓存
   openStorageName = 'fileList' //一打开文件
   pasteData = {
-    type: 0, //1复制文件 2复制文件夹 3剪裁文件 4 剪裁文件夹
+    type: 0, //1复制文件 0复制文件夹 3剪裁文件 4 剪裁文件夹
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
@@ -179,11 +182,6 @@ export default class LeftComponent extends Vue {
           if (data.type === 3) {
             getDirContent(res)
               .then(async (result: any) => {
-                // const stat = await getStat(res)
-                // console.log(
-                //   'v====',
-                //   (this.$refs.tree as any).getNode(this.xNodeKey)
-                // )
                 ;(this.$refs.tree as any).updateKeyChildren(
                   this.xNodeKey,
                   result.children
@@ -244,6 +242,32 @@ export default class LeftComponent extends Vue {
         console.error(error)
         ;(this as any).$message.error('删除失败')
       })
+  }
+  //复制或剪裁
+  copyOrMove(data: any) {
+    this.pasteData = data
+  }
+  //粘贴
+  paste(data: any) {
+    if (this.pasteData.src) {
+      copyFiles(this.pasteData.type, this.pasteData.src, data.src)
+        .then(async (res: any) => {
+          getDirContent(data.src)
+            .then(async (result: any) => {
+              ;(this.$refs.tree as any).updateKeyChildren(
+                data.key,
+                result.children
+              )
+            })
+            .catch((error: any) => {
+              console.error(error)
+            })
+        })
+        .catch((error: any) => {
+          console.error(error)
+          ;(this as any).$message.error('错误')
+        })
+    }
   }
 }
 </script>
