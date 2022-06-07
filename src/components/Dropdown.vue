@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-06 18:57:32
+ * @LastEditTime: 2022-06-07 12:44:29
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -93,14 +93,14 @@ export default class DropdownComponent extends Vue {
   //   }
   //打开文件 tree
   openFile() {
-    this.$emit('handleNodeClick', (this.$parent as any).node.data)
+    this.$emit('handleNodeClick', this.data)
   }
   createDialog(type: number) {
-    this.$emit('createDialog', type, (this.$parent as any).node)
+    this.$emit('createDialog', type, this.data)
   }
   //删除
   removeNode() {
-    this.$emit('removeNode', (this.$parent as any).node)
+    this.$emit('removeNode', this.data)
   }
   //复制路径 all
   copyFile() {

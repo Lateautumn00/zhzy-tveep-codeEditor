@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-06 19:36:18
+ * @LastEditTime: 2022-06-07 13:06:25
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -84,7 +84,7 @@ export default class LeftComponent extends Vue {
   dirLocal = '' //本地缓存文件夹地址
   localStorageName = 'menuOpenDirectory' //目录地址缓存
   openStorageName = 'fileList' //一打开文件
-  xNode: any //当前操作的
+  xNodeKey = '' //当前操作的
   mounted() {
     this.$nextTick(() => {
       const dirLocal = (window as any).localStorage.getItem(
@@ -150,14 +150,14 @@ export default class LeftComponent extends Vue {
   }
   //创建文件
   // eslint-disable-next-line no-undef
-  createDialog(type: number, node: any) {
-    this.xNode = node
+  createDialog(type: number, data: any) {
+    this.xNodeKey = `${data.key}`
     const title = type === 1 ? '创建文件' : type === 0 ? '创建文件夹' : '重命名'
-    const name = type === 2 || type === 3 ? node.data.label : ''
+    const name = type === 2 || type === 3 ? data.label : ''
     ;(this.$refs.dialog as any).openDialog({
       title,
       type: type,
-      src: node.data.src,
+      src: data.src,
       name
     })
   }
@@ -167,15 +167,13 @@ export default class LeftComponent extends Vue {
       //重命名
       renameFile(data.src, data.name)
         .then(async (res: any) => {
-          const stat = await getStat(res)
-          ;(this.$refs.tree as any).updateKeyChildren(this.xNode, {
-            key: `${stat.ino}`,
-            label: data.name,
-            src: res,
-            type: 1,
-            state: 0,
-            children: []
-          })
+          const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
+          xNode.data.label = data.name
+          xNode.data.src = res
+          this.$emit('leftBrotherEvents', {
+            name: 'updateTab',
+            value: xNode.data
+          }) //通知right
         })
         .catch((error: any) => {
           console.log(error)
@@ -194,7 +192,8 @@ export default class LeftComponent extends Vue {
             state: 0,
             children: []
           }
-          ;(this.$refs.tree as any).append(v, this.xNode)
+          const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
+          ;(this.$refs.tree as any).append(v, xNode)
           if (data.type === 1) this.handleNodeClick(v)
         })
         .catch((error: any) => {
@@ -203,14 +202,15 @@ export default class LeftComponent extends Vue {
         })
     }
   }
-  removeNode(node: any) {
-    deleteFile(node.data.src)
+  removeNode(data: any) {
+    deleteFile(data.src)
       .then(() => {
-        ;(this.$refs.tree as any).remove(node)
+        const xNode = (this.$refs.tree as any).getNode(data.key)
+        ;(this.$refs.tree as any).remove(xNode)
         this.$emit('leftBrotherEvents', {
           name: 'clearFiles',
           k: 3,
-          value: node.data.key
+          value: data.key
         })
       })
       .catch((error: any) => {

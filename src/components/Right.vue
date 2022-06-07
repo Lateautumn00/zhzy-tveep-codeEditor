@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-05 15:43:05
+ * @LastEditTime: 2022-06-07 13:12:05
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -108,10 +108,13 @@ export default class RightComponent extends Vue {
   //其他兄弟节点发来的消息
   brotherEvents(data: any) {
     if (data.name === 'clearFiles') {
-      this.closeFileAll(data.value, data.k) //清空所有一打开文件
+      this.closeFileAll(data.value, data.k) //删掉tab
     } else if (data.name === 'addTab') {
-      //打开新文件
+      //打开新tab
       this.addTab(data.value)
+    } else if (data.name === 'updateTab') {
+      //更新tab
+      this.updateTab(data.value)
     }
   }
   updateFileEditState(key: string, state: number) {
@@ -136,7 +139,17 @@ export default class RightComponent extends Vue {
     this.tabsValue = `${data.key}`
     this.updateLocalStorage()
   }
-
+  //更新tab
+  // eslint-disable-next-line no-undef
+  updateTab = (data: TreeList) => {
+    this.tabs.forEach((tab: any) => {
+      if (tab.key === data.key) {
+        tab.src = data.src
+        tab.label = data.label
+        this.updateLocalStorage()
+      }
+    })
+  }
   //关闭+
   removeTab(key: string, k = 3) {
     let state = 0 //是否有未保存的
