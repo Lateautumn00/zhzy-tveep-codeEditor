@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-07 21:32:31
+ * @LastEditTime: 2022-06-08 12:13:21
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -45,19 +45,19 @@
       <el-dropdown-menu v-if="type === 2">
         <el-dropdown-item
           @click="saveFile"
-          :disabled="!data.state ? true : false"
+          :disabled="!dataList.state ? true : false"
           >保存</el-dropdown-item
         >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
           @click="removeTab(3)"
-          :disabled="data.state ? true : false"
+          :disabled="dataList.state ? true : false"
           >关闭</el-dropdown-item
         >
         <el-dropdown-item @click="removeTab(2)">关闭已保存</el-dropdown-item>
         <el-dropdown-item @click="removeTab(1)">关闭其他</el-dropdown-item>
         <el-dropdown-item
-          :disabled="data.state ? true : false"
+          :disabled="dataList.state ? true : false"
           @click="removeTab(0)"
           >关闭全部</el-dropdown-item
         >
@@ -74,7 +74,7 @@ import { Options, Vue } from 'vue-class-component'
     placement: String,
     type: Number,
     size: String,
-    data: Object,
+    dataList: Object,
     pasteData: Object
   }
   //   watch: {
@@ -92,41 +92,49 @@ export default class DropdownComponent extends Vue {
   placement = 'bottom' //位置 top/top-start/top-end/bottom/bottom-start/bottom-end
   type = 0 //0目录1文件
   size = 'default' //large / default / small
-  data: any
+  // eslint-disable-next-line no-undef
+  dataList: TreeList = {
+    key: '',
+    label: '',
+    src: '',
+    type: 0,
+    state: 1,
+    children: []
+  }
   pasteData: any //是否可粘贴
   //   dataWatch(newValue: any, oldValue: any) {
   //     console.log('监听到222....', this.type, newValue, oldValue)
   //   }
   //打开文件 tree
   openFile() {
-    this.$emit('handleNodeClick', this.data)
+    this.$emit('handleNodeClick', this.dataList)
   }
   createDialog(type: number) {
-    this.$emit('createDialog', type, this.data)
+    this.$emit('createDialog', type, this.dataList)
   }
   //删除
   removeNode() {
-    this.$emit('removeNode', this.data)
+    this.$emit('removeNode', this.dataList)
   }
   //复制文件
   copyOrMove() {
-    this.$emit('copyOrMove', this.data)
+    this.$emit('copyOrMove', this.dataList)
   }
   //粘贴
   paste() {
-    this.$emit('paste', this.data)
+    this.$emit('paste', this.dataList)
   }
   //复制路径 all
   copyFile() {
-    ;(window as any).$electron.clipboard.writeText(this.data.src)
+    ;(window as any).$electron.clipboard.writeText(this.dataList.src)
   }
   //保存文件 tabs
   saveFile() {
-    this.$emit('saveFile', this.data.key)
+    this.$emit('saveFile', this.dataList.key)
   }
   //关闭文件 tabs
   removeTab(k: number) {
-    this.$emit('removeTab', this.data.key, k)
+    this.$emit('removeTab', this.dataList.key, k)
   }
 }
 </script>

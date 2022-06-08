@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-07 21:30:37
+ * @LastEditTime: 2022-06-08 12:17:54
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -22,7 +22,7 @@
           :type="data.type"
           placement="bottom"
           size="large"
-          :data="data"
+          :dataList="data"
           :pasteData="pasteData"
           @handleNodeClick="handleNodeClick"
           @createDialog="createDialog"
@@ -39,7 +39,7 @@
     </el-tree>
     <el-tree
       ref="tree"
-      :data="data"
+      :data="dataList"
       :props="defaultProps"
       highlight-current
       @node-click="handleNodeClick"
@@ -51,7 +51,7 @@
           :type="data.type"
           placement="bottom"
           size="large"
-          :data="data"
+          :dataList="data"
           :pasteData="pasteData"
           @handleNodeClick="handleNodeClick"
           @createDialog="createDialog"
@@ -109,10 +109,10 @@ export default class LeftComponent extends Vue {
       children: []
     }
   ]
-  data: any = []
+  // eslint-disable-next-line no-undef
+  dataList: TreeList[] = []
   dirLocal = '' //本地缓存文件夹地址
   localStorageName = 'menuOpenDirectory' //目录地址缓存
-  openStorageName = 'fileList' //一打开文件
   pasteData = {
     type: 0, //1复制文件 0复制文件夹 3剪裁文件 4 剪裁文件夹
     src: ''
@@ -128,8 +128,7 @@ export default class LeftComponent extends Vue {
           // eslint-disable-next-line no-undef
           .then((res: TreeList) => {
             res.type = -1
-            this.data[0] = res
-            this.dirLocal = dirLocal
+            this.dataList[0] = res
           })
           .catch((error: any) => {
             ;(window as any).localStorage.removeItem(this.localStorageName)
@@ -145,8 +144,7 @@ export default class LeftComponent extends Vue {
             // eslint-disable-next-line no-undef
             .then((res: TreeList) => {
               res.type = -1
-              this.data[0] = res
-              this.dirLocal = result
+              this.dataList[0] = res
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
                 result

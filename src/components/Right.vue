@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-07 21:10:33
+ * @LastEditTime: 2022-06-08 12:24:10
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -28,7 +28,7 @@
             :type="2"
             placement="bottom"
             size="large"
-            :data="item"
+            :dataList="item"
             @saveFile="saveFile"
             @removeTab="removeTab"
           >
@@ -40,7 +40,7 @@
         </el-tooltip>
       </template>
       <CodemirrorComponent
-        :data="item"
+        :dataList="item"
         :ref="'code' + item.key"
         @updateFileEditState="updateFileEditState"
         @closeFileAll="closeFileAll"
@@ -65,7 +65,7 @@ import { getStat } from '@/modular/fsModular'
 export default class RightComponent extends Vue {
   tabsValue = '0' //当前展示的标签
   // eslint-disable-next-line no-undef
-  tabs: any = []
+  tabs: TreeList[] = []
   openStorageName = 'fileList'
   mounted() {
     this.$nextTick(() => {
@@ -233,7 +233,7 @@ export default class RightComponent extends Vue {
     }
   }
   //点击tab
-  clickTab = () => {
+  clickTab() {
     this.updateLocalStorage()
   }
   //更新缓存
