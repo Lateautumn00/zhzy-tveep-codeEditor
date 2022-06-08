@@ -26,7 +26,8 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "src/preload.ts",
-    "src/types/*.d.ts"
+    "src/types/*.d.ts",
+    "src/**/*.d.ts"
   ],
   "exclude": ["node_modules"]
 }
