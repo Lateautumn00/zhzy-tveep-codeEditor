@@ -93,9 +93,9 @@ app.on('ready', async () => {
   //   }
   if (win === null) createWindow()
   //注册全局快捷键
-  globalShortcut.register('Ctrl+C', () => {
-    win.webContents.send('menuPreservation') //保存当前
-  })
+  //   globalShortcut.register('Ctrl+S', () => {
+  //     win.webContents.send('menuPreservation') //保存当前
+  //   })
 })
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

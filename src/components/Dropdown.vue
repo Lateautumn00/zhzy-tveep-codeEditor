@@ -46,7 +46,7 @@
         <el-dropdown-item
           @click="saveFile"
           :disabled="!dataList.state ? true : false"
-          >保存 （Ctrl+C）</el-dropdown-item
+          >保存 （Ctrl+S）</el-dropdown-item
         >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item

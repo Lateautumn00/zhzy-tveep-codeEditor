@@ -40,6 +40,7 @@ export default class HomeComponent extends Vue {
   maxWidth = 400 //最大宽度
   minWidth = 150 //最小宽度
   asideWidth = 200 //当前位置
+
   mounted() {
     this.$nextTick(() => {
       const divider = document.getElementById('divider') as any

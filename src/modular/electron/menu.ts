@@ -45,7 +45,7 @@ export function menu(window: any, Menu: any, dialog: any) {
         },
         {
           label: '保存',
-          accelerator: process.platform === 'darwin' ? 'Ctrl+C' : 'Ctrl+C', //无效
+          accelerator: process.platform === 'darwin' ? 'Ctrl+S' : 'Ctrl+S',
           click: function () {
             window.webContents.send('menuPreservation')
           }
