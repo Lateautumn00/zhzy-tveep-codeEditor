@@ -19,44 +19,44 @@ node.js 版本  16.13.1
 ## 安装包
 
 ```
-yarn install
+npm install
 ```
 
 ### 本地运行网页版
 
 ```
-yarn run web:serve
+npm run web:serve
 ```
 
 ### 打包网页版
 
 ```
-yarn run web:build
+npm run web:build
 可用启动服务代理静态资源的n种方法.pdf里面的方式
 ```
 
 ### 本地运行桌面版
 
 ```
-yarn run electron:serve
+npm run electron:serve
 ```
 
 ### 打包桌面版 exe
 
 ```
-yarn run electron:build
+npm run electron:build
 ```
 
 ### 单元测试
 
 ```
-yarn run test:unit
+npm run test:unit
 ```
 
 ### Lints and fixes files
 
 ```
-yarn run lint
+npm run lint
 ```
 
 ### Customize configuration
@@ -66,7 +66,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ### 升级
 
 ```
-yarn run electron:build 打包后
+npm run electron:build 打包后
 
 将dist_electron 目录下的 exe文件 和 latest.yml上传到 服务器指定目录下
 
@@ -77,6 +77,18 @@ yarn run electron:build 打包后
 
 ```
 在终端中敲入： npm set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
-或者
-yarn config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
 ```
+### 解决 node-pty 安装错误的问题
+
+```
+window 以管理员身份打开powershell： npm install --global --production windows-build-tools@4.0.0
+```
+
+### 解决 windows-build-tools 安装慢的问题
+
+```
+https://dotnet.microsoft.com/zh-cn/download  升级.net framework   我用的6.0版本
+
+```
+
+npm i node-loader --save --legacy-peer-deps
