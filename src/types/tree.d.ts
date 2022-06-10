@@ -7,7 +7,7 @@
  * @Reference:
  */
 //左侧 侧边栏树
-interface TreeList {
+export interface TreeList {
   key: string
   label: string
   src: string
@@ -16,7 +16,7 @@ interface TreeList {
   children: TreeList[]
 }
 //右侧tabs
-interface Tabs {
+export interface Tabs {
   label?: string
   key?: string
   src?: string

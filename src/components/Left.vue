@@ -73,6 +73,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import DropdownComponent from '@/components/Dropdown.vue'
+import { DialogData } from '@/types/dialog'
 import {
   getDirContent,
   deleteFile,
@@ -82,11 +83,15 @@ import {
   copyFiles
 } from '@/modular/fsModular'
 import DialogComponent from '@/components/Dialog.vue'
-
+import { TreeList } from '@/types/tree'
 @Options({
   components: {
     DropdownComponent,
     DialogComponent
+  },
+  props: {
+    openData: Object,
+    dataList: Object
   }
 })
 export default class LeftComponent extends Vue {
@@ -98,83 +103,15 @@ export default class LeftComponent extends Vue {
     type: 'type',
     state: 0 //状态 0 未有修改 1 有修改 1
   }
-  // eslint-disable-next-line no-undef
-  openData: TreeList[] = [
-    {
-      key: '-2',
-      label: '已打开文件',
-      src: '',
-      type: -2,
-      state: 0,
-      children: []
-    }
-  ]
-  // eslint-disable-next-line no-undef
+  openData: TreeList[] = []
   dataList: TreeList[] = []
-  dirLocal = '' //本地缓存文件夹地址
-  localStorageName = 'menuOpenDirectory' //目录地址缓存
   pasteData = {
     type: 0, //1复制文件 0复制文件夹 3剪裁文件 4 剪裁文件夹
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
-  mounted() {
-    this.$nextTick(() => {
-      const dirLocal = (window as any).localStorage.getItem(
-        this.localStorageName
-      )
-      if (dirLocal) {
-        getDirContent(dirLocal)
-          // eslint-disable-next-line no-undef
-          .then((res: TreeList) => {
-            res.type = -1
-            this.dataList[0] = res
-          })
-          .catch((error: any) => {
-            ;(window as any).localStorage.removeItem(this.localStorageName)
-            console.error(error)
-          })
-      }
 
-      //监听ipc消息
-      ;(window as any).$electron.ipcRenderer.on(
-        'menuOpenDirectory',
-        (event: any, result: string) => {
-          getDirContent(result)
-            // eslint-disable-next-line no-undef
-            .then((res: TreeList) => {
-              res.type = -1
-              this.dataList[0] = res
-              ;(window as any).localStorage.setItem(
-                this.localStorageName,
-                result
-              ) //将本次的文件夹目录写入缓存
-              this.$emit('leftBrotherEvents', {
-                name: 'clearFiles',
-                value: {
-                  key: '',
-                  k: 0
-                }
-              })
-            })
-            .catch((error: any) => {
-              ;(this as any).$message.error(error)
-              console.error(error)
-            })
-        }
-      )
-    })
-  }
-  //其他兄弟节点发来的消息
-  // eslint-disable-next-line no-undef
-  brotherEvents(data: RightBrotherEvents) {
-    if (data.name === 'updateTab') {
-      //更新
-      this.openData[0].children = data.value.tabs
-    }
-  }
-
-  // eslint-disable-next-line no-undef
+  //打开文件
   handleNodeClick = (value: TreeList) => {
     if (value.type === 1) {
       //去读取文件
@@ -182,7 +119,6 @@ export default class LeftComponent extends Vue {
     }
   }
   //创建文件
-  // eslint-disable-next-line no-undef
   createDialog(type: number, data: TreeList) {
     this.xNodeKey = `${data.key}`
     const title = type === 1 ? '创建文件' : type === 0 ? '创建文件夹' : '重命名'
@@ -194,8 +130,7 @@ export default class LeftComponent extends Vue {
       name
     })
   }
-  //创建
-  // eslint-disable-next-line no-undef
+  //创建文件 文件夹
   operationFile(data: DialogData) {
     if (data.type === 2 || data.type === 3) {
       //重命名
@@ -207,7 +142,6 @@ export default class LeftComponent extends Vue {
           xNode.data.src = res
           if (data.type === 3) {
             getDirContent(res)
-              // eslint-disable-next-line no-undef
               .then(async (result: TreeList) => {
                 ;(this.$refs.tree as any).updateKeyChildren(
                   this.xNodeKey,
@@ -254,7 +188,7 @@ export default class LeftComponent extends Vue {
         })
     }
   }
-  // eslint-disable-next-line no-undef
+  //删除树节点
   removeNode(data: TreeList) {
     deleteFile(data.src)
       .then(() => {
@@ -274,7 +208,6 @@ export default class LeftComponent extends Vue {
       })
   }
   //复制或剪裁
-  // eslint-disable-next-line no-undef
   copyOrMove(data: TreeList) {
     this.pasteData = {
       type: data.type,
@@ -282,13 +215,11 @@ export default class LeftComponent extends Vue {
     }
   }
   //粘贴
-  // eslint-disable-next-line no-undef
   paste(data: TreeList) {
     if (this.pasteData.src) {
       copyFiles(this.pasteData.type, this.pasteData.src, data.src)
         .then(async () => {
           getDirContent(data.src)
-            // eslint-disable-next-line no-undef
             .then(async (result: TreeList) => {
               ;(this.$refs.tree as any).updateKeyChildren(
                 data.key,

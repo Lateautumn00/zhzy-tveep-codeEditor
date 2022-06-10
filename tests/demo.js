@@ -5,7 +5,6 @@ const { readFile, readdir, stat, writeFile } = require('fs/promises')
 const path = require('path')
 let d = 0
 const getDirContent = async (_dir) => {
-  // eslint-disable-next-line no-undef
   const list = {
     id: ++d,
     label: path.basename(_dir),

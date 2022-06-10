@@ -6,18 +6,18 @@
  * @LastEditors: lanchao
  * @Reference:
  */
-interface EventsBrother {
+import { TreeList } from '@/types/tree'
+export interface EventsBrother {
   tabsValue: string
-  // eslint-disable-next-line no-undef
   tabs: TreeList[]
 }
 //左侧通知右侧
-interface LeftBrotherEvents {
+export interface LeftBrotherEvents {
   name: string
   value: any
 }
 //右侧通知左侧
-interface RightBrotherEvents {
+export interface RightBrotherEvents {
   name: string
   value: any
 }

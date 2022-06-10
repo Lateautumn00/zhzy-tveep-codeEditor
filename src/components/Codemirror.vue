@@ -28,18 +28,18 @@ import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { getFileContent, setFileContent } from '@/modular/fsModular'
+import { TreeList } from '@/types/tree'
 @Options({
   components: {
     Codemirror
   },
   props: {
-    dataList: Object
+    dataList: Object,
+    tabsValue: String
   }
 })
 export default class CodemirrorComponent extends Vue {
-  // eslint-disable-next-line quotes
   code = ''
-  // eslint-disable-next-line no-undef
   dataList: TreeList = {
     key: '',
     label: '',

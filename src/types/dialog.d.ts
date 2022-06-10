@@ -7,7 +7,7 @@
  * @Reference:
  */
 //dialog弹框
-interface DialogData {
+export interface DialogData {
   title: string
   type: number
   src: string

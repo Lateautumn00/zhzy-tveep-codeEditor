@@ -19,13 +19,13 @@ import {
 } from 'fs/promises'
 import path from 'path'
 import fs from 'fs'
+import { TreeList } from '@/types/tree'
 /**
  * 获取文件夹下所有子文件
  * @param _dir 文件夹路径
  * @returns
  */
 export const getDirContent = async (_dir: string) => {
-  // eslint-disable-next-line no-undef
   const list: TreeList = {
     key: '-1',
     label: path.basename(_dir),

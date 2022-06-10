@@ -8,11 +8,11 @@
 -->
 <template>
   <el-tabs
-    v-model="tabsValue"
+    v-model="tabsValues"
     type="card"
     class="demo-tabs"
     @tab-remove="removeTab"
-    @tab-click="clickTab"
+    @tab-click="clickTabs"
   >
     <el-tab-pane
       v-for="item in tabs"
@@ -53,204 +53,78 @@
 import { Options, Vue } from 'vue-class-component'
 import CodemirrorComponent from '@/components/Codemirror.vue'
 import DropdownComponent from '@/components/Dropdown.vue'
-import path from 'path'
-import { ElMessageBox } from 'element-plus'
-import { getStat } from '@/modular/fsModular'
+import { TreeList } from '@/types/tree'
 @Options({
   components: {
     CodemirrorComponent,
     DropdownComponent
+  },
+  props: {
+    tabs: Object,
+    tabValue: String
+  },
+  watch: {
+    tabValue: [
+      {
+        handler: 'tabsValueWatch'
+      }
+    ]
   }
 })
 export default class RightComponent extends Vue {
-  tabsValue = '0' //当前展示的标签
-  // eslint-disable-next-line no-undef
+  tabsValues = '0' //当前展示的标签
   tabs: TreeList[] = []
-  openStorageName = 'fileList'
   mounted() {
     this.$nextTick(() => {
-      const dirLocal = (window as any).localStorage.getItem(
-        this.openStorageName
-      )
-      if (dirLocal) {
-        const data = JSON.parse(dirLocal)
-        this.$emit('rightBrotherEvents', { name: 'updateTab', value: data }) //回传给左侧树
-        this.tabs = data.tabs
-        this.tabsValue = data.tabsValue
-      }
-      //监听ipc消息
       //保存功能
       ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
-        this.saveFile(this.tabsValue) //当前打开并展示的tab
+        this.saveFile(this.tabsValues) //当前打开并展示的tab
       })
-      //打开文件
-      ;(window as any).$electron.ipcRenderer.on(
-        'menuOpenFile',
-        async (event: any, result: string) => {
-          const stat = await getStat(result)
-          // eslint-disable-next-line no-undef
-          const tab: TreeList = {
-            key: `${stat.ino}`,
-            label: path.basename(result),
-            src: result,
-            type: 1,
-            state: 0,
-            children: []
-          }
-          this.addTab(tab)
-        }
-      )
     })
+  }
+  tabsValueWatch(newValue: any, oldValue: any) {
+    if (newValue !== oldValue) this.tabsValues = newValue
   }
   //保存文件
   saveFile(tabsValue: string) {
     ;(this.$refs[`code${tabsValue}`] as any)[0].getFileDoc()
   }
-
-  //其他兄弟节点发来的消息
-  // eslint-disable-next-line no-undef
-  brotherEvents(data: LeftBrotherEvents) {
-    if (data.name === 'clearFiles') {
-      this.closeFileAll(data.value.key, data.value.k) //删掉tab
-    } else if (data.name === 'addTab') {
-      //打开新tab
-      this.addTab(data.value)
-    } else if (data.name === 'updateTab') {
-      //更新tab
-      this.updateTab(data.value)
-    }
-  }
   updateFileEditState(key: string, state: number) {
-    this.tabs.forEach((tab: any) => {
-      if (tab.key === key) tab.state = state
-    })
-    this.updateLocalStorage()
-  }
-  //新增tab
-  // eslint-disable-next-line no-undef
-  addTab = (data: TreeList) => {
-    //判断文件是否已经打开
-    if (data) {
-      const value = this.tabs.filter((tab: any) => tab.src === data.src)
-      if (value.length) {
-        this.tabsValue = `${value[0].key}`
-        this.updateLocalStorage()
-        return false
+    this.$emit('rightBrotherEvents', {
+      name: 'updateFileEditState',
+      value: {
+        key,
+        state
       }
-    }
-    this.tabs.push(data)
-    this.tabsValue = `${data.key}`
-    this.updateLocalStorage()
-  }
-  //更新tab
-  // eslint-disable-next-line no-undef
-  updateTab = (data: any) => {
-    if (data.type === 2) {
-      this.tabs.forEach((tab: any) => {
-        if (tab.key === data.xNode.key) {
-          tab.src = data.xNode.src
-          tab.label = data.xNode.label
-          this.updateLocalStorage()
-        }
-      })
-    } else if (data.type === 3) {
-      let num = 0
-      const len = data.oldSrc.length
-      this.tabs.forEach((tab: any) => {
-        if (tab.src.substr(0, len) === data.oldSrc) {
-          tab.src = data.xNode.src + tab.src.substr(len)
-          ++num
-        }
-      })
-      if (num > 0) this.updateLocalStorage()
-    }
+    })
   }
   //关闭+
   removeTab(key: string, k = 3) {
-    let state = 0 //是否有未保存的
-    if (k === 0) {
-      //全部
-      const data = this.tabs.filter((value: any) => value.state === 1) //未保存的
-      state = data.length
-    } else if (k === 1) {
-      //其它
-      const data = this.tabs.filter(
-        (value: any) => value.state === 1 && value.key !== key
-      ) //未保存的
-      state = data.length
-    } else if (k === 3) {
-      //自己
-      const data = this.tabs.filter(
-        (value: any) => value.key === key && value.state === 1
-      )
-      state = data.length
-    }
-    if (state === 0) {
-      this.closeFileAll(key, k)
-    } else if (state > 0) {
-      ElMessageBox.confirm('当前编辑内容还未保存，确定关闭？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      })
-        .then(() => {
-          this.closeFileAll(key, k)
-        })
-        .catch(() => {
-          // catch error
-        })
-    }
-  }
-  //关闭文件
-  /**
-   * k 0 关闭全部 1 关闭其它 2关闭已保存 3 关闭当前
-   * key 当前的key
-   */
-  closeFileAll(key: string, k: number) {
-    if (k === 0) {
-      // 关闭全部已打开文件
-      this.tabs = []
-      this.tabsValue = '0'
-      this.updateLocalStorage()
-    } else if (k === 1) {
-      //关闭其它
-      this.tabs = this.tabs.filter((value: any) => value.key === key)
-      this.tabsValue = this.tabs[0].key
-      this.updateLocalStorage()
-    } else if (k === 2) {
-      //关闭已保存
-      const tabs = this.tabs
-      this.tabs = tabs.filter((value: any) => value.state === 1) //未保存的
-      if (key === this.tabsValue)
-        this.tabsValue = this.tabs.length ? this.tabs[0].key : '0'
-      this.updateLocalStorage()
-    } else if (k === 3) {
-      //关闭当前tab
-      const tabs = this.tabs
-      this.tabs = tabs.filter((value: any) => value.key !== key)
-      if (key === this.tabsValue)
-        this.tabsValue = this.tabs.length ? this.tabs[0].key : '0'
-      this.updateLocalStorage()
-    }
-  }
-  //点击tab
-  clickTab() {
-    this.updateLocalStorage()
-  }
-  //更新缓存
-  updateLocalStorage = () => {
-    // eslint-disable-next-line no-undef
-    const data: EventsBrother = {
-      tabsValue: this.tabsValue,
-      tabs: this.tabs
-    }
-    ;(window as any).localStorage.setItem(
-      this.openStorageName,
-      JSON.stringify(data)
-    )
     this.$emit('rightBrotherEvents', {
-      name: 'updateTab',
-      value: data
-    }) //回传给左侧树
+      name: 'removeTab',
+      value: {
+        key,
+        k
+      }
+    })
+  }
+  closeFileAll(key: string, k: number) {
+    this.$emit('rightBrotherEvents', {
+      name: 'closeFileAll',
+      value: {
+        key,
+        k
+      }
+    })
+  }
+  //点击切换tab
+  clickTabs(p: any) {
+    this.$emit('rightBrotherEvents', {
+      name: 'clickTab',
+      value: {
+        key: p.props.name
+      }
+    })
   }
 }
 </script>

@@ -67,6 +67,7 @@
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
+import { TreeList } from '@/types/tree'
 @Options({
   components: {},
   props: {
@@ -92,7 +93,6 @@ export default class DropdownComponent extends Vue {
   placement = 'bottom' //位置 top/top-start/top-end/bottom/bottom-start/bottom-end
   type = 0 //0目录1文件
   size = 'default' //large / default / small
-  // eslint-disable-next-line no-undef
   dataList: TreeList = {
     key: '',
     label: '',

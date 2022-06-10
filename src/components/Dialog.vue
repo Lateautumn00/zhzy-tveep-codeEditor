@@ -29,12 +29,7 @@
 </template>
 <script lang="ts">
 import { Vue } from 'vue-class-component'
-interface DialogData {
-  title: string
-  type: number
-  src: string
-  name: string
-}
+import { DialogData } from '@/types/dialog'
 export default class DialogComponent extends Vue {
   dialogVisible = false
   data: any = {
@@ -43,7 +38,6 @@ export default class DialogComponent extends Vue {
     src: '',
     name: ''
   }
-  // eslint-disable-next-line no-undef
   openDialog(data: DialogData) {
     this.data = data
     this.dialogVisible = true
