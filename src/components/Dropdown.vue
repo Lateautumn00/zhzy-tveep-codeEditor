@@ -13,7 +13,7 @@
       <el-dropdown-menu v-if="type === -1 || type === 0">
         <el-dropdown-item @click="createDialog(1)">新建文件</el-dropdown-item>
         <el-dropdown-item @click="createDialog(0)">新建文件夹</el-dropdown-item>
-        <el-dropdown-item v-if="type === 0 ? true : false" @click="copyOrMove()"
+        <el-dropdown-item v-if="type === 0 ? true : false" @click="copyOrMove"
           >复制</el-dropdown-item
         >
         <el-dropdown-item
@@ -36,7 +36,7 @@
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 1">
         <el-dropdown-item @click="openFile">打开</el-dropdown-item>
-        <el-dropdown-item @click="copyOrMove()">复制</el-dropdown-item>
+        <el-dropdown-item @click="copyOrMove">复制</el-dropdown-item>
         <!-- <el-dropdown-item>剪裁</el-dropdown-item> -->
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item @click="createDialog(2)">重命名</el-dropdown-item>

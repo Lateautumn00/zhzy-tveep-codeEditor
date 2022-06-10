@@ -9,10 +9,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <!-- <el-header v-if="isElectron">
-        <HeaderComponent />
-      </el-header> -->
-      <el-container :class="isElectron ? 'eContainer' : 'wContainer'">
+      <el-container class="eContainer">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
           <LeftComponent ref="leftRef" @leftBrotherEvents="leftBrotherEvents" />
         </el-aside>
@@ -35,7 +32,6 @@ import LeftComponent from '@/components/Left.vue'
 import RightComponent from '@/components/Right.vue'
 @Options({
   components: {
-    // HeaderComponent,
     LeftComponent,
     RightComponent
   }
@@ -44,7 +40,6 @@ export default class HomeComponent extends Vue {
   maxWidth = 400 //最大宽度
   minWidth = 150 //最小宽度
   asideWidth = 200 //当前位置
-  isElectron = process.env.IS_ELECTRON ? process.env.IS_ELECTRON : false
   mounted() {
     this.$nextTick(() => {
       const divider = document.getElementById('divider') as any
@@ -103,9 +98,6 @@ export default class HomeComponent extends Vue {
   border-bottom: 1px #dcdfe6 solid;
 }
 .eContainer {
-  height: 100vh;
-}
-.wContainer {
   height: 100vh;
 }
 .el-divider--vertical {
