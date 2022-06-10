@@ -1,4 +1,12 @@
-import { app, protocol, BrowserWindow, ipcMain, Menu, dialog } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  dialog,
+  globalShortcut
+} from 'electron'
 import { upgradeHandle } from '@/modular/electron/upgrade'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { menu } from '@/modular/electron/menu'
@@ -84,6 +92,10 @@ app.on('ready', async () => {
   //     }
   //   }
   if (win === null) createWindow()
+  //注册全局快捷键
+  globalShortcut.register('Ctrl+C', () => {
+    win.webContents.send('menuPreservation') //保存当前
+  })
 })
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

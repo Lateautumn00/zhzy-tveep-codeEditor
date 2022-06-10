@@ -7,35 +7,15 @@
  * @Reference:
  */
 export function menu(window: any, Menu: any, dialog: any) {
+  //openfile 选择文件
+  //openDirectory 选择文件夹
+  //multiSelection 多选
+  //showHiddenFiles 显示隐藏文件
+  //createDirectory 创建文件夹
   const template: any = [
     {
       label: '文件',
       submenu: [
-        // {
-        //   label: '新建文件夹',
-        //   accelerator: 'ctrl+n',
-        //   click: function () {
-        //     dialog
-        //       .showOpenDialog({
-        //         properties: ['createDirectory']
-        //       })
-        //       .then((result: any) => {
-        //         console.log(result)
-        //       })
-        //   }
-        // },
-        // {
-        //   label: '新建文件',
-        //   click: function () {
-        //     dialog
-        //       .showOpenDialog({
-        //         properties: ['createFile']
-        //       })
-        //       .then((result: any) => {
-        //         console.log(result)
-        //       })
-        //   }
-        // },
         {
           label: '打开文件',
           click: function () {
@@ -44,8 +24,6 @@ export function menu(window: any, Menu: any, dialog: any) {
                 properties: ['openFile']
               })
               .then((result: any) => {
-                console.log(result)
-
                 window.webContents.send('menuOpenFile', result.filePaths[0])
               })
           }
@@ -55,11 +33,6 @@ export function menu(window: any, Menu: any, dialog: any) {
           click: function () {
             dialog
               .showOpenDialog({
-                //openfile 选择文件
-                //openDirectory 选择文件夹
-                //multiSelection 多选
-                //showHiddenFiles 显示隐藏文件
-                //createDirectory 创建文件夹
                 properties: ['openDirectory']
               })
               .then((result: any) => {
@@ -72,29 +45,16 @@ export function menu(window: any, Menu: any, dialog: any) {
         },
         {
           label: '保存',
-          accelerator: 'ctrl+c',
+          accelerator: process.platform === 'darwin' ? 'Ctrl+C' : 'Ctrl+C', //无效
           click: function () {
             window.webContents.send('menuPreservation')
           }
         }
       ]
     }
-    // {
-    //   label: '编辑',
-    //   submenu: [
-    //     {
-    //       label: '复制',
-    //       role: 'copy'
-    //     },
-    //     {
-    //       label: '截切',
-    //       role: 'cut'
-    //     }
-    //   ]
-    // }
   ]
-  const m = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(m)
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 //右键菜单
 // export function rightMenu() {
