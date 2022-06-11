@@ -25,6 +25,7 @@
             @rightBrotherEvents="rightBrotherEvents"
             :tabs="openData[0].children"
             :tabValue="tabsValue"
+            :dirPath="dirPath"
           />
         </el-main>
       </el-container>
@@ -55,6 +56,7 @@ export default class HomeComponent extends Vue {
   maxWidth = 400 //最大宽度
   minWidth = 150 //最小宽度
   asideWidth = 200 //当前位置
+  dirPath = '' //当前文件夹路径
   tabsValue = '0' //当前展示的标签
   openStorageName = 'fileList' //一打开文件缓存名称
   localStorageName = 'menuOpenDirectory' //目录地址缓存名称
@@ -74,32 +76,8 @@ export default class HomeComponent extends Vue {
       //拖动左侧栏
       const divider = document.getElementById('divider') as any
       this.mouseDownAndMove(divider)
-
-      //打开默认文件夹
-      const dirLocal = (window as any).localStorage.getItem(
-        this.localStorageName
-      )
-      if (dirLocal) {
-        getDirContent(dirLocal)
-          .then((res: TreeList) => {
-            res.type = -1
-            this.dataList[0] = res
-          })
-          .catch((error: any) => {
-            ;(window as any).localStorage.removeItem(this.localStorageName)
-            console.error(error)
-          })
-      }
-      //默认打开文件
-      const FilesLocal = (window as any).localStorage.getItem(
-        this.openStorageName
-      )
-      if (FilesLocal) {
-        const data = JSON.parse(FilesLocal)
-        this.openData[0].children = data.tabs
-        this.tabsValue = data.tabsValue
-      }
-
+      this.openDefaultDir()
+      this.openDefaultFile()
       //监听ipc 打开文件
       //打开文件
       ;(window as any).$electron.ipcRenderer.on(
@@ -130,6 +108,7 @@ export default class HomeComponent extends Vue {
                 result
               ) //将本次的文件夹目录写入缓存
               this.closeFileAll('', 0)
+              this.dirPath = result
             })
             .catch((error: any) => {
               ;(this as any).$message.error(error)
@@ -138,6 +117,35 @@ export default class HomeComponent extends Vue {
         }
       )
     })
+  }
+  //打开上次的文件夹
+  openDefaultDir() {
+    //打开默认文件夹
+    const dirPath = (window as any).localStorage.getItem(this.localStorageName)
+    if (dirPath) {
+      getDirContent(dirPath)
+        .then((res: TreeList) => {
+          res.type = -1
+          this.dataList[0] = res
+          this.dirPath = dirPath
+        })
+        .catch((error: any) => {
+          ;(window as any).localStorage.removeItem(this.localStorageName)
+          console.error(error)
+        })
+    }
+  }
+  //打开上次的文件
+  openDefaultFile() {
+    //默认打开文件
+    const FilesLocal = (window as any).localStorage.getItem(
+      this.openStorageName
+    )
+    if (FilesLocal) {
+      const data = JSON.parse(FilesLocal)
+      this.openData[0].children = data.tabs
+      this.tabsValue = data.tabsValue
+    }
   }
   //左侧
   leftBrotherEvents(data: LeftBrotherEvents) {
@@ -295,7 +303,6 @@ export default class HomeComponent extends Vue {
     )
   }
   //鼠标按下并移动
-  //方式一
   mouseDownAndMove = (dom: any) => {
     dom.onmousedown = (e: any) => {
       e = e || window.event

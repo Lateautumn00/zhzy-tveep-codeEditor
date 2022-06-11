@@ -36,11 +36,9 @@ export const getDirContent = async (_dir: string) => {
   }
   let dirNum = 0 //下次放文件夹的位置
   const dirs = await readdir(_dir) //读文件
-
   for (const value of dirs) {
     const newDir = path.join(_dir, value)
     const stats = await getStat(newDir)
-
     if (stats.isDirectory()) {
       //如果是文件夹
       //list.key = `${stats.ino}`

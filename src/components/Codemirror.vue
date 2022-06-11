@@ -19,6 +19,7 @@
     @change="changeFile"
     @focus="focusFile"
     @blur="blurFile"
+    class="code"
   />
 </template>
 
@@ -71,10 +72,8 @@ export default class CodemirrorComponent extends Vue {
   //读取当前页中的内容   包含未提交的
   //是用箭头函数无法获取props接受的值
   getFileDoc() {
-    //if (this.dataList.state  === 1) {
     setFileContent(this.dataList.src, this.code)
     this.$emit('updateFileEditState', this.dataList.key, 0)
-    //}
   }
   //文件变动
   changeFile() {
@@ -102,4 +101,18 @@ export default class CodemirrorComponent extends Vue {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+:deep(.cm-scroller::-webkit-scrollbar) {
+  /*滚动条整体样式*/
+  width: 10px;
+  height: 3px;
+}
+:deep(.cm-scroller::-webkit-scrollbar-thumb) {
+  /*滚动条里面小方块样式*/
+  background-color: #929292;
+}
+:deep(.cm-scroller::-webkit-scrollbar-track) {
+  /*滚动条里面轨道样式*/
+  background: #282c34;
+}
+</style>

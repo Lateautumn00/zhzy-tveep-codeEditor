@@ -52,6 +52,7 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
+      :default-expand-all="true"
     >
       <template #default="{ data }">
         <DropdownComponent

@@ -13,7 +13,8 @@
         "electron:build": "vue-cli-service electron:build",
         "electron:serve": "vue-cli-service electron:serve",
         "postinstall": "electron-builder install-app-deps",
-        "postuninstall": "electron-builder install-app-deps"
+        "postuninstall": "electron-builder install-app-deps",
+        "rebuild": "electron-rebuild -f -w node-pty"
     },
     "main": "background.js",
     "dependencies": {
@@ -25,12 +26,14 @@
         "axios": "^0.24.0",
         "core-js": "^3.6.5",
         "element-plus": "^2.2.2",
+        "iconv-lite": "^0.6.3",
         "vue": "^3.0.0",
         "vue-class-component": "^8.0.0-0",
         "vue-codemirror": "^5.0.1",
         "vue-router": "^4.0.0-0",
         "vuex": "^4.0.0-0",
-        "xterm": "^4.18.0"
+        "xterm": "^4.18.0",
+        "xterm-addon-fit": "^0.5.0"
     },
     "devDependencies": {
         "@electron/remote": "^2.0.8",
@@ -54,6 +57,7 @@
         "chai-as-promised": "^7.1.1",
         "electron": "^18.2.4",
         "electron-devtools-installer": "^3.1.0",
+        "electron-rebuild": "^3.2.7",
         "electron-updater": "^4.6.1",
         "eslint": "^6.7.2",
         "eslint-plugin-prettier": "^3.3.1",

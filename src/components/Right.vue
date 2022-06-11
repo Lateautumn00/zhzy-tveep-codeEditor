@@ -7,61 +7,76 @@
  * @Reference: 
 -->
 <template>
-  <el-tabs
-    v-model="tabsValues"
-    type="card"
-    class="demo-tabs"
-    @tab-remove="closeTab"
-    @tab-click="clickTabs"
+  <div
+    class="divTop"
+    :style="{
+      height: 'calc(100% - ' + asideHeight + 'px)',
+      overflow: 'hidden'
+    }"
   >
-    <el-tab-pane
-      v-for="item in tabs"
-      :key="item.key"
-      :label="item.label"
-      :name="item.key"
-      :closable="!item.state"
+    <el-tabs
+      v-model="tabsValues"
+      type="card"
+      class="demo-tabs"
+      @tab-remove="closeTab"
+      @tab-click="clickTabs"
     >
-      <template #label>
-        <el-tooltip class="box-item" effect="light" :content="item.src">
-          <DropdownComponent
-            trigger="contextmenu"
-            :type="2"
-            placement="bottom"
-            size="large"
-            :dataList="item"
-            @saveFile="saveFile"
-            @closeTab="closeTab"
-          >
-            <span class="custom-tabs-label">
-              <span>{{ item.label }}</span>
-              <el-icon v-if="item.state === 1"><Edit /></el-icon>
-            </span>
-          </DropdownComponent>
-        </el-tooltip>
-      </template>
-      <CodemirrorComponent
-        :dataList="item"
-        :ref="'code' + item.key"
-        @updateFileEditState="updateFileEditState"
-        @closeFileAll="closeFileAll"
-      />
-    </el-tab-pane>
-  </el-tabs>
+      <el-tab-pane
+        v-for="item in tabs"
+        :key="item.key"
+        :label="item.label"
+        :name="item.key"
+        :closable="!item.state"
+      >
+        <template #label>
+          <el-tooltip class="box-item" effect="light" :content="item.src">
+            <DropdownComponent
+              trigger="contextmenu"
+              :type="2"
+              placement="bottom"
+              size="large"
+              :dataList="item"
+              @saveFile="saveFile"
+              @closeTab="closeTab"
+            >
+              <span class="custom-tabs-label">
+                <span>{{ item.label }}</span>
+                <el-icon v-if="item.state === 1"><Edit /></el-icon>
+              </span>
+            </DropdownComponent>
+          </el-tooltip>
+        </template>
+        <CodemirrorComponent
+          :dataList="item"
+          :ref="'code' + item.key"
+          @updateFileEditState="updateFileEditState"
+          @closeFileAll="closeFileAll"
+        />
+      </el-tab-pane>
+    </el-tabs>
+  </div>
+  <el-divider border-style="solid" id="divider1" />
+  <div :style="{ height: asideHeight + 'px', overflow: 'hidden' }">
+    <TerminalComponent :dirPath="dirPath" />
+  </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
 import CodemirrorComponent from '@/components/Codemirror.vue'
 import DropdownComponent from '@/components/Dropdown.vue'
+import TerminalComponent from '@/components/Terminal.vue'
 import { TreeList } from '@/types/tree'
 @Options({
   components: {
     CodemirrorComponent,
-    DropdownComponent
+    DropdownComponent,
+    TerminalComponent
   },
   props: {
     tabs: Object,
-    tabValue: String
+    tabValue: String,
+    dirPath: String
   },
   watch: {
     tabValue: [
@@ -72,10 +87,46 @@ import { TreeList } from '@/types/tree'
   }
 })
 export default class RightComponent extends Vue {
+  maxHeight = 500 //最大宽度
+  minHeight = 150 //最小宽度
+  asideHeight = 300 //当前位置
+  dirPath = ''
   tabsValues = '0' //当前展示的标签
   tabs: TreeList[] = []
+  //鼠标按下并移动
+  mouseDownAndMove = (dom: any) => {
+    dom.onmousedown = (e: any) => {
+      e = e || window.event
+      e.preventDefault() //阻止默认操作
+      document.onmousemove = this.mouseMove
+      document.onmouseup = this.mouseUp
+    }
+  }
+
+  //鼠标移动
+  mouseMove = (e: any) => {
+    e = e || window.event
+    let w = this.asideHeight - e.movementY //左侧栏宽度
+    if (w < this.minHeight) {
+      console.error('高度超下限')
+      w = this.minHeight
+    } else if (w > this.maxHeight) {
+      console.error('高度超上限')
+      w = this.maxHeight
+    }
+    this.asideHeight = w
+  }
+  //鼠标抬起
+  mouseUp = () => {
+    document.onmousemove = null
+    document.onmouseup = null
+  }
+
   mounted() {
     this.$nextTick(() => {
+      //拖动命令行
+      const divider = document.getElementById('divider1') as any
+      this.mouseDownAndMove(divider)
       //保存功能
       ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
         this.saveFile(this.tabsValues) //当前打开并展示的tab
@@ -142,5 +193,12 @@ export default class RightComponent extends Vue {
 }
 .el-tab-pane {
   height: 100%;
+}
+.el-divider--horizontal {
+  margin: 0;
+  height: auto;
+  border-top: 1px #dcdfe6 solid;
+  border-bottom: 1px #dcdfe6 solid;
+  cursor: n-resize;
 }
 </style>
