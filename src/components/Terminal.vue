@@ -2,17 +2,17 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-10 09:42:53
+ * @LastEditTime: 2022-06-11 18:22:21
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
-  <div class="xapp">
+  <div class="x-app">
     <div class="main-class">
-      <!-- 渲染过往的命令行 -->
+      <!-- 历史命令行 -->
       <div v-for="item in commandArr" :key="item.key">
         <div class="command-action">
-          <!-- 执行成功或者失败图标切换 -->
+          <!-- 执行成功 或 失败图标切换 -->
           <i
             :class="[
               'el-icon-right',
@@ -20,7 +20,7 @@
               { 'error-icon': item.code !== 0 }
             ]"
           ></i>
-          <!-- 过往执行地址和命令行、信息 -->
+          <!-- 历史执行地址和命令行、信息 -->
           <span class="command-action-path">{{ item.dirPath }} $</span>
           <span class="command-action-contenteditable">{{ item.command }}</span>
         </div>
@@ -200,7 +200,7 @@ export default class TerminalComponent extends Vue {
   }
   // 滚动到底部
   scrollBottom() {
-    let dom: any = document.querySelector('.xapp')
+    let dom: any = document.querySelector('.x-app')
     dom.scrollTop = dom.scrollHeight // 滚动高度
     dom = null
   }
@@ -235,7 +235,7 @@ export default class TerminalComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.xapp {
+.x-app {
   height: 100%;
   max-height: 100%;
   overflow-y: auto;
@@ -291,16 +291,16 @@ export default class TerminalComponent extends Vue {
 .command-action-editor {
   padding: 10px 0 20px 0;
 }
-.xapp::-webkit-scrollbar {
+.x-app::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 10px;
   height: 3px;
 }
-.xapp::-webkit-scrollbar-thumb {
+.x-app::-webkit-scrollbar-thumb {
   /*滚动条里面小方块样式*/
   background-color: #929292;
 }
-.xapp::-webkit-scrollbar-track {
+.x-app::-webkit-scrollbar-track {
   /*滚动条里面轨道样式*/
   background: #282c34;
 }
