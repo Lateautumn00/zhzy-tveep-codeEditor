@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-08 12:24:10
+ * @LastEditTime: 2022-06-11 09:51:52
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -11,7 +11,7 @@
     v-model="tabsValues"
     type="card"
     class="demo-tabs"
-    @tab-remove="removeTab"
+    @tab-remove="closeTab"
     @tab-click="clickTabs"
   >
     <el-tab-pane
@@ -30,7 +30,7 @@
             size="large"
             :dataList="item"
             @saveFile="saveFile"
-            @removeTab="removeTab"
+            @closeTab="closeTab"
           >
             <span class="custom-tabs-label">
               <span>{{ item.label }}</span>
@@ -99,9 +99,9 @@ export default class RightComponent extends Vue {
     })
   }
   //关闭+
-  removeTab(key: string, k = 3) {
+  closeTab(key: string, k = 3) {
     this.$emit('rightBrotherEvents', {
-      name: 'removeTab',
+      name: 'closeTab',
       value: {
         key,
         k

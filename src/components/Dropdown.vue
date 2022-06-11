@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-08 12:13:21
+ * @LastEditTime: 2022-06-11 09:51:15
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -50,15 +50,15 @@
         >
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
-          @click="removeTab(3)"
+          @click="closeTab(3)"
           :disabled="dataList.state ? true : false"
           >关闭</el-dropdown-item
         >
-        <el-dropdown-item @click="removeTab(2)">关闭已保存</el-dropdown-item>
-        <el-dropdown-item @click="removeTab(1)">关闭其他</el-dropdown-item>
+        <el-dropdown-item @click="closeTab(2)">关闭已保存</el-dropdown-item>
+        <el-dropdown-item @click="closeTab(1)">关闭其他</el-dropdown-item>
         <el-dropdown-item
           :disabled="dataList.state ? true : false"
-          @click="removeTab(0)"
+          @click="closeTab(0)"
           >关闭全部</el-dropdown-item
         >
       </el-dropdown-menu>
@@ -133,8 +133,8 @@ export default class DropdownComponent extends Vue {
     this.$emit('saveFile', this.dataList.key)
   }
   //关闭文件 tabs
-  removeTab(k: number) {
-    this.$emit('removeTab', this.dataList.key, k)
+  closeTab(k: number) {
+    this.$emit('closeTab', this.dataList.key, k)
   }
 }
 </script>

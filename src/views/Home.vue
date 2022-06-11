@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-07 21:09:41
+ * @LastEditTime: 2022-06-11 09:52:12
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -139,28 +139,29 @@ export default class HomeComponent extends Vue {
       )
     })
   }
-  //兄弟之间消息中专 左侧兄弟发给右侧
+  //左侧
   leftBrotherEvents(data: LeftBrotherEvents) {
     if (data.name === 'addTab') {
       this.addTab(data.value) //打开新tab
-    } else if (data.name === 'clearFiles') {
-      this.closeFileAll(data.value.key, data.value.k) //删掉tab
     } else if (data.name === 'updateTab') {
       this.updateTab(data.value) //更新tab
+    } else if (data.name === 'closeTab') {
+      this.closeTab(data.value.key, data.value.k) //关闭tab 判断弹窗
+    } else if (data.name === 'closeFileAll') {
+      this.closeFileAll(data.value.key, data.value.k) //删掉tab
     }
   }
+  //右侧
   rightBrotherEvents(data: RightBrotherEvents) {
-    if (data.name === 'removeTab') {
-      this.removeTab(data.value.key, data.value.k) //关闭tab 判断弹窗
-    } else if (data.name === 'closeFileAll') {
-      this.closeFileAll(data.value.key, data.value.k) //关闭tab 不判断弹窗
-    } else if (data.name === 'clickTab') {
+    if (data.name === 'clickTab') {
       this.tabsValue = data.value.key
-      console.log('clickTab===', data.value.key, this.tabsValue)
-
       this.updateLocalStorage() //点击tab
     } else if (data.name === 'updateFileEditState') {
       this.updateFileEditState(data.value.key, data.value.state)
+    } else if (data.name === 'closeTab') {
+      this.closeTab(data.value.key, data.value.k) //关闭tab 判断弹窗
+    } else if (data.name === 'closeFileAll') {
+      this.closeFileAll(data.value.key, data.value.k) //关闭tab 不判断弹窗
     }
   }
   //新增tab
@@ -181,7 +182,7 @@ export default class HomeComponent extends Vue {
     this.updateLocalStorage()
   }
   //关闭+
-  removeTab(key: string, k = 3) {
+  closeTab(key: string, k = 3) {
     let state = 0 //是否有未保存的
     if (k === 0) {
       //全部

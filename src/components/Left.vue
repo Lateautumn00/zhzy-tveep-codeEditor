@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-08 12:17:54
+ * @LastEditTime: 2022-06-11 09:51:32
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -15,6 +15,7 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
+      :default-expand-all="true"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -31,7 +32,14 @@
           @paste="paste"
         >
           <span class="custom-tree-node">
-            <el-icon v-if="data.state === 1"><Edit /></el-icon>
+            <el-icon v-if="data.state === 1 && data.type === 1"
+              ><Edit
+            /></el-icon>
+            <el-icon
+              @click.stop="closeTab(data)"
+              v-if="data.state === 0 && data.type === 1"
+              ><Close
+            /></el-icon>
             <span>{{ data.label }}</span>
           </span>
         </DropdownComponent>
@@ -188,6 +196,16 @@ export default class LeftComponent extends Vue {
         })
     }
   }
+  //关闭tab
+  closeTab(data: TreeList) {
+    this.$emit('leftBrotherEvents', {
+      name: 'closeTab',
+      value: {
+        key: data.key,
+        k: 3
+      }
+    })
+  }
   //删除树节点
   removeNode(data: TreeList) {
     deleteFile(data.src)
@@ -195,7 +213,7 @@ export default class LeftComponent extends Vue {
         const xNode = (this.$refs.tree as any).getNode(data.key)
         ;(this.$refs.tree as any).remove(xNode)
         this.$emit('leftBrotherEvents', {
-          name: 'clearFiles',
+          name: 'closeFileAll',
           value: {
             key: data.key,
             k: 3
