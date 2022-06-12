@@ -2,12 +2,17 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 15:42:12
- * @LastEditTime: 2022-06-12 19:24:56
+ * @LastEditTime: 2022-06-12 19:53:27
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
   <div class="left">
+    <img
+      alt="Vue logo"
+      src="../assets/logo.png"
+      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 6px"
+    />
     <el-dropdown trigger="click" placement="bottom" size="default">
       <span>文件</span>
       <template #dropdown>
@@ -69,6 +74,8 @@ export default class HeaderComponent extends Vue {
 <style scoped lang="scss">
 .left {
   -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
 }
 .right {
   -webkit-app-region: no-drag;
