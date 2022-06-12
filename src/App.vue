@@ -2,23 +2,21 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-04-14 11:21:23
- * @LastEditTime: 2022-06-07 18:44:00
+ * @LastEditTime: 2022-06-12 20:06:22
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
-  <div id="app">
-    <router-view />
-    <!--异步组件-->
-    <Suspense v-if="isUpgrade">
-      <template #default>
-        <UpgradeComponent />
-      </template>
-      <template #fallback>
-        <h1>检查更新 ...</h1>
-      </template>
-    </Suspense>
-  </div>
+  <router-view />
+  <!--异步组件-->
+  <Suspense v-if="isUpgrade">
+    <template #default>
+      <UpgradeComponent />
+    </template>
+    <template #fallback>
+      <h1>检查更新 ...</h1>
+    </template>
+  </Suspense>
 </template>
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
@@ -39,17 +37,4 @@ export default class AppComponent extends Vue {
     : false //判断是否可更新 true是 false否
 }
 </script>
-<style lang="scss">
-body {
-  margin: 0;
-  padding: 0;
-}
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  //text-align: center;
-  color: #2c3e50;
-  font-size: 16px;
-}
-</style>
+<style lang="scss"></style>
