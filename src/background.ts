@@ -9,7 +9,8 @@ import {
 } from 'electron'
 import { upgradeHandle } from '@/modular/electron/upgrade'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import { menu } from '@/modular/electron/menu'
+import { ipcMainHandle } from '@/modular/electron/ipcMain'
+//import { menu } from '@/modular/electron/menu'
 import path from 'path'
 //import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -56,11 +57,12 @@ async function createWindow() {
   }
 
   //设置自定义菜单
-  menu(win, Menu, dialog)
+  //menu(win, Menu, dialog)
   // 当应用所有窗口关闭要做的事情
   win.on('closed', () => {
     win = null
   })
+  ipcMainHandle(win, ipcMain, dialog, app)
 }
 
 // Quit when all windows are closed.
@@ -93,9 +95,9 @@ app.on('ready', async () => {
   //   }
   if (win === null) createWindow()
   //注册全局快捷键
-  //   globalShortcut.register('Ctrl+S', () => {
-  //     win.webContents.send('menuPreservation') //保存当前
-  //   })
+  globalShortcut.register('Ctrl+S', () => {
+    win.webContents.send('menuPreservation') //保存当前
+  })
 })
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
@@ -111,20 +113,3 @@ if (isDevelopment) {
     })
   }
 }
-//登录窗口最小化
-ipcMain.on('app-min', function () {
-  win.minimize()
-})
-//登录窗口最大化、还原窗口
-ipcMain.on('app-max', function () {
-  if (win.isMaximized()) {
-    win.restore()
-  } else {
-    win.maximize()
-  }
-})
-ipcMain.on('app-close', function () {
-  //win.close() //在设置无边框后失效
-  win = null //主窗口设置为null 防止内存溢出
-  app.exit() //直接退出应用程序
-})
