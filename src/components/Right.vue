@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-11 09:51:52
+ * @LastEditTime: 2022-06-12 16:59:27
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -84,7 +84,8 @@ import { TreeList } from '@/types/tree'
         handler: 'tabsValueWatch'
       }
     ]
-  }
+  },
+  emits: { rightBrotherEvents: null }
 })
 export default class RightComponent extends Vue {
   maxHeight = 500 //最大宽度

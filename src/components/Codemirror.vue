@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-12 11:09:37
+ * @LastEditTime: 2022-06-12 17:41:54
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -37,6 +37,10 @@ import { TreeList } from '@/types/tree'
   props: {
     dataList: Object,
     tabsValue: String
+  },
+  emits: {
+    closeFileAll: null,
+    updateFileEditState: null
   }
 })
 export default class CodemirrorComponent extends Vue {
@@ -102,17 +106,10 @@ export default class CodemirrorComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import '@/assets/style/dark.scss';
 :deep(.cm-scroller::-webkit-scrollbar) {
   /*滚动条整体样式*/
   width: 10px;
   height: 3px;
-}
-:deep(.cm-scroller::-webkit-scrollbar-thumb) {
-  /*滚动条里面小方块样式*/
-  background-color: #929292;
-}
-:deep(.cm-scroller::-webkit-scrollbar-track) {
-  /*滚动条里面轨道样式*/
-  background: #282c34;
 }
 </style>

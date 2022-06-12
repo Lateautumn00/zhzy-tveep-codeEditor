@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-11 09:51:15
+ * @LastEditTime: 2022-06-12 17:05:32
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -77,6 +77,15 @@ import { TreeList } from '@/types/tree'
     size: String,
     dataList: Object,
     pasteData: Object
+  },
+  emits: {
+    handleNodeClick: null,
+    createDialog: null,
+    removeNode: null,
+    copyOrMove: null,
+    paste: null,
+    saveFile: null,
+    closeTab: null
   }
   //   watch: {
   //     data: [

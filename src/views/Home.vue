@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-11 09:52:12
+ * @LastEditTime: 2022-06-12 17:16:03
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -15,7 +15,6 @@
             ref="leftRef"
             @leftBrotherEvents="leftBrotherEvents"
             :openData="openData"
-            :dataList="dataList"
           />
         </el-aside>
         <el-divider direction="vertical" border-style="solid" id="divider" />
@@ -39,7 +38,7 @@ import LeftComponent from '@/components/Left.vue'
 import RightComponent from '@/components/Right.vue'
 import path from 'path'
 import { ElMessageBox } from 'element-plus'
-import { getStat, getDirContent } from '@/modular/fsModular'
+import { getStat } from '@/modular/fsModular'
 import { TreeList } from '@/types/tree'
 import {
   EventsBrother,
@@ -59,8 +58,7 @@ export default class HomeComponent extends Vue {
   dirPath = '' //当前文件夹路径
   tabsValue = '0' //当前展示的标签
   openStorageName = 'fileList' //一打开文件缓存名称
-  localStorageName = 'menuOpenDirectory' //目录地址缓存名称
-  dataList: TreeList[] = [] //文件树
+
   openData: TreeList[] = [
     {
       key: '-2',
@@ -76,7 +74,6 @@ export default class HomeComponent extends Vue {
       //拖动左侧栏
       const divider = document.getElementById('divider') as any
       this.mouseDownAndMove(divider)
-      this.openDefaultDir()
       this.openDefaultFile()
       //监听ipc 打开文件
       //打开文件
@@ -95,45 +92,7 @@ export default class HomeComponent extends Vue {
           this.addTab(tab)
         }
       )
-      //打开新文件夹
-      ;(window as any).$electron.ipcRenderer.on(
-        'menuOpenDirectory',
-        (event: any, result: string) => {
-          getDirContent(result)
-            .then((res: TreeList) => {
-              res.type = -1
-              this.dataList[0] = res
-              ;(window as any).localStorage.setItem(
-                this.localStorageName,
-                result
-              ) //将本次的文件夹目录写入缓存
-              this.closeFileAll('', 0)
-              this.dirPath = result
-            })
-            .catch((error: any) => {
-              ;(this as any).$message.error(error)
-              console.error(error)
-            })
-        }
-      )
     })
-  }
-  //打开上次的文件夹
-  openDefaultDir() {
-    //打开默认文件夹
-    const dirPath = (window as any).localStorage.getItem(this.localStorageName)
-    if (dirPath) {
-      getDirContent(dirPath)
-        .then((res: TreeList) => {
-          res.type = -1
-          this.dataList[0] = res
-          this.dirPath = dirPath
-        })
-        .catch((error: any) => {
-          ;(window as any).localStorage.removeItem(this.localStorageName)
-          console.error(error)
-        })
-    }
   }
   //打开上次的文件
   openDefaultFile() {
@@ -157,6 +116,8 @@ export default class HomeComponent extends Vue {
       this.closeTab(data.value.key, data.value.k) //关闭tab 判断弹窗
     } else if (data.name === 'closeFileAll') {
       this.closeFileAll(data.value.key, data.value.k) //删掉tab
+    } else if (data.name === 'updateDirPath') {
+      this.dirPath = data.value
     }
   }
   //右侧
@@ -296,7 +257,6 @@ export default class HomeComponent extends Vue {
       tabsValue: this.tabsValue,
       tabs: this.openData[0].children
     }
-    console.log('up====', data.tabsValue)
     ;(window as any).localStorage.setItem(
       this.openStorageName,
       JSON.stringify(data)

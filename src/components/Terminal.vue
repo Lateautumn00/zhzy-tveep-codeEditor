@@ -2,48 +2,53 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-11 18:22:21
+ * @LastEditTime: 2022-06-12 18:06:54
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
-  <div class="x-app">
-    <div class="main-class">
+  <div class="terminal-app">
+    <div class="terminal-class">
       <!-- 历史命令行 -->
       <div v-for="item in commandArr" :key="item.key">
-        <div class="command-action">
+        <div class="terminal-action">
           <!-- 执行成功 或 失败图标切换 -->
-          <i
-            :class="[
-              'el-icon-right',
-              'command-action-icon',
-              { 'error-icon': item.code !== 0 }
-            ]"
-          ></i>
+          <el-icon v-if="item.code"><CircleClose color="red" /></el-icon>
+          <el-icon v-else><CircleCheck color="green" /></el-icon>
           <!-- 历史执行地址和命令行、信息 -->
-          <span class="command-action-path">{{ item.dirPath }} $</span>
-          <span class="command-action-contenteditable">{{ item.command }}</span>
+          <span class="terminal-action-path">{{ item.dirPath }} $</span>
+          <span
+            class="terminal-action-contenteditable terminal-action-contenteditable-error"
+            v-if="item.code"
+            >{{ item.command }}</span
+          >
+          <span class="terminal-action-contenteditable" v-else>{{
+            item.command
+          }}</span>
         </div>
-        <div class="output-command">{{ item.commandMsg }}</div>
+        <div class="terminal-command terminal-command-error" v-if="item.code">
+          {{ item.commandMsg }}
+        </div>
+        <div class="terminal-command" v-else>{{ item.commandMsg }}</div>
       </div>
       <!-- 当前输入的命令行 -->
       <div
-        class="command-action command-action-editor"
+        class="terminal-action terminal-action-editor"
         @mouseup="timeoutFocusInput"
       >
-        <i class="el-icon-right command-action-icon"></i>
+        <el-icon><Position color="yellow" /></el-icon>
         <!-- 执行地址 -->
-        <span class="command-action-path">{{ dirPath }} $</span>
+        <span class="terminal-action-path">{{ dirPath }} $</span>
         <!-- 命令行输入 -->
         <span
           :contenteditable="action ? false : true"
-          class="command-action-contenteditable"
+          class="terminal-action-contenteditable"
           @input="onDivInput($event)"
           @keydown="keyFn"
         ></span>
       </div>
       <!-- 当前命令行输出 -->
-      <div class="output-command">
+      <div class="terminal-command">
         <div v-for="item in commandMsg" :key="item.key">{{ item }}</div>
       </div>
     </div>
@@ -78,9 +83,9 @@ export default class TerminalComponent extends Vue {
   addPath = '' // 不同系统 获取路径的命令 mac是pwd window是chdir
   mounted() {
     this.addGetPath()
-    this.inputDom = document.querySelector('.command-action-contenteditable')
+    this.inputDom = document.querySelector('.terminal-action-contenteditable')
   }
-  initHandler(newValue: any, oldValue: any) {
+  initHandler() {
     this.isClear('clear')
   }
   // 回车执行命令
@@ -200,7 +205,7 @@ export default class TerminalComponent extends Vue {
   }
   // 滚动到底部
   scrollBottom() {
-    let dom: any = document.querySelector('.x-app')
+    let dom: any = document.querySelector('.terminal-app')
     dom.scrollTop = dom.scrollHeight // 滚动高度
     dom = null
   }
@@ -235,7 +240,8 @@ export default class TerminalComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.x-app {
+@import '@/assets/style/dark.scss';
+.terminal-app {
   height: 100%;
   max-height: 100%;
   overflow-y: auto;
@@ -244,64 +250,45 @@ export default class TerminalComponent extends Vue {
   flex-direction: column;
   color: #333;
 }
-.main-class {
-  background: #282c34;
-  color: #929292;
+.terminal-class {
   flex: 1;
   padding: 10px 20px 0 10px;
 }
-.command-action {
+.terminal-action-contenteditable {
+  border: none;
+  outline: none;
+  min-width: 100px;
+  white-space: pre-wrap;
+}
+.terminal-action-contenteditable-error {
+  color: red;
+}
+.terminal-action {
   font-size: 16px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
-.command-action-icon {
-  line-height: 16px;
-  display: inline-block;
-  color: #88e200;
-}
-.error-icon {
-  color: #ff0066;
-}
-.command-action-path {
+.terminal-action-path {
   color: #21c5dc;
   margin: 0 5px 0 8px;
   display: inline-block;
 }
-.command-action-input {
-  border: none;
-  outline: none;
-  color: #b2b2b2;
-  background: #282c34;
-}
-.command-action-contenteditable {
-  border: none;
-  outline: none;
-  background: #282c34;
-  min-width: 100px;
+
+.terminal-command {
+  margin: 5px;
   white-space: pre-wrap;
-  color: #b2b2b2;
 }
-.output-command {
-  margin: 10px 10px 10px 0;
-  white-space: pre-wrap;
+.terminal-command-error {
+  color: red;
 }
 
-.command-action-editor {
+.terminal-action-editor {
   padding: 10px 0 20px 0;
 }
-.x-app::-webkit-scrollbar {
+.terminal-app::-webkit-scrollbar {
   /*滚动条整体样式*/
   width: 10px;
   height: 3px;
-}
-.x-app::-webkit-scrollbar-thumb {
-  /*滚动条里面小方块样式*/
-  background-color: #929292;
-}
-.x-app::-webkit-scrollbar-track {
-  /*滚动条里面轨道样式*/
-  background: #282c34;
 }
 </style>

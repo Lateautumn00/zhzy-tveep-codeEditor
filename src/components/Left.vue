@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-11 09:51:32
+ * @LastEditTime: 2022-06-12 17:06:07
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -99,8 +99,10 @@ import { TreeList } from '@/types/tree'
     DialogComponent
   },
   props: {
-    openData: Object,
-    dataList: Object
+    openData: Object
+  },
+  emits: {
+    leftBrotherEvents: null
   }
 })
 export default class LeftComponent extends Vue {
@@ -114,12 +116,67 @@ export default class LeftComponent extends Vue {
   }
   openData: TreeList[] = []
   dataList: TreeList[] = []
+  localStorageName = 'menuOpenDirectory' //目录地址缓存名称
   pasteData = {
     type: 0, //1复制文件 0复制文件夹 3剪裁文件 4 剪裁文件夹
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
-
+  mounted() {
+    this.$nextTick(() => {
+      this.openDefaultDir()
+      //打开新文件夹
+      ;(window as any).$electron.ipcRenderer.on(
+        'menuOpenDirectory',
+        (event: any, result: string) => {
+          getDirContent(result)
+            .then((res: TreeList) => {
+              res.type = -1
+              this.dataList[0] = res
+              ;(window as any).localStorage.setItem(
+                this.localStorageName,
+                result
+              ) //将本次的文件夹目录写入缓存
+              this.$emit('leftBrotherEvents', {
+                name: 'closeFileAll',
+                value: {
+                  key: '',
+                  k: 0
+                }
+              })
+              this.$emit('leftBrotherEvents', {
+                name: 'updateDirPath',
+                value: result
+              })
+            })
+            .catch((error: any) => {
+              ;(this as any).$message.error(error)
+              console.error(error)
+            })
+        }
+      )
+    })
+  }
+  //打开上次的文件夹
+  openDefaultDir() {
+    //打开默认文件夹
+    const dirPath = (window as any).localStorage.getItem(this.localStorageName)
+    if (dirPath) {
+      getDirContent(dirPath)
+        .then((res: TreeList) => {
+          res.type = -1
+          this.dataList[0] = res
+          this.$emit('leftBrotherEvents', {
+            name: 'updateDirPath',
+            value: dirPath
+          })
+        })
+        .catch((error: any) => {
+          ;(window as any).localStorage.removeItem(this.localStorageName)
+          console.error(error)
+        })
+    }
+  }
   //打开文件
   handleNodeClick = (value: TreeList) => {
     if (value.type === 1) {

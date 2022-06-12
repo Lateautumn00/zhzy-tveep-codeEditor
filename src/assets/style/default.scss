@@ -1,0 +1,41 @@
+$bgc: #fff;
+//编辑器
+:deep(.ͼo) {
+  background-color: $bgc;
+}
+:deep(.ͼo .cm-activeLine) {
+  background-color: $bgc;
+}
+:deep(.ͼo .cm-gutters) {
+  background-color: $bgc;
+}
+:deep(.ͼ3 .cm-activeLineGutter) {
+  background-color: $bgc;
+}
+//编辑器滑动条样式****
+:deep(.cm-scroller::-webkit-scrollbar-thumb) {
+  /*滚动条里面小方块样式*/
+  background-color: $bgc;
+}
+:deep(.cm-scroller::-webkit-scrollbar-track) {
+  /*滚动条里面轨道样式*/
+  background: $bgc;
+}
+//终端
+.terminal-class {
+  background-color: $bgc;
+  color: #929292;
+}
+.terminal-action-contenteditable {
+  background-color: $bgc;
+  color: #b2b2b2;
+}
+//终端滑动条样式
+.terminal-app::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块样式*/
+  background-color: $bgc;
+}
+.terminal-app::-webkit-scrollbar-track {
+  /*滚动条里面轨道样式*/
+  background: $bgc;
+}
