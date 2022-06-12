@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-08 12:13:13
+ * @LastEditTime: 2022-06-12 11:09:37
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -45,8 +45,8 @@ export default class CodemirrorComponent extends Vue {
     key: '',
     label: '',
     src: '',
-    type: 0,
-    state: 1,
+    type: 1,
+    state: 0,
     children: []
   }
   extensions = [javascript(), oneDark]
