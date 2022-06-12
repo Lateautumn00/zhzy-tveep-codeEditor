@@ -2,13 +2,16 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-12 17:16:03
+ * @LastEditTime: 2022-06-12 18:14:48
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
   <div class="common-layout">
     <el-container>
+      <el-header>
+        <HeaderComponent />
+      </el-header>
       <el-container class="eContainer">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
           <LeftComponent
@@ -34,6 +37,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component'
+import HeaderComponent from '@/components/Header.vue'
 import LeftComponent from '@/components/Left.vue'
 import RightComponent from '@/components/Right.vue'
 import path from 'path'
@@ -47,6 +51,7 @@ import {
 } from '@/types/brotherEvents'
 @Options({
   components: {
+    HeaderComponent,
     LeftComponent,
     RightComponent
   }
@@ -303,7 +308,7 @@ export default class HomeComponent extends Vue {
   border-bottom: 1px #dcdfe6 solid;
 }
 .eContainer {
-  height: 100vh;
+  height: calc(100vh - 51px);
 }
 .el-divider--vertical {
   height: auto;

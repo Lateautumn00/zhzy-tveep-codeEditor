@@ -31,7 +31,7 @@ async function createWindow() {
     //backgroundColor: '#2c313a', //背景颜色
     title: '知乎者也', //标题
     // autoHideMenuBar: true, //是否隐藏菜单栏
-    // frame: false, //无边框   不使用无边框模式 需要屏蔽掉
+    frame: false, //无边框   不使用无边框模式 需要屏蔽掉
     movable: true,
     webPreferences: {
       nodeIntegration: process.env

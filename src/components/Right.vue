@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-12 16:59:27
+ * @LastEditTime: 2022-06-12 18:24:09
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -10,7 +10,7 @@
   <div
     class="divTop"
     :style="{
-      height: 'calc(100% - ' + asideHeight + 'px)',
+      height: 'calc(100% - 2px - ' + asideHeight + 'px)',
       overflow: 'hidden'
     }"
   >
