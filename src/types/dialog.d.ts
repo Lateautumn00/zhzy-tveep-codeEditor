@@ -8,6 +8,7 @@
  */
 //dialog弹框
 export interface DialogData {
+  tag: string
   title: string
   type: number
   src: string

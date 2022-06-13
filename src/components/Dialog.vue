@@ -33,6 +33,7 @@ import { DialogData } from '@/types/dialog'
 export default class DialogComponent extends Vue {
   dialogVisible = false
   data: any = {
+    tag: '',
     title: '',
     type: 1,
     src: '',

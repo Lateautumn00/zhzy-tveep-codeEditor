@@ -184,11 +184,18 @@ export default class LeftComponent extends Vue {
     }
   }
   //创建文件
-  createDialog(type: number, data: TreeList) {
+  createDialog(tag: string, type: number, data: TreeList) {
     this.xNodeKey = `${data.key}`
-    const title = type === 1 ? '创建文件' : type === 0 ? '创建文件夹' : '重命名'
-    const name = type === 2 || type === 3 ? data.label : ''
+    let name = ''
+    let title = ''
+    if (tag === 'create') {
+      title = type === 1 ? '创建文件' : '创建文件夹'
+    } else if (tag === 'basename') {
+      title = '重命名'
+      name = data.label
+    }
     ;(this.$refs.dialog as any).openDialog({
+      tag: tag,
       title,
       type: type,
       src: data.src,
@@ -197,7 +204,7 @@ export default class LeftComponent extends Vue {
   }
   //创建文件 文件夹
   operationFile(data: DialogData) {
-    if (data.type === 2 || data.type === 3) {
+    if (data.tag === 'basename') {
       //重命名
       renameFile(data.src, data.name)
         .then((res: any) => {
@@ -205,7 +212,7 @@ export default class LeftComponent extends Vue {
           const oldSrc = xNode.data.src
           xNode.data.label = data.name
           xNode.data.src = res
-          if (data.type === 3) {
+          if (data.type === 0) {
             getDirContent(res)
               .then((result: TreeList) => {
                 ;(this.$refs.tree as any).updateKeyChildren(

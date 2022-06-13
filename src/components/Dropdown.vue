@@ -11,8 +11,12 @@
     <slot />
     <template #dropdown>
       <el-dropdown-menu v-if="type === -1 || type === 0">
-        <el-dropdown-item @click="createDialog(1)">新建文件</el-dropdown-item>
-        <el-dropdown-item @click="createDialog(0)">新建文件夹</el-dropdown-item>
+        <el-dropdown-item @click="createDialog('create', 1)"
+          >新建文件</el-dropdown-item
+        >
+        <el-dropdown-item @click="createDialog('create', 0)"
+          >新建文件夹</el-dropdown-item
+        >
         <el-dropdown-item v-if="type === 0 ? true : false" @click="copyOrMove"
           >复制</el-dropdown-item
         >
@@ -27,7 +31,7 @@
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
           v-if="type === 0 ? true : false"
-          @click="createDialog(3)"
+          @click="createDialog('basename', 0)"
           >重命名</el-dropdown-item
         >
         <!-- <el-dropdown-item v-if="type === 0 ? true : false" @click="removeNode"
@@ -39,7 +43,9 @@
         <el-dropdown-item @click="copyOrMove">复制</el-dropdown-item>
         <!-- <el-dropdown-item>剪裁</el-dropdown-item> -->
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item @click="createDialog(2)">重命名</el-dropdown-item>
+        <el-dropdown-item @click="createDialog('basename', 1)"
+          >重命名</el-dropdown-item
+        >
         <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
       </el-dropdown-menu>
       <el-dropdown-menu v-if="type === 2">
@@ -100,7 +106,7 @@ import { TreeList } from '@/types/tree'
 export default class DropdownComponent extends Vue {
   trigger = 'click' //触发方式 click/focus/hover/contextmenu
   placement = 'bottom' //位置 top/top-start/top-end/bottom/bottom-start/bottom-end
-  type = 0 //0目录1文件
+  type = 0 //-2已打开文件树根节点 -1文件树根节点 0目录1文件2 tab
   size = 'default' //large / default / small
   dataList: TreeList = {
     key: '',
@@ -118,8 +124,8 @@ export default class DropdownComponent extends Vue {
   openFile() {
     this.$emit('handleNodeClick', this.dataList)
   }
-  createDialog(type: number) {
-    this.$emit('createDialog', type, this.dataList)
+  createDialog(tag: string, type: number) {
+    this.$emit('createDialog', tag, type, this.dataList)
   }
   //删除
   removeNode() {
