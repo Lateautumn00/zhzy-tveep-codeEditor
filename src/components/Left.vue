@@ -8,6 +8,7 @@
 -->
 <template>
   <div class="left">
+    <div class="title">已打开文件</div>
     <el-tree
       ref="tree"
       :data="openData"
@@ -15,7 +16,6 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
-      :default-expand-all="true"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -43,6 +43,7 @@
         </DropdownComponent>
       </template>
     </el-tree>
+    <div class="title">{{ title }}</div>
     <el-tree
       ref="tree"
       :data="dataList"
@@ -50,7 +51,8 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
-      :default-expanded-keys="defaultExpandedKeys"
+      :lazy="true"
+      :load="loadNode"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -82,7 +84,7 @@ import { Options, Vue } from 'vue-class-component'
 import DropdownComponent from '@/components/Dropdown.vue'
 import { DialogData } from '@/types/dialog'
 import {
-  getDirContent,
+  getDirContentOne,
   deleteFile,
   createFilePath,
   renameFile,
@@ -120,19 +122,16 @@ export default class LeftComponent extends Vue {
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
-  defaultExpandedKeys: string[] = [] //默认打开节点
+  title = ''
   mounted() {
     this.$nextTick(() => {
-      this.openDefaultDir()
       //打开新文件夹
       ;(window as any).$electron.ipcRenderer.on(
         'menuOpenDirectory',
         (event: any, result: string) => {
-          getDirContent(result)
+          getDirContentOne(result)
             .then((res: TreeList) => {
-              res.index = 2
-              this.dataList[0] = res
-              this.defaultExpandedKeys[0] = res.key
+              this.dataList = res.children
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
                 result
@@ -157,25 +156,25 @@ export default class LeftComponent extends Vue {
       )
     })
   }
-  //打开上次的文件夹
-  openDefaultDir() {
-    //打开默认文件夹
-    const dirPath = (window as any).localStorage.getItem(this.localStorageName)
-    if (dirPath) {
-      getDirContent(dirPath)
-        .then((res: TreeList) => {
-          res.index = 2
-          this.dataList[0] = res
-          this.defaultExpandedKeys[0] = res.key
-          this.$emit('leftBrotherEvents', {
-            name: 'updateDirPath',
-            value: dirPath
-          })
+  loadNode = async (node: any, resolve: any) => {
+    console.log(node)
+
+    if (node.level === 0) {
+      const dirPath = (window as any).localStorage.getItem(
+        this.localStorageName
+      )
+      if (dirPath) {
+        const data = await getDirContentOne(dirPath)
+        this.title = data.label
+        this.$emit('leftBrotherEvents', {
+          name: 'updateDirPath',
+          value: dirPath
         })
-        .catch((error: any) => {
-          ;(window as any).localStorage.removeItem(this.localStorageName)
-          console.error(error)
-        })
+        return resolve(data.children)
+      }
+    } else if (node.level > 0) {
+      const data = await getDirContentOne(node.data.src)
+      return resolve(data.children)
     }
   }
   //打开文件
@@ -215,7 +214,7 @@ export default class LeftComponent extends Vue {
           xNode.data.label = data.name
           xNode.data.src = res
           if (!data.type) {
-            getDirContent(res)
+            getDirContentOne(res)
               .then((result: TreeList) => {
                 ;(this.$refs.tree as any).updateKeyChildren(
                   this.xNodeKey,
@@ -304,7 +303,7 @@ export default class LeftComponent extends Vue {
     if (this.pasteData.src) {
       copyFiles(this.pasteData.type, this.pasteData.src, data.src)
         .then(() => {
-          getDirContent(data.src)
+          getDirContentOne(data.src)
             .then((result: TreeList) => {
               ;(this.$refs.tree as any).updateKeyChildren(
                 data.key,

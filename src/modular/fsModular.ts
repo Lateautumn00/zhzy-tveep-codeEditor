@@ -21,7 +21,7 @@ import path from 'path'
 import fs from 'fs'
 import { TreeList } from '@/types/tree'
 /**
- * 获取文件夹下所有子文件
+ * 获取文件夹下所有子文件   文件越多越满
  * @param _dir 文件夹路径
  * @returns
  */
@@ -62,6 +62,7 @@ export const getDirContent = async (_dir: string) => {
   }
   return list
 }
+//获取一层文件
 export const getDirContentOne = async (_dir: string) => {
   const list: TreeList = {
     index: 3,

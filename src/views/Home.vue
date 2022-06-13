@@ -25,7 +25,7 @@
           <RightComponent
             ref="rightRef"
             @rightBrotherEvents="rightBrotherEvents"
-            :tabs="openData[0].children"
+            :tabs="openData"
             :tabValue="tabsValue"
             :dirPath="dirPath"
           />
@@ -63,18 +63,7 @@ export default class HomeComponent extends Vue {
   dirPath = '' //当前文件夹路径
   tabsValue = '0' //当前展示的标签
   openStorageName = 'fileList' //一打开文件缓存名称
-
-  openData: TreeList[] = [
-    {
-      index: 1,
-      key: '-2',
-      label: '已打开文件',
-      src: '',
-      isLeaf: false,
-      state: 0,
-      children: []
-    }
-  ] //已打开文件树
+  openData: TreeList[] = [] //已打开文件树
   mounted() {
     this.$nextTick(() => {
       //拖动左侧栏
@@ -109,7 +98,7 @@ export default class HomeComponent extends Vue {
     )
     if (FilesLocal) {
       const data = JSON.parse(FilesLocal)
-      this.openData[0].children = data.tabs
+      this.openData = data.tabs
       this.tabsValue = data.tabsValue
     }
   }
@@ -144,16 +133,14 @@ export default class HomeComponent extends Vue {
   addTab = (data: TreeList) => {
     //判断文件是否已经打开
     if (data) {
-      const value = this.openData[0].children.filter(
-        (tab: any) => tab.src === data.src
-      )
+      const value = this.openData.filter((tab: any) => tab.src === data.src)
       if (value.length) {
         this.tabsValue = `${value[0].key}`
         this.updateLocalStorage()
         return false
       }
     }
-    this.openData[0].children.push(data)
+    this.openData.push(data)
     this.tabsValue = `${data.key}`
     this.updateLocalStorage()
   }
@@ -162,19 +149,17 @@ export default class HomeComponent extends Vue {
     let state = 0 //是否有未保存的
     if (k === 0) {
       //全部
-      const data = this.openData[0].children.filter(
-        (value: any) => value.state === 1
-      ) //未保存的
+      const data = this.openData.filter((value: any) => value.state === 1) //未保存的
       state = data.length
     } else if (k === 1) {
       //其它
-      const data = this.openData[0].children.filter(
+      const data = this.openData.filter(
         (value: any) => value.state === 1 && value.key !== key
       ) //未保存的
       state = data.length
     } else if (k === 3) {
       //自己
-      const data = this.openData[0].children.filter(
+      const data = this.openData.filter(
         (value: any) => value.key === key && value.state === 1
       )
       state = data.length
@@ -202,37 +187,31 @@ export default class HomeComponent extends Vue {
   closeFileAll(key: string, k: number) {
     if (k === 0) {
       // 关闭全部已打开文件
-      this.openData[0].children = []
+      this.openData = []
       this.tabsValue = '0'
     } else if (k === 1) {
       //关闭其它
-      this.openData[0].children = this.openData[0].children.filter(
-        (value: any) => value.key === key
-      )
-      this.tabsValue = this.openData[0].children[0].key
+      this.openData = this.openData.filter((value: any) => value.key === key)
+      this.tabsValue = this.openData[0].key
     } else if (k === 2) {
       //关闭已保存
-      const tabs = this.openData[0].children
-      this.openData[0].children = tabs.filter((value: any) => value.state === 1) //未保存的
+      const tabs = this.openData
+      this.openData = tabs.filter((value: any) => value.state === 1) //未保存的
       if (key === this.tabsValue)
-        this.tabsValue = this.openData[0].children.length
-          ? this.openData[0].children[0].key
-          : '0'
+        this.tabsValue = this.openData.length ? this.openData[0].key : '0'
     } else if (k === 3) {
       //关闭当前tab
-      const tabs = this.openData[0].children
-      this.openData[0].children = tabs.filter((value: any) => value.key !== key)
+      const tabs = this.openData
+      this.openData = tabs.filter((value: any) => value.key !== key)
       if (key === this.tabsValue)
-        this.tabsValue = this.openData[0].children.length
-          ? this.openData[0].children[0].key
-          : '0'
+        this.tabsValue = this.openData.length ? this.openData[0].key : '0'
     }
     this.updateLocalStorage()
   }
   //更新tab
   updateTab = (data: any) => {
     if (data.type) {
-      this.openData[0].children.forEach((tab: any) => {
+      this.openData.forEach((tab: any) => {
         if (tab.key === data.xNode.key) {
           tab.src = data.xNode.src
           tab.label = data.xNode.label
@@ -242,7 +221,7 @@ export default class HomeComponent extends Vue {
     } else {
       let num = 0
       const len = data.oldSrc.length
-      this.openData[0].children.forEach((tab: any) => {
+      this.openData.forEach((tab: any) => {
         if (tab.src.substr(0, len) === data.oldSrc) {
           tab.src = data.xNode.src + tab.src.substr(len)
           ++num
@@ -253,7 +232,7 @@ export default class HomeComponent extends Vue {
   }
   //更新编辑状态
   updateFileEditState(key: string, state: number) {
-    this.openData[0].children.forEach((tab: any) => {
+    this.openData.forEach((tab: any) => {
       if (tab.key === key) tab.state = state
     })
     this.updateLocalStorage()
@@ -262,7 +241,7 @@ export default class HomeComponent extends Vue {
   updateLocalStorage = () => {
     const data: EventsBrother = {
       tabsValue: this.tabsValue,
-      tabs: this.openData[0].children
+      tabs: this.openData
     }
     ;(window as any).localStorage.setItem(
       this.openStorageName,
