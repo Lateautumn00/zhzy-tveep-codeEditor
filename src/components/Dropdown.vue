@@ -11,10 +11,10 @@
     <slot />
     <template #dropdown>
       <el-dropdown-menu v-if="index === 2 || index === 3">
-        <el-dropdown-item @click="createDialog('create', 1)"
+        <el-dropdown-item @click="createDialog('create', true)"
           >新建文件</el-dropdown-item
         >
-        <el-dropdown-item @click="createDialog('create', 0)"
+        <el-dropdown-item @click="createDialog('create', false)"
           >新建文件夹</el-dropdown-item
         >
         <el-dropdown-item v-if="index === 3 ? true : false" @click="copyOrMove"
@@ -31,7 +31,7 @@
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
         <el-dropdown-item
           v-if="index === 3 ? true : false"
-          @click="createDialog('basename', 0)"
+          @click="createDialog('basename', false)"
           >重命名</el-dropdown-item
         >
         <!-- <el-dropdown-item v-if="index === 3 ? true : false" @click="removeNode"
@@ -43,7 +43,7 @@
         <el-dropdown-item @click="copyOrMove">复制</el-dropdown-item>
         <!-- <el-dropdown-item>剪裁</el-dropdown-item> -->
         <el-dropdown-item @click="copyFile">复制路径</el-dropdown-item>
-        <el-dropdown-item @click="createDialog('basename', 1)"
+        <el-dropdown-item @click="createDialog('basename', true)"
           >重命名</el-dropdown-item
         >
         <el-dropdown-item @click="removeNode">删除</el-dropdown-item>
@@ -113,7 +113,7 @@ export default class DropdownComponent extends Vue {
     key: '',
     label: '',
     src: '',
-    type: 0,
+    isLeaf: false,
     state: 1,
     children: []
   }
@@ -125,7 +125,7 @@ export default class DropdownComponent extends Vue {
   openFile() {
     this.$emit('handleNodeClick', this.dataList)
   }
-  createDialog(tag: string, type: number) {
+  createDialog(tag: string, type: boolean) {
     this.$emit('createDialog', tag, type, this.dataList)
   }
   //删除

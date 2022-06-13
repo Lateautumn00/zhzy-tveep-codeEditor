@@ -70,7 +70,7 @@ export default class HomeComponent extends Vue {
       key: '-2',
       label: '已打开文件',
       src: '',
-      type: 0,
+      isLeaf: false,
       state: 0,
       children: []
     }
@@ -92,7 +92,7 @@ export default class HomeComponent extends Vue {
             key: `${stat.ino}`,
             label: path.basename(result),
             src: result,
-            type: 1,
+            isLeaf: true,
             state: 0,
             children: []
           }
@@ -231,7 +231,7 @@ export default class HomeComponent extends Vue {
   }
   //更新tab
   updateTab = (data: any) => {
-    if (data.type === 2) {
+    if (data.type) {
       this.openData[0].children.forEach((tab: any) => {
         if (tab.key === data.xNode.key) {
           tab.src = data.xNode.src
@@ -239,7 +239,7 @@ export default class HomeComponent extends Vue {
           this.updateLocalStorage()
         }
       })
-    } else if (data.type === 3) {
+    } else {
       let num = 0
       const len = data.oldSrc.length
       this.openData[0].children.forEach((tab: any) => {

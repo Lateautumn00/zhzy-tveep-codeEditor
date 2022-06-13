@@ -32,12 +32,10 @@
           @paste="paste"
         >
           <span class="custom-tree-node">
-            <el-icon v-if="data.state === 1 && data.type === 1"
-              ><Edit
-            /></el-icon>
+            <el-icon v-if="data.state === 1 && data.isLeaf"><Edit /></el-icon>
             <el-icon
               @click.stop="closeTab(data)"
-              v-if="data.state === 0 && data.type === 1"
+              v-if="data.state === 0 && data.isLeaf"
               ><Close
             /></el-icon>
             <span>{{ data.label }}</span>
@@ -110,14 +108,14 @@ export default class LeftComponent extends Vue {
     label: 'label',
     src: 'src',
     children: 'children',
-    type: 'type',
+    isLeaf: 'isLeaf',
     state: 'state' //状态 0 未有修改 1 有修改 1
   }
   openData: TreeList[] = []
   dataList: TreeList[] = []
   localStorageName = 'menuOpenDirectory' //目录地址缓存名称
   pasteData = {
-    type: 0, //1复制文件 0复制文件夹 3剪裁文件 4 剪裁文件夹
+    type: false, //true复制文件 false复制文件夹
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
@@ -178,18 +176,18 @@ export default class LeftComponent extends Vue {
   }
   //打开文件
   handleNodeClick = (value: TreeList) => {
-    if (value.type === 1) {
+    if (value.isLeaf) {
       //去读取文件
       this.$emit('leftBrotherEvents', { name: 'addTab', value: value })
     }
   }
   //创建文件
-  createDialog(tag: string, type: number, data: TreeList) {
+  createDialog(tag: string, type: boolean, data: TreeList) {
     this.xNodeKey = `${data.key}`
     let name = ''
     let title = ''
     if (tag === 'create') {
-      title = type === 1 ? '创建文件' : '创建文件夹'
+      title = type ? '创建文件' : '创建文件夹'
     } else if (tag === 'basename') {
       title = '重命名'
       name = data.label
@@ -212,7 +210,7 @@ export default class LeftComponent extends Vue {
           const oldSrc = xNode.data.src
           xNode.data.label = data.name
           xNode.data.src = res
-          if (data.type === 0) {
+          if (!data.type) {
             getDirContent(res)
               .then((result: TreeList) => {
                 ;(this.$refs.tree as any).updateKeyChildren(
@@ -243,17 +241,17 @@ export default class LeftComponent extends Vue {
         .then(async (res: any) => {
           const stat = await getStat(res)
           const v = {
-            index: data.type === 0 ? 3 : 4,
+            index: data.type ? 4 : 3,
             key: `${stat.ino}`,
             label: data.name,
             src: res,
-            type: data.type,
+            isLeaf: data.type,
             state: 0,
             children: []
           }
           const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
           ;(this.$refs.tree as any).append(v, xNode)
-          if (data.type === 1) this.handleNodeClick(v)
+          if (data.type) this.handleNodeClick(v)
         })
         .catch((error: any) => {
           console.error(error)
@@ -293,7 +291,7 @@ export default class LeftComponent extends Vue {
   //复制或剪裁
   copyOrMove(data: TreeList) {
     this.pasteData = {
-      type: data.type,
+      type: data.isLeaf,
       src: data.src
     }
   }

@@ -10,7 +10,7 @@
 export interface DialogData {
   tag: string
   title: string
-  type: number
+  type: boolean
   src: string
   name: string
 }

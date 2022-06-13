@@ -50,7 +50,7 @@ export default class CodemirrorComponent extends Vue {
     key: '',
     label: '',
     src: '',
-    type: 1,
+    isLeaf: true,
     state: 0,
     children: []
   }

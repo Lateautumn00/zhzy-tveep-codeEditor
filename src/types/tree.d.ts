@@ -12,7 +12,7 @@ export interface TreeList {
   key: string
   label: string
   src: string
-  type: number //是否为文件  0 文件夹 1文件
+  isLeaf: boolean //是否为文件  false 文件夹 true文件
   state: number //是否编辑状态 0 否 1 是
   children: TreeList[]
 }

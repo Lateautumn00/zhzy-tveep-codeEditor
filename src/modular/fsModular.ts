@@ -31,7 +31,7 @@ export const getDirContent = async (_dir: string) => {
     key: '-1',
     label: path.basename(_dir),
     src: _dir,
-    type: 0, //0文件夹1 文件
+    isLeaf: false,
     state: 0,
     children: []
   }
@@ -54,7 +54,7 @@ export const getDirContent = async (_dir: string) => {
         key: `${stats.ino}`,
         label: value,
         src: newDir,
-        type: 1,
+        isLeaf: true,
         state: 0,
         children: []
       })
@@ -68,7 +68,7 @@ export const getDirContentOne = async (_dir: string) => {
     key: '-1',
     label: path.basename(_dir),
     src: _dir,
-    type: 0, //0文件夹1 文件
+    isLeaf: false, //0文件夹1 文件
     state: 0,
     children: []
   }
@@ -84,7 +84,7 @@ export const getDirContentOne = async (_dir: string) => {
         key: `${stats.ino}`,
         label: value,
         src: newDir,
-        type: 0,
+        isLeaf: false,
         state: 0,
         children: []
       })
@@ -96,7 +96,7 @@ export const getDirContentOne = async (_dir: string) => {
         key: `${stats.ino}`,
         label: value,
         src: newDir,
-        type: 1,
+        isLeaf: true,
         state: 0,
         children: []
       })
@@ -118,13 +118,13 @@ export const getFileContent = async (fileDir: string) => {
 }
 //目录下创建文件 文件夹
 export const createFilePath = async (
-  type: number,
+  type: boolean,
   fileDir: string,
   name: string
 ) => {
   if (!fs.existsSync(fileDir)) throw new Error('源文件不存在') //如果源文件不存在 z
   const newPath = path.join(fileDir, name)
-  type === 0 ? await mkdir(newPath) : await writeFile(newPath, ' ')
+  !type ? await mkdir(newPath) : await writeFile(newPath, ' ')
   return newPath
 }
 //重命名
@@ -171,7 +171,7 @@ export const deleteDir = async (fileDir: string) => {
  * target 目标地址
  */
 export const copyFiles = async (
-  type: number,
+  type: boolean,
   source: string,
   target: string
 ) => {
@@ -179,7 +179,7 @@ export const copyFiles = async (
   const name = path.basename(source)
   const targetDir = path.join(target, name)
   if (fs.existsSync(targetDir)) throw new Error('新文件已存在') //如果新文件已存在
-  type === 0
+  !type
     ? await copyDirectory(source, targetDir)
     : await copyFile(source, targetDir, 1)
   return targetDir
