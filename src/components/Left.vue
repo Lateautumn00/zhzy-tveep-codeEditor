@@ -20,7 +20,7 @@
       <template #default="{ data }">
         <DropdownComponent
           trigger="contextmenu"
-          :type="data.type"
+          :index="data.index"
           placement="bottom"
           size="large"
           :dataList="data"
@@ -56,7 +56,7 @@
       <template #default="{ data }">
         <DropdownComponent
           trigger="contextmenu"
-          :type="data.type"
+          :index="data.index"
           placement="bottom"
           size="large"
           :dataList="data"
@@ -130,7 +130,7 @@ export default class LeftComponent extends Vue {
         (event: any, result: string) => {
           getDirContent(result)
             .then((res: TreeList) => {
-              res.type = -1
+              res.index = 2
               this.dataList[0] = res
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
@@ -163,7 +163,7 @@ export default class LeftComponent extends Vue {
     if (dirPath) {
       getDirContent(dirPath)
         .then((res: TreeList) => {
-          res.type = -1
+          res.index = 2
           this.dataList[0] = res
           this.$emit('leftBrotherEvents', {
             name: 'updateDirPath',
@@ -243,6 +243,7 @@ export default class LeftComponent extends Vue {
         .then(async (res: any) => {
           const stat = await getStat(res)
           const v = {
+            index: data.type === 0 ? 3 : 4,
             key: `${stat.ino}`,
             label: data.name,
             src: res,

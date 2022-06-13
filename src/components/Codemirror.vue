@@ -46,6 +46,7 @@ import { TreeList } from '@/types/tree'
 export default class CodemirrorComponent extends Vue {
   code = ''
   dataList: TreeList = {
+    index: 4,
     key: '',
     label: '',
     src: '',

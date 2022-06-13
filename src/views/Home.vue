@@ -66,10 +66,11 @@ export default class HomeComponent extends Vue {
 
   openData: TreeList[] = [
     {
+      index: 1,
       key: '-2',
       label: '已打开文件',
       src: '',
-      type: -2,
+      type: 0,
       state: 0,
       children: []
     }
@@ -87,6 +88,7 @@ export default class HomeComponent extends Vue {
         async (event: any, result: string) => {
           const stat = await getStat(result)
           const tab: TreeList = {
+            index: 4,
             key: `${stat.ino}`,
             label: path.basename(result),
             src: result,

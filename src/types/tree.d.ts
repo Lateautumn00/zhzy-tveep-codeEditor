@@ -8,6 +8,7 @@
  */
 //左侧 侧边栏树
 export interface TreeList {
+  index: number //1已打开文件树根节点 2文件树根节点 3目录 4文件
   key: string
   label: string
   src: string

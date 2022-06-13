@@ -32,7 +32,7 @@
           <el-tooltip class="box-item" effect="light" :content="item.src">
             <DropdownComponent
               trigger="contextmenu"
-              :type="2"
+              :index="5"
               placement="bottom"
               size="large"
               :dataList="item"

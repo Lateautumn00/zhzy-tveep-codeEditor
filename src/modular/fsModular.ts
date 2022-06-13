@@ -27,6 +27,7 @@ import { TreeList } from '@/types/tree'
  */
 export const getDirContent = async (_dir: string) => {
   const list: TreeList = {
+    index: 3,
     key: '-1',
     label: path.basename(_dir),
     src: _dir,
@@ -49,6 +50,7 @@ export const getDirContent = async (_dir: string) => {
     } else if (stats.isFile()) {
       //如果是文件
       list.children.push({
+        index: 4,
         key: `${stats.ino}`,
         label: value,
         src: newDir,
@@ -62,6 +64,7 @@ export const getDirContent = async (_dir: string) => {
 }
 export const getDirContentOne = async (_dir: string) => {
   const list: TreeList = {
+    index: 3,
     key: '-1',
     label: path.basename(_dir),
     src: _dir,
@@ -77,6 +80,7 @@ export const getDirContentOne = async (_dir: string) => {
     if (stats.isDirectory()) {
       //如果是文件夹
       list.children.splice(dirNum, 0, {
+        index: 3,
         key: `${stats.ino}`,
         label: value,
         src: newDir,
@@ -88,6 +92,7 @@ export const getDirContentOne = async (_dir: string) => {
     } else if (stats.isFile()) {
       //如果是文件
       list.children.push({
+        index: 4,
         key: `${stats.ino}`,
         label: value,
         src: newDir,
