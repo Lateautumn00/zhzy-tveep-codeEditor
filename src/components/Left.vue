@@ -50,6 +50,7 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
+      :default-expanded-keys="defaultExpandedKeys"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -119,6 +120,7 @@ export default class LeftComponent extends Vue {
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
+  defaultExpandedKeys: string[] = [] //默认打开节点
   mounted() {
     this.$nextTick(() => {
       this.openDefaultDir()
@@ -130,6 +132,7 @@ export default class LeftComponent extends Vue {
             .then((res: TreeList) => {
               res.index = 2
               this.dataList[0] = res
+              this.defaultExpandedKeys[0] = res.key
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
                 result
@@ -163,6 +166,7 @@ export default class LeftComponent extends Vue {
         .then((res: TreeList) => {
           res.index = 2
           this.dataList[0] = res
+          this.defaultExpandedKeys[0] = res.key
           this.$emit('leftBrotherEvents', {
             name: 'updateDirPath',
             value: dirPath
