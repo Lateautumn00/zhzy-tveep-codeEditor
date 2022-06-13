@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-12 17:41:54
+ * @LastEditTime: 2022-06-13 11:12:15
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -106,7 +106,7 @@ export default class CodemirrorComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import '@/assets/style/dark.scss';
+@import '@/assets/style/default.scss';
 :deep(.cm-scroller::-webkit-scrollbar) {
   /*滚动条整体样式*/
   width: 10px;

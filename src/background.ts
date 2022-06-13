@@ -10,7 +10,7 @@ import {
 import { upgradeHandle } from '@/modular/electron/upgrade'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { ipcMainHandle } from '@/modular/electron/ipcMain'
-//import { menu } from '@/modular/electron/menu'
+import { menu } from '@/modular/electron/menu'
 import path from 'path'
 //import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -31,7 +31,7 @@ async function createWindow() {
     //transparent: true, //窗口透明  设置后还原窗口win.restore()无效
     //backgroundColor: '#2c313a', //背景颜色
     title: '知乎者也', //标题
-    // autoHideMenuBar: true, //是否隐藏菜单栏
+    autoHideMenuBar: true, //是否隐藏菜单栏
     frame: false, //无边框   不使用无边框模式 需要屏蔽掉
     movable: true,
     webPreferences: {
@@ -57,7 +57,7 @@ async function createWindow() {
   }
 
   //设置自定义菜单
-  //menu(win, Menu, dialog)
+  menu(win, Menu, dialog)
   // 当应用所有窗口关闭要做的事情
   win.on('closed', () => {
     win = null
@@ -95,9 +95,9 @@ app.on('ready', async () => {
   //   }
   if (win === null) createWindow()
   //注册全局快捷键
-  globalShortcut.register('Ctrl+S', () => {
-    win.webContents.send('menuPreservation') //保存当前
-  })
+  //   globalShortcut.register('Ctrl+S', () => {
+  //     win.webContents.send('menuPreservation') //保存当前
+  //   })
 })
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

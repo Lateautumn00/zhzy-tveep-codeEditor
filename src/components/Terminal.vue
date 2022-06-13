@@ -2,7 +2,7 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-12 18:06:54
+ * @LastEditTime: 2022-06-13 11:39:51
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -36,7 +36,7 @@
         class="terminal-action terminal-action-editor"
         @mouseup="timeoutFocusInput"
       >
-        <el-icon><Position color="yellow" /></el-icon>
+        <el-icon><Position color="green" /></el-icon>
         <!-- 执行地址 -->
         <span class="terminal-action-path">{{ dirPath }} $</span>
         <!-- 命令行输入 -->
@@ -76,15 +76,16 @@ export default class TerminalComponent extends Vue {
   command = '' // 用户输入命令
   handleCommand = '' // 经过处理的用户命令 比如清除首尾空格、添加获取路径的命令
   commandMsg: any = [] // 当前命令信息
-  commandArr: any = [] // 过往命令行输出保存
+  commandArr: any = [] // 过往命令输出
   isActive = true // 终端是否聚焦
   action = false // 是否正在执行命令
   inputDom: any // 输入框dom
-  addPath = '' // 不同系统 获取路径的命令 mac是pwd window是chdir
+  path = '' // 不同系统 获取路径的命令 mac是pwd window是chdir
   mounted() {
     this.addGetPath()
     this.inputDom = document.querySelector('.terminal-action-contenteditable')
   }
+  //切换文件夹 清空历史
   initHandler() {
     this.isClear('clear')
   }
@@ -92,7 +93,7 @@ export default class TerminalComponent extends Vue {
   keyFn(e: any) {
     if (e.keyCode === 13) {
       this.actionCommand()
-      e.preventDefault()
+      e.preventDefault() //阻止
     }
   }
   // 执行命令
@@ -107,13 +108,13 @@ export default class TerminalComponent extends Vue {
       shell: true, // 使用shell命令
       env: process.env
     })
-    // 监听命令行执行过程的输出
+    // 监听命令行执行输出
     ls.stdout.on('data', (data) => {
       const value = data.toString().trim()
       this.commandMsg.push(value)
       console.log(`stdout: ${value}`)
     })
-    // 错误或详细状态进度报告 比如 git push、 git clone
+    // 监听错误
     ls.stderr.on('data', (data) => {
       data = iconvLite.decode(data, 'cp936')
       this.commandMsg.push(`stderr: ${data}`)
@@ -124,45 +125,43 @@ export default class TerminalComponent extends Vue {
   }
   // 执行完毕 保存信息 更新状态
   closeCommandAction(code: any) {
-    // 保存执行信息
     this.commandArr.push({
+      key: '',
       code, // 是否执行成功
-      dirPath: this.dirPath, // 执行路径
-      command: this.command, // 执行命令
-      commandMsg: this.commandMsg.join('\r') // 执行信息
-    })
+      dirPath: this.dirPath, // 路径
+      command: this.command, // 命令
+      commandMsg: this.commandMsg.join('\r') // 返回信息
+    }) // 保存执行信息
     // 清空
     this.updatePath(this.handleCommand, code)
     this.commandFinish()
-    console.log(
-      `子进程退出，退出码 ${code}, 运行${code === 0 ? '成功' : '失败'}`
-    )
+    console.log(`退出码 ${code}, ${code === 0 ? '成功' : '失败'}`)
   }
   // cd命令处理
   cdCommand(command: any) {
     let pathCommand = ''
     if (this.command.startsWith('cd ')) {
-      pathCommand = this.addPath
+      pathCommand = this.path
     } else if (this.command.indexOf(' cd ') !== -1) {
-      pathCommand = this.addPath
+      pathCommand = this.path
     }
     return command + pathCommand
-    // 目录自动联想...等很多细节功能 可以做但没必要2
+  }
+
+  // 获取不同系统下的路径
+  addGetPath() {
+    const systemName = this.getOsName()
+    if (systemName === 'Mac') {
+      this.path = ' && pwd'
+    } else if (systemName === 'Windows') {
+      this.path = ' && chdir'
+    }
   }
   // 清空历史
   isClear(command: any) {
     if (command === 'clear') {
       this.commandArr = []
       this.commandFinish()
-    }
-  }
-  // 获取不同系统下的路径
-  addGetPath() {
-    const systemName = this.getOsInfo()
-    if (systemName === 'Mac') {
-      this.addPath = ' && pwd'
-    } else if (systemName === 'Windows') {
-      this.addPath = ' && chdir'
     }
   }
   // 命令执行完毕 重置参数
@@ -177,10 +176,10 @@ export default class TerminalComponent extends Vue {
       this.scrollBottom()
     })
   }
-  // 判断命令是否添加过addPath
+  // 判断命令是否添加过path
   updatePath(command: any, code: any) {
     if (code !== 0) return
-    const isPathChange = command.indexOf(this.addPath) !== -1
+    const isPathChange = command.indexOf(this.path) !== -1
     if (isPathChange) {
       this.dirPath = this.commandMsg[this.commandMsg.length - 1]
     }
@@ -193,12 +192,12 @@ export default class TerminalComponent extends Vue {
   timeoutFocusInput() {
     setTimeout(() => {
       this.focusInput()
-    }, 200)
+    }, 150)
   }
   // 聚焦输入
   focusInput() {
     this.inputDom.focus() //解决ff不获取焦点无法定位问题
-    var range: any = window.getSelection() //创建range
+    let range: any = window.getSelection() //创建range
     range.selectAllChildren(this.inputDom) //range 选择obj下所有子内容
     range.collapseToEnd() //光标移至最后
     this.inputDom.focus()
@@ -209,38 +208,38 @@ export default class TerminalComponent extends Vue {
     dom.scrollTop = dom.scrollHeight // 滚动高度
     dom = null
   }
-  // 获取操作系统信息
-  getOsInfo() {
-    var userAgent = navigator.userAgent.toLowerCase()
-    var name = 'Unknown'
+  // 获取操作系统
+  getOsName() {
+    const userAgent = navigator.userAgent.toLowerCase()
+    let systemName = ''
     if (userAgent.indexOf('win') > -1) {
-      name = 'Windows'
+      systemName = 'Windows'
     } else if (userAgent.indexOf('mac') > -1) {
-      name = 'Mac'
+      systemName = 'Mac'
     } else if (
       userAgent.indexOf('x11') > -1 ||
       userAgent.indexOf('unix') > -1 ||
       userAgent.indexOf('sunname') > -1 ||
       userAgent.indexOf('bsd') > -1
     ) {
-      name = 'Unix'
+      systemName = 'Unix'
     } else if (userAgent.indexOf('iphone') > -1) {
-      name = 'iPhone'
+      systemName = 'iPhone'
     } else if (userAgent.indexOf('linux') > -1) {
       if (userAgent.indexOf('android') > -1) {
-        name = 'Android'
+        systemName = 'Android'
       } else {
-        name = 'Linux'
+        systemName = 'Linux'
       }
     }
-    return name
+    return systemName
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import '@/assets/style/dark.scss';
+@import '@/assets/style/default.scss';
 .terminal-app {
   height: 100%;
   max-height: 100%;

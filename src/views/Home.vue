@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-12 19:58:30
+ * @LastEditTime: 2022-06-13 10:17:49
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -298,7 +298,7 @@ export default class HomeComponent extends Vue {
 }
 </script>
 <style scoped lang="scss">
-@import '@/assets/style/dark.scss';
+@import '@/assets/style/default.scss';
 .el-header {
   -webkit-app-region: drag; /**实现拖拽窗口 */
   --el-header-height: 50px;
