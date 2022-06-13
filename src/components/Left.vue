@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-12 17:06:07
+ * @LastEditTime: 2022-06-13 14:35:02
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -52,7 +52,6 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
-      :default-expand-all="true"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -112,7 +111,7 @@ export default class LeftComponent extends Vue {
     src: 'src',
     children: 'children',
     type: 'type',
-    state: 0 //状态 0 未有修改 1 有修改 1
+    state: 'state' //状态 0 未有修改 1 有修改 1
   }
   openData: TreeList[] = []
   dataList: TreeList[] = []
@@ -201,14 +200,14 @@ export default class LeftComponent extends Vue {
     if (data.type === 2 || data.type === 3) {
       //重命名
       renameFile(data.src, data.name)
-        .then(async (res: any) => {
+        .then((res: any) => {
           const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
           const oldSrc = xNode.data.src
           xNode.data.label = data.name
           xNode.data.src = res
           if (data.type === 3) {
             getDirContent(res)
-              .then(async (result: TreeList) => {
+              .then((result: TreeList) => {
                 ;(this.$refs.tree as any).updateKeyChildren(
                   this.xNodeKey,
                   result.children
@@ -228,7 +227,7 @@ export default class LeftComponent extends Vue {
           }) //通知right
         })
         .catch((error: any) => {
-          console.log(error)
+          console.error(error)
           ;(this as any).$message.error('错误')
         })
     } else {
@@ -249,7 +248,7 @@ export default class LeftComponent extends Vue {
           if (data.type === 1) this.handleNodeClick(v)
         })
         .catch((error: any) => {
-          console.log(error)
+          console.error(error)
           ;(this as any).$message.error('错误')
         })
     }
@@ -294,9 +293,9 @@ export default class LeftComponent extends Vue {
   paste(data: TreeList) {
     if (this.pasteData.src) {
       copyFiles(this.pasteData.type, this.pasteData.src, data.src)
-        .then(async () => {
+        .then(() => {
           getDirContent(data.src)
-            .then(async (result: TreeList) => {
+            .then((result: TreeList) => {
               ;(this.$refs.tree as any).updateKeyChildren(
                 data.key,
                 result.children
