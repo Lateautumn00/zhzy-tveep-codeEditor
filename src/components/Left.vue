@@ -2,13 +2,13 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 11:26:36
+ * @LastEditTime: 2022-06-14 11:48:45
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
   <div class="left">
-    <div class="title">已打开文件</div>
+    <div class="title"><span>已打开文件</span></div>
     <el-tree
       ref="tree"
       :data="openData"
@@ -41,20 +41,22 @@
         </DropdownComponent>
       </template>
     </el-tree>
-    <DropdownComponent
-      trigger="contextmenu"
-      :index="2"
-      placement="bottom"
-      size="large"
-      :dataList="titleData"
-      :pasteData="pasteData"
-      @handleNodeClick="handleNodeClick"
-      @createDialog="createDialog"
-      @copyOrMove="copyOrMove"
-      @paste="paste"
-    >
-      <div class="title">{{ titleData.label }}</div>
-    </DropdownComponent>
+    <div class="title">
+      <DropdownComponent
+        trigger="contextmenu"
+        :index="2"
+        placement="bottom"
+        size="large"
+        :dataList="titleData"
+        :pasteData="pasteData"
+        @handleNodeClick="handleNodeClick"
+        @createDialog="createDialog"
+        @copyOrMove="copyOrMove"
+        @paste="paste"
+      >
+        <span>{{ titleData.label }}</span>
+      </DropdownComponent>
+    </div>
     <el-tree
       ref="tree"
       :data="dataList"
@@ -178,7 +180,7 @@ export default class LeftComponent extends Vue {
     this.titleData = {
       index: 2,
       key: data.key,
-      label: data.label,
+      label: data.label.toUpperCase(),
       src: data.src,
       children: [],
       isLeaf: data.isLeaf,
@@ -361,5 +363,17 @@ export default class LeftComponent extends Vue {
 .left {
   height: 100%;
   overflow-y: auto;
+}
+.title {
+  background: #ecf5ff;
+  height: 25px;
+  line-height: 25px;
+  padding-left: 5px;
+  > span {
+    font-weight: bold;
+  }
+  :deep(.el-dropdown) {
+    font-weight: bold;
+  }
 }
 </style>
