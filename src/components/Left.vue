@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 17:14:38
+ * @LastEditTime: 2022-06-14 17:21:10
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -157,7 +157,7 @@ export default class LeftComponent extends Vue {
   } //是否可粘贴
   xNodeKey = '' //当前操作的
   tabsValueWatch(newValue: any, oldValue: any) {
-    console.log('监听到...', newValue, oldValue)
+    //console.log('监听到...', newValue, oldValue)
     if (newValue !== oldValue) {
       const xNode = (this.$refs.tree as any).getNode(newValue)
       ;(this.$refs.tree as any).setCurrentNode(xNode, true)
