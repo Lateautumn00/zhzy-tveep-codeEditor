@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 16:33:54
+ * @LastEditTime: 2022-06-14 17:14:38
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -63,6 +63,7 @@
       highlight-current
       @node-click="handleNodeClick"
       node-key="key"
+      :check-on-click-node="true"
       :lazy="true"
       :load="loadNode"
     >
@@ -100,7 +101,6 @@ import {
   deleteFile,
   createFilePath,
   renameFile,
-  getStat,
   copyFiles,
   moveFile
 } from '@/modular/fsModular'
@@ -112,7 +112,15 @@ import { TreeList } from '@/types/tree'
     DialogComponent
   },
   props: {
-    openData: Object
+    openData: Object,
+    tabValue: String
+  },
+  watch: {
+    tabValue: [
+      {
+        handler: 'tabsValueWatch'
+      }
+    ]
   },
   emits: {
     leftBrotherEvents: null
@@ -128,6 +136,7 @@ export default class LeftComponent extends Vue {
     isLeaf: 'isLeaf',
     state: 'state' //状态 0 未有修改 1 有修改 1
   }
+  //tabsValue = '0'
   openData: TreeList[] = []
   dataList: TreeList[] = []
   titleData: TreeList = {
@@ -147,6 +156,13 @@ export default class LeftComponent extends Vue {
     key: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
+  tabsValueWatch(newValue: any, oldValue: any) {
+    console.log('监听到...', newValue, oldValue)
+    if (newValue !== oldValue) {
+      const xNode = (this.$refs.tree as any).getNode(newValue)
+      ;(this.$refs.tree as any).setCurrentNode(xNode, true)
+    }
+  }
   mounted() {
     this.$nextTick(() => {
       //打开新文件夹

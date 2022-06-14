@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-12 18:24:09
+ * @LastEditTime: 2022-06-14 17:09:29
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -135,6 +135,7 @@ export default class RightComponent extends Vue {
     })
   }
   tabsValueWatch(newValue: any, oldValue: any) {
+    console.log('监听到22...', newValue, oldValue)
     if (newValue !== oldValue) this.tabsValues = newValue
   }
   //保存文件

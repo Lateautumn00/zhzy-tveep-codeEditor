@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-14 15:03:40
+ * @LastEditTime: 2022-06-14 17:13:28
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -18,6 +18,7 @@
             ref="leftRef"
             @leftBrotherEvents="leftBrotherEvents"
             :openData="openData"
+            :tabValue="tabsValue"
           />
         </el-aside>
         <el-divider direction="vertical" border-style="solid" id="divider" />
