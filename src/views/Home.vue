@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-13 10:17:49
+ * @LastEditTime: 2022-06-14 15:03:40
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -111,7 +111,7 @@ export default class HomeComponent extends Vue {
     } else if (data.name === 'closeTab') {
       this.closeTab(data.value.key, data.value.k) //关闭tab 判断弹窗
     } else if (data.name === 'closeFileAll') {
-      this.closeFileAll(data.value.key, data.value.k) //删掉tab
+      this.closeFileAll(data.value.key, data.value.k, data.value.src) //删掉tab
     } else if (data.name === 'updateDirPath') {
       this.dirPath = data.value
     }
@@ -184,7 +184,7 @@ export default class HomeComponent extends Vue {
    * k 0 关闭全部 1 关闭其它 2关闭已保存 3 关闭当前
    * key 当前的key
    */
-  closeFileAll(key: string, k: number) {
+  closeFileAll(key: string, k: number, src?: string) {
     if (k === 0) {
       // 关闭全部已打开文件
       this.openData = []
@@ -205,6 +205,13 @@ export default class HomeComponent extends Vue {
       this.openData = tabs.filter((value: any) => value.key !== key)
       if (key === this.tabsValue)
         this.tabsValue = this.openData.length ? this.openData[0].key : '0'
+    } else if (k === 4) {
+      //左侧树删除目录
+      const len = src ? src.length : 0
+      if (len === 0) return
+      this.openData = this.openData.filter(
+        (tab: any) => tab.src.substr(0, len) !== src
+      )
     }
     this.updateLocalStorage()
   }

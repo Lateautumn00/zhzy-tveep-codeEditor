@@ -2,7 +2,7 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-13 14:33:46
+ * @LastEditTime: 2022-06-14 15:09:11
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -144,26 +144,29 @@ export const setFileContent = async (fileDir: string, content: string) => {
 export const deleteFile = async (fileDir: string) => {
   if (!fs.existsSync(fileDir)) throw new Error('源文件不存在') //如果源文件不存在
   const stats = await getStat(fileDir)
+  let type = ''
   if (stats.isDirectory()) {
-    return await deleteDir(fileDir)
+    type = 'dir'
+    await deleteDir(fileDir)
   } else if (stats.isFile()) {
-    return await unlink(fileDir)
+    type = 'file'
+    await unlink(fileDir)
   }
+  return type
 }
 //删除文件夹 (待完成)
 export const deleteDir = async (fileDir: string) => {
-  console.log('未完')
   if (!fs.existsSync(fileDir)) throw new Error('源文件不存在') //如果源文件不存在
   const files = await readdir(fileDir)
-  files.forEach(async (item: any) => {
+  for (const item of files) {
     const item_path = path.join(fileDir, item)
     const stats = await getStat(item_path)
     if (stats.isDirectory()) {
-      deleteDir(item_path)
+      await deleteDir(item_path)
     } else {
       await unlink(item_path)
     }
-  })
+  }
   await rmdir(fileDir)
 }
 //拷贝文件

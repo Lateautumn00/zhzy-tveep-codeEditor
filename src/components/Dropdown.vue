@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-12 17:05:32
+ * @LastEditTime: 2022-06-14 14:29:21
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -34,9 +34,9 @@
           @click="createDialog('basename', false)"
           >重命名</el-dropdown-item
         >
-        <!-- <el-dropdown-item v-if="index === 3 ? true : false" @click="removeNode"
+        <el-dropdown-item v-if="index === 3 ? true : false" @click="removeNode"
           >删除</el-dropdown-item
-        > -->
+        >
       </el-dropdown-menu>
       <el-dropdown-menu v-if="index === 4">
         <el-dropdown-item @click="openFile">打开</el-dropdown-item>

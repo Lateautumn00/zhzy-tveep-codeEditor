@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 11:48:45
+ * @LastEditTime: 2022-06-14 14:50:23
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -306,16 +306,27 @@ export default class LeftComponent extends Vue {
   //删除树节点
   removeNode(data: TreeList) {
     deleteFile(data.src)
-      .then(() => {
+      .then((res: string) => {
         const xNode = (this.$refs.tree as any).getNode(data.key)
         ;(this.$refs.tree as any).remove(xNode)
-        this.$emit('leftBrotherEvents', {
-          name: 'closeFileAll',
-          value: {
-            key: data.key,
-            k: 3
-          }
-        })
+        if (res === 'file') {
+          this.$emit('leftBrotherEvents', {
+            name: 'closeFileAll',
+            value: {
+              key: data.key,
+              k: 3
+            }
+          })
+        } else {
+          this.$emit('leftBrotherEvents', {
+            name: 'closeFileAll',
+            value: {
+              key: data.key,
+              k: 4,
+              src: data.src
+            }
+          })
+        }
       })
       .catch((error: any) => {
         console.error(error)
