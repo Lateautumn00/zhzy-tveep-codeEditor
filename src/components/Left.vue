@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 14:50:23
+ * @LastEditTime: 2022-06-14 16:33:54
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -10,7 +10,6 @@
   <div class="left">
     <div class="title"><span>已打开文件</span></div>
     <el-tree
-      ref="tree"
       :data="openData"
       :props="defaultProps"
       highlight-current
@@ -102,7 +101,8 @@ import {
   createFilePath,
   renameFile,
   getStat,
-  copyFiles
+  copyFiles,
+  moveFile
 } from '@/modular/fsModular'
 import DialogComponent from '@/components/Dialog.vue'
 import { TreeList } from '@/types/tree'
@@ -141,8 +141,10 @@ export default class LeftComponent extends Vue {
   } //文件夹
   localStorageName = 'menuOpenDirectory' //目录地址缓存名称
   pasteData = {
+    mode: '',
     type: false, //true复制文件 false复制文件夹
-    src: ''
+    src: '',
+    key: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
   mounted() {
@@ -263,7 +265,7 @@ export default class LeftComponent extends Vue {
               type: data.type,
               oldSrc
             }
-          }) //通知right
+          })
         })
         .catch((error: any) => {
           console.error(error)
@@ -272,17 +274,7 @@ export default class LeftComponent extends Vue {
     } else {
       //创建文件 文件夹
       createFilePath(data.type, data.src, data.name)
-        .then(async (res: any) => {
-          const stat = await getStat(res)
-          const v = {
-            index: data.type ? 4 : 3,
-            key: `${stat.ino}`,
-            label: data.name,
-            src: res,
-            isLeaf: data.type,
-            state: 0,
-            children: []
-          }
+        .then((v: any) => {
           const xNode = (this.$refs.tree as any).getNode(this.xNodeKey)
           ;(this.$refs.tree as any).append(v, xNode)
           if (data.type) this.handleNodeClick(v)
@@ -333,38 +325,76 @@ export default class LeftComponent extends Vue {
         ;(this as any).$message.error('删除失败')
       })
   }
-  //复制或剪裁
-  copyOrMove(data: TreeList) {
+  //复制或剪裁操作
+  copyOrMove(mode: string, data: TreeList) {
     this.pasteData = {
+      mode: mode,
       type: data.isLeaf,
-      src: data.src
+      src: data.src,
+      key: data.key
     }
   }
   //粘贴
   paste(data: TreeList) {
     if (this.pasteData.src) {
-      copyFiles(this.pasteData.type, this.pasteData.src, data.src)
-        .then(() => {
-          getDirContentOne(data.src)
-            .then((result: TreeList) => {
-              if (data.index === 2) {
-                this.dataList = result.children
-              } else {
-                ;(this.$refs.tree as any).updateKeyChildren(
-                  data.key,
-                  result.children
-                )
-              }
-            })
-            .catch((error: any) => {
-              console.error(error)
-            })
-        })
-        .catch((error: any) => {
-          console.error(error)
-          ;(this as any).$message.error('错误')
-        })
+      if (this.pasteData.mode === 'copy') {
+        this.copy(data)
+      } else if (this.pasteData.mode === 'move') {
+        this.move(data)
+      }
     }
+  }
+  //复制
+  copy(data: TreeList) {
+    copyFiles(this.pasteData.type, this.pasteData.src, data.src)
+      .then(() => {
+        getDirContentOne(data.src)
+          .then((result: TreeList) => {
+            if (data.index === 2) {
+              this.dataList = result.children
+            } else {
+              ;(this.$refs.tree as any).updateKeyChildren(
+                data.key,
+                result.children
+              )
+            }
+          })
+          .catch((error: any) => {
+            console.error(error)
+          })
+      })
+      .catch((error: any) => {
+        console.error(error)
+        ;(this as any).$message.error('错误')
+      })
+  }
+  //剪裁
+  move(data: TreeList) {
+    moveFile(this.pasteData.type, this.pasteData.src, data.src)
+      .then(async (v: any) => {
+        const xNodeReMove = (this.$refs.tree as any).getNode(this.pasteData.key)
+        ;(this.$refs.tree as any).remove(xNodeReMove)
+        const xNodeAppend = (this.$refs.tree as any).getNode(data.key)
+        ;(this.$refs.tree as any).append(v, xNodeAppend)
+        this.$emit('leftBrotherEvents', {
+          name: 'updateTab',
+          value: {
+            xNode: v,
+            type: this.pasteData.type,
+            oldSrc: this.pasteData.src
+          }
+        }) //通知right
+        this.pasteData = {
+          mode: '',
+          type: data.isLeaf,
+          src: '',
+          key: ''
+        }
+      })
+      .catch((error: any) => {
+        console.error(error)
+        ;(this as any).$message.error('错误')
+      })
   }
 }
 </script>

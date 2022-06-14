@@ -2,7 +2,7 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-14 15:09:11
+ * @LastEditTime: 2022-06-14 16:20:45
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -126,7 +126,16 @@ export const createFilePath = async (
   if (!fs.existsSync(fileDir)) throw new Error('源文件不存在') //如果源文件不存在 z
   const newPath = path.join(fileDir, name)
   !type ? await mkdir(newPath) : await writeFile(newPath, ' ')
-  return newPath
+  const stat = await getStat(newPath)
+  return {
+    index: type ? 4 : 3,
+    key: `${stat.ino}`,
+    label: name,
+    src: newPath,
+    isLeaf: type,
+    state: 0,
+    children: []
+  }
 }
 //重命名
 export const renameFile = async (oldDir: string, name: string) => {
@@ -136,6 +145,7 @@ export const renameFile = async (oldDir: string, name: string) => {
   await rename(oldDir, newDir)
   return newDir
 }
+
 //写入文件
 export const setFileContent = async (fileDir: string, content: string) => {
   return await writeFile(fileDir, content)
@@ -205,4 +215,26 @@ export const copyDirectory = async (source: string, target: string) => {
     }
   })
   return true
+}
+//移动文件
+export const moveFile = async (
+  type: boolean,
+  source: string,
+  target: string
+) => {
+  if (!fs.existsSync(source)) throw new Error('源文件不存在') //如果源文件不存在
+  const name = path.basename(source) //获取文件名
+  const targetDir = path.join(target, name) //新的路径
+  if (fs.existsSync(targetDir)) throw new Error('新文件已存在') //如果源文件不存在
+  await rename(source, targetDir)
+  const stat = await getStat(targetDir)
+  return {
+    index: type ? 4 : 3,
+    key: `${stat.ino}`,
+    label: name,
+    src: targetDir,
+    isLeaf: type,
+    state: 0,
+    children: []
+  }
 }
