@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-13 14:35:02
+ * @LastEditTime: 2022-06-14 11:26:36
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -26,10 +26,8 @@
           :dataList="data"
           :pasteData="pasteData"
           @handleNodeClick="handleNodeClick"
-          @createDialog="createDialog"
           @removeNode="removeNode"
           @copyOrMove="copyOrMove"
-          @paste="paste"
         >
           <span class="custom-tree-node">
             <el-icon v-if="data.state === 1 && data.isLeaf"><Edit /></el-icon>
@@ -43,7 +41,20 @@
         </DropdownComponent>
       </template>
     </el-tree>
-    <div class="title">{{ title }}</div>
+    <DropdownComponent
+      trigger="contextmenu"
+      :index="2"
+      placement="bottom"
+      size="large"
+      :dataList="titleData"
+      :pasteData="pasteData"
+      @handleNodeClick="handleNodeClick"
+      @createDialog="createDialog"
+      @copyOrMove="copyOrMove"
+      @paste="paste"
+    >
+      <div class="title">{{ titleData.label }}</div>
+    </DropdownComponent>
     <el-tree
       ref="tree"
       :data="dataList"
@@ -107,6 +118,7 @@ import { TreeList } from '@/types/tree'
 })
 export default class LeftComponent extends Vue {
   defaultProps = {
+    index: 'index',
     key: 'ino',
     label: 'label',
     src: 'src',
@@ -116,13 +128,21 @@ export default class LeftComponent extends Vue {
   }
   openData: TreeList[] = []
   dataList: TreeList[] = []
+  titleData: TreeList = {
+    index: 2,
+    key: '',
+    label: '',
+    src: '',
+    children: [],
+    isLeaf: false,
+    state: 0 //状态 0 未有修改 1 有修改 1
+  } //文件夹
   localStorageName = 'menuOpenDirectory' //目录地址缓存名称
   pasteData = {
     type: false, //true复制文件 false复制文件夹
     src: ''
   } //是否可粘贴
   xNodeKey = '' //当前操作的
-  title = ''
   mounted() {
     this.$nextTick(() => {
       //打开新文件夹
@@ -131,6 +151,7 @@ export default class LeftComponent extends Vue {
         (event: any, result: string) => {
           getDirContentOne(result)
             .then((res: TreeList) => {
+              this.updateTitleData(res)
               this.dataList = res.children
               ;(window as any).localStorage.setItem(
                 this.localStorageName,
@@ -143,10 +164,6 @@ export default class LeftComponent extends Vue {
                   k: 0
                 }
               })
-              this.$emit('leftBrotherEvents', {
-                name: 'updateDirPath',
-                value: result
-              })
             })
             .catch((error: any) => {
               ;(this as any).$message.error(error)
@@ -154,6 +171,22 @@ export default class LeftComponent extends Vue {
             })
         }
       )
+    })
+  }
+  //更新文件夹
+  updateTitleData(data: TreeList) {
+    this.titleData = {
+      index: 2,
+      key: data.key,
+      label: data.label,
+      src: data.src,
+      children: [],
+      isLeaf: data.isLeaf,
+      state: data.state //状态 0 未有修改 1 有修改 1
+    }
+    this.$emit('leftBrotherEvents', {
+      name: 'updateDirPath',
+      value: data.src
     })
   }
   loadNode = async (node: any, resolve: any) => {
@@ -165,11 +198,7 @@ export default class LeftComponent extends Vue {
       )
       if (dirPath) {
         const data = await getDirContentOne(dirPath)
-        this.title = data.label
-        this.$emit('leftBrotherEvents', {
-          name: 'updateDirPath',
-          value: dirPath
-        })
+        this.updateTitleData(data)
         return resolve(data.children)
       }
     } else if (node.level > 0) {
@@ -305,10 +334,14 @@ export default class LeftComponent extends Vue {
         .then(() => {
           getDirContentOne(data.src)
             .then((result: TreeList) => {
-              ;(this.$refs.tree as any).updateKeyChildren(
-                data.key,
-                result.children
-              )
+              if (data.index === 2) {
+                this.dataList = result.children
+              } else {
+                ;(this.$refs.tree as any).updateKeyChildren(
+                  data.key,
+                  result.children
+                )
+              }
             })
             .catch((error: any) => {
               console.error(error)
