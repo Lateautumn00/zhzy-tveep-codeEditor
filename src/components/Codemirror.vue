@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-13 11:12:15
+ * @LastEditTime: 2022-06-16 15:28:12
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -47,7 +47,7 @@ export default class CodemirrorComponent extends Vue {
   code = ''
   dataList: TreeList = {
     index: 4,
-    key: '',
+    key: '-2',
     label: '',
     src: '',
     isLeaf: true,

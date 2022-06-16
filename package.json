@@ -8,10 +8,10 @@
     "license": "",
     "author": "Lanchao",
     "scripts": {
-        "test:unit": "vue-cli-service test:unit",
-        "lint": "vue-cli-service lint",
         "electron:build": "vue-cli-service electron:build",
         "electron:serve": "vue-cli-service electron:serve",
+        "test:unit": "vue-cli-service test:unit",
+        "lint": "vue-cli-service lint",
         "postinstall": "electron-builder install-app-deps",
         "postuninstall": "electron-builder install-app-deps"
     },

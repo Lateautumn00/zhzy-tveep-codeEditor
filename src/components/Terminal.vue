@@ -2,7 +2,7 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-13 11:39:51
+ * @LastEditTime: 2022-06-16 15:15:50
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -126,7 +126,7 @@ export default class TerminalComponent extends Vue {
   // 执行完毕 保存信息 更新状态
   closeCommandAction(code: any) {
     this.commandArr.push({
-      key: '',
+      key: this.commandArr.length,
       code, // 是否执行成功
       dirPath: this.dirPath, // 路径
       command: this.command, // 命令

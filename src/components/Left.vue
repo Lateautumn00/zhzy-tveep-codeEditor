@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-14 17:21:10
+ * @LastEditTime: 2022-06-16 15:59:37
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -40,7 +40,7 @@
         </DropdownComponent>
       </template>
     </el-tree>
-    <div class="title">
+    <div>
       <DropdownComponent
         trigger="contextmenu"
         :index="2"
@@ -53,7 +53,23 @@
         @copyOrMove="copyOrMove"
         @paste="paste"
       >
-        <span>{{ titleData.label }}</span>
+        <div class="title">
+          <span>{{ titleData.label }}</span>
+          <div class="title-icon">
+            <el-tooltip class="box-item" effect="light" content="刷新">
+              <el-icon :size="16" @click="updateDir"><RefreshRight /></el-icon>
+            </el-tooltip>
+            <el-tooltip class="box-item" effect="light" content="新建文件">
+              <el-icon :size="16" @click="createDialog('create', true)"
+                ><DocumentAdd
+              /></el-icon>
+            </el-tooltip>
+            <el-tooltip class="box-item" effect="light" content="新建文件夹">
+              <el-icon :size="16" @click="createDialog('create', false)"
+                ><FolderAdd /></el-icon
+            ></el-tooltip>
+          </div>
+        </div>
       </DropdownComponent>
     </div>
     <el-tree
@@ -141,7 +157,7 @@ export default class LeftComponent extends Vue {
   dataList: TreeList[] = []
   titleData: TreeList = {
     index: 2,
-    key: '',
+    key: '-1',
     label: '',
     src: '',
     children: [],
@@ -157,9 +173,10 @@ export default class LeftComponent extends Vue {
   } //是否可粘贴
   xNodeKey = '' //当前操作的
   tabsValueWatch(newValue: any, oldValue: any) {
-    //console.log('监听到...', newValue, oldValue)
-    if (newValue !== oldValue) {
-      const xNode = (this.$refs.tree as any).getNode(newValue)
+    if (oldValue === '0') return false
+    if (newValue === oldValue) return false
+    const xNode = (this.$refs.tree as any).getNode(newValue)
+    if (xNode) {
       ;(this.$refs.tree as any).setCurrentNode(xNode, true)
     }
   }
@@ -193,6 +210,18 @@ export default class LeftComponent extends Vue {
       )
     })
   }
+  //刷新文件目录
+  updateDir() {
+    getDirContentOne(this.titleData.src)
+      .then((res: TreeList) => {
+        this.updateTitleData(res)
+        this.dataList = res.children
+      })
+      .catch((error: any) => {
+        ;(this as any).$message.error(error)
+        console.error(error)
+      })
+  }
   //更新文件夹
   updateTitleData(data: TreeList) {
     this.titleData = {
@@ -209,22 +238,24 @@ export default class LeftComponent extends Vue {
       value: data.src
     })
   }
+  //异步加载文件夹子树
   loadNode = async (node: any, resolve: any) => {
-    console.log(node)
-
+    let src = ''
     if (node.level === 0) {
-      const dirPath = (window as any).localStorage.getItem(
-        this.localStorageName
-      )
-      if (dirPath) {
-        const data = await getDirContentOne(dirPath)
-        this.updateTitleData(data)
-        return resolve(data.children)
-      }
+      src = (window as any).localStorage.getItem(this.localStorageName)
     } else if (node.level > 0) {
-      const data = await getDirContentOne(node.data.src)
-      return resolve(data.children)
+      src = node.data.src
     }
+    if (src === '') return false
+    getDirContentOne(src)
+      .then((data: TreeList) => {
+        if (node.level === 0) this.updateTitleData(data)
+        return resolve(data.children)
+      })
+      .catch((error: any) => {
+        ;(this as any).$message.error(error)
+        console.error(error)
+      })
   }
   //打开文件
   handleNodeClick = (value: TreeList) => {
@@ -234,7 +265,8 @@ export default class LeftComponent extends Vue {
     }
   }
   //创建文件
-  createDialog(tag: string, type: boolean, data: TreeList) {
+  createDialog(tag: string, type: boolean, data?: TreeList) {
+    data = data || this.titleData
     this.xNodeKey = `${data.key}`
     let name = ''
     let title = ''
@@ -424,13 +456,33 @@ export default class LeftComponent extends Vue {
 .title {
   background: #ecf5ff;
   height: 25px;
-  line-height: 25px;
-  padding-left: 5px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+  align-items: center;
   > span {
     font-weight: bold;
+    width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: auto;
+    word-break: break-word;
+    white-space: nowrap;
   }
-  :deep(.el-dropdown) {
-    font-weight: bold;
+  > .title-icon {
+    align-items: center;
+    display: flex;
+    width: 60px;
+    justify-content: space-between;
+    > :deep(.el-icon) {
+      cursor: pointer;
+    }
   }
+}
+:deep(.el-dropdown) {
+  width: 100%;
+}
+:deep(.el-dropdown--large) {
+  width: 100%;
 }
 </style>

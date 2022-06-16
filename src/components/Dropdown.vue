@@ -2,7 +2,7 @@
  * @Description: 下拉菜单
  * @Author: lanchao
  * @Date: 2022-06-04 16:33:27
- * @LastEditTime: 2022-06-14 16:44:46
+ * @LastEditTime: 2022-06-16 15:28:21
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -114,7 +114,7 @@ export default class DropdownComponent extends Vue {
   size = 'default' //large / default / small
   dataList: TreeList = {
     index: 0,
-    key: '',
+    key: '-2',
     label: '',
     src: '',
     isLeaf: false,
