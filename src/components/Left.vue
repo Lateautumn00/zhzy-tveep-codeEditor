@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-16 15:59:37
+ * @LastEditTime: 2022-06-17 16:29:18
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -82,6 +82,9 @@
       :check-on-click-node="true"
       :lazy="true"
       :load="loadNode"
+      draggable
+      @node-drop="nodeDrop"
+      :allow-drop="allowDrop"
     >
       <template #default="{ data }">
         <DropdownComponent
@@ -122,6 +125,7 @@ import {
 } from '@/modular/fsModular'
 import DialogComponent from '@/components/Dialog.vue'
 import { TreeList } from '@/types/tree'
+import path from 'path'
 @Options({
   components: {
     DropdownComponent,
@@ -209,6 +213,55 @@ export default class LeftComponent extends Vue {
         }
       )
     })
+  }
+  allowDrop(node: any, lastNode: any, position: string) {
+    //console.log(node, lastNode, position)
+    if (lastNode.data.isLeaf) {
+      if (position === 'inner') {
+        return false
+      } else {
+        return true
+      }
+    } else {
+      return true
+    }
+  }
+  //拖动节点成功
+  nodeDrop(node: any, lastNode: any, position: string) {
+    //console.log('拖动成功', node, lastNode, position, e)
+    const source = node.data.src //源文件
+    let target = lastNode.data.src //目标文件
+    let targetKey = lastNode.parent.key || lastNode.parent.id //目标key
+    if (lastNode.data.isLeaf) {
+      //如果目标是文件
+      target = path.dirname(target)
+    } else {
+      //目标是文件夹
+      if (position !== 'inner') {
+        target = path.dirname(target)
+      }
+    }
+    //console.log('结果', source, target, targetKey)
+    if (path.join(target, path.basename(source)) === source) return false //如果新文件与源文件路径相同 就返回
+    moveFile(node.data.isLeaf, source, target)
+      .then(async (v: any) => {
+        const xNodeReMove = (this.$refs.tree as any).getNode(node.data.key)
+        ;(this.$refs.tree as any).remove(xNodeReMove)
+        const xNodeAppend = (this.$refs.tree as any).getNode(targetKey)
+        ;(this.$refs.tree as any).append(v, xNodeAppend)
+        this.$emit('leftBrotherEvents', {
+          name: 'updateTab',
+          value: {
+            xNode: v,
+            type: node.data.isLeaf,
+            oldSrc: source
+          }
+        }) //通知right
+      })
+      .catch((error: any) => {
+        console.error(error)
+        //;(this as any).$message.error('错误')
+      })
   }
   //刷新文件目录
   updateDir() {

@@ -2,7 +2,7 @@
  * @Description:
  * @Author: lanchao
  * @Date: 2022-06-02 11:21:16
- * @LastEditTime: 2022-06-14 16:20:45
+ * @LastEditTime: 2022-06-17 16:14:54
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -217,6 +217,13 @@ export const copyDirectory = async (source: string, target: string) => {
   return true
 }
 //移动文件
+/**
+ *
+ * @param type 源文件类型 true 文件 fasle 文件夹
+ * @param source
+ * @param target
+ * @returns
+ */
 export const moveFile = async (
   type: boolean,
   source: string,
