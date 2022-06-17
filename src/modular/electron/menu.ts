@@ -2,7 +2,7 @@
  * @Description:自定义菜单
  * @Author: lanchao
  * @Date: 2022-06-01 18:36:21
- * @LastEditTime: 2022-06-12 18:37:53
+ * @LastEditTime: 2022-06-17 17:28:20
  * @LastEditors: lanchao
  * @Reference:
  */
@@ -45,7 +45,8 @@ export function menu(window: any, Menu: any, dialog: any) {
         },
         {
           label: '保存',
-          accelerator: process.platform === 'darwin' ? 'Ctrl+S' : 'Ctrl+S',
+          accelerator:
+            process.platform === 'darwin' ? 'CmdOrCtrl+S' : 'CmdOrCtrl+S',
           click: function () {
             window.webContents.send('menuPreservation')
           }
