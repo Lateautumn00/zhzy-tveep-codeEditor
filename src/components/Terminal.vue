@@ -110,6 +110,7 @@ export default class TerminalComponent extends Vue {
     })
     // 监听命令行执行输出
     ls.stdout.on('data', (data) => {
+      data = iconvLite.decode(data, 'cp936')
       const value = data.toString().trim()
       this.commandMsg.push(value)
       console.log(`stdout: ${value}`)
