@@ -1,0 +1,69 @@
+//混入
+//flex
+@mixin set-flex(
+  $justify-content: null,
+  $align-items: null,
+  $flex-direction: null,
+  $flex-wrap: null,
+  $flex-flow: null
+) {
+  display: flex;
+  @if $justify-content {
+    justify-content: $justify-content;
+  }
+  @if $align-items {
+    align-items: $align-items;
+  }
+  @if $flex-direction {
+    flex-direction: $flex-direction;
+  }
+  @if $flex-wrap {
+    flex-wrap: $flex-wrap;
+  }
+  @if $flex-flow {
+    flex-flow: $flex-flow;
+  }
+}
+
+//文字超出 宽度显示...
+@mixin omit-text($width) {
+  width: $width;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: auto;
+  word-break: break-word;
+  white-space: nowrap;
+}
+
+//圆角
+@mixin set-radius($width, $height, $border-radius) {
+  width: $width;
+  height: $height;
+  border-radius: $border-radius;
+}
+
+//手势
+@mixin set-cursor($cursor) {
+  cursor: $cursor;
+}
+//垂直滑块
+@mixin set-overflow($overflow-y: false, $overflow-x: false, $height: 100%) {
+  height: $height;
+  overflow-y: auto;
+  overflow-x: auto;
+  @if $overflow-y {
+    overflow-y: hidden;
+  }
+  @if $overflow-x {
+    overflow-x: hidden;
+  }
+}
+//宽高
+@mixin widthOrHeight($width: null, $height: null) {
+  @if $width {
+    width: $width;
+  }
+  @if $height {
+    height: $height;
+  }
+}

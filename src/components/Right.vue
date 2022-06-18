@@ -184,6 +184,7 @@ export default class RightComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@use '@/assets/style/mixin.scss' as mixin;
 .demo-tabs {
   height: 100%;
 }
@@ -201,6 +202,6 @@ export default class RightComponent extends Vue {
   height: auto;
   border-top: 1px #dcdfe6 solid;
   border-bottom: 1px #dcdfe6 solid;
-  cursor: n-resize;
+  @include mixin.set-cursor(n-resize);
 }
 </style>

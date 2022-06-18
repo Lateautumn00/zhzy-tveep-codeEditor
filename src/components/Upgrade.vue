@@ -90,11 +90,13 @@ export default class UpgradeComponent extends Vue {
 }
 </script>
 <style lang="scss">
+@use '@/assets/style/default.scss';
+@use '@/assets/style/mixin.scss' as mixin;
 #update {
   background: #f8f8f8;
 }
 .percentages {
-  width: 100%;
+  @include mixin.widthOrHeight(100%);
   height: 5vh;
   line-height: 5vh;
   text-align: center;
@@ -107,12 +109,10 @@ body {
   background: rgba(0, 0, 0, 0.5) !important;
 }
 .el-tooltip {
-  display: flex;
-  align-items: center;
+  @include mixin.set-flex(null, center);
 }
 .footer {
-  display: flex;
-  flex-flow: row-reverse;
+  @include mixin.set-flex(null, null, null, null, row-reverse);
 }
 </style>
 <style lang="scss" scoped>

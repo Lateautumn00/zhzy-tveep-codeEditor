@@ -240,15 +240,15 @@ export default class TerminalComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import '@/assets/style/default.scss';
+@use '@/assets/style/default.scss';
+@use '@/assets/style/mixin.scss' as mixin;
+$terminal-error-color: red;
+$terminal-color: #333;
+$terminal-path-color: #21c5dc;
 .terminal-app {
-  height: 100%;
-  max-height: 100%;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  color: #333;
+  @include mixin.set-overflow(false, false, 100%);
+  @include mixin.set-flex(center, null, column);
+  color: $terminal-color;
 }
 .terminal-class {
   flex: 1;
@@ -261,16 +261,13 @@ export default class TerminalComponent extends Vue {
   white-space: pre-wrap;
 }
 .terminal-action-contenteditable-error {
-  color: red;
+  color: $terminal-error-color;
 }
 .terminal-action {
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  @include mixin.set-flex(null, center, null, wrap);
 }
 .terminal-action-path {
-  color: #21c5dc;
+  color: $terminal-path-color;
   margin: 0 5px 0 8px;
   display: inline-block;
 }
@@ -280,7 +277,7 @@ export default class TerminalComponent extends Vue {
   white-space: pre-wrap;
 }
 .terminal-command-error {
-  color: red;
+  color: $terminal-error-color;
 }
 
 .terminal-action-editor {
@@ -288,7 +285,6 @@ export default class TerminalComponent extends Vue {
 }
 .terminal-app::-webkit-scrollbar {
   /*滚动条整体样式*/
-  width: 10px;
-  height: 3px;
+  @include mixin.widthOrHeight(1px, 1px);
 }
 </style>

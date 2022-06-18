@@ -502,40 +502,36 @@ export default class LeftComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@use '@/assets/style/default.scss';
+@use '@/assets/style/mixin.scss' as mixin;
 .left {
-  height: 100%;
-  overflow-y: auto;
+  @include mixin.set-overflow(false, true, 100%);
+}
+.left::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  @include mixin.widthOrHeight(1px, 1px);
 }
 .title {
   background: #ecf5ff;
-  height: 25px;
-  display: flex;
-  justify-content: space-between;
+  @include mixin.widthOrHeight(null, 25px);
+  @include mixin.set-flex(space-between, center);
   padding: 0 5px;
-  align-items: center;
   > span {
     font-weight: bold;
-    width: 70%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: auto;
-    word-break: break-word;
-    white-space: nowrap;
+    @include mixin.omit-text(70%);
   }
   > .title-icon {
-    align-items: center;
-    display: flex;
-    width: 60px;
-    justify-content: space-between;
-    > :deep(.el-icon) {
-      cursor: pointer;
+    @include mixin.widthOrHeight(60px);
+    @include mixin.set-flex(space-between, center);
+    > .el-icon {
+      @include mixin.set-cursor(pointer);
     }
   }
 }
 :deep(.el-dropdown) {
-  width: 100%;
+  @include mixin.widthOrHeight(100%);
 }
 :deep(.el-dropdown--large) {
-  width: 100%;
+  @include mixin.widthOrHeight(100%);
 }
 </style>

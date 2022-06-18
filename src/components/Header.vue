@@ -8,11 +8,7 @@
 -->
 <template>
   <div class="left">
-    <img
-      alt="Vue logo"
-      src="../assets/logo.png"
-      style="width: 30px; height: 30px; border-radius: 50%; margin-right: 6px"
-    />
+    <img src="../assets/logo.png" class="logo" />
     <el-dropdown trigger="click" placement="bottom" size="default">
       <span>文件</span>
       <template #dropdown>
@@ -72,17 +68,28 @@ export default class HeaderComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@use '@/assets/style/default.scss';
+@use '@/assets/style/extends.scss';
+@use '@/assets/style/mixin.scss' as mixin;
+
 .left {
-  -webkit-app-region: no-drag;
-  display: flex;
-  align-items: center;
+  @include mixin.set-flex(null, center);
+  .logo {
+    @include mixin.set-radius(30px, 30px, 50%);
+    margin-right: 6px;
+  }
+  .el-dropdown--default > span {
+    @extend %no-drag;
+  }
 }
+
 .right {
-  -webkit-app-region: no-drag;
-  display: flex;
-  justify-content: space-between;
-  width: 60px;
+  @include mixin.set-flex(space-between);
+  @include mixin.widthOrHeight(60px);
   margin-left: auto;
-  cursor: pointer;
+
+  .el-icon {
+    @extend %no-drag;
+  }
 }
 </style>

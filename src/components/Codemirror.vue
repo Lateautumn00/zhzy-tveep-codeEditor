@@ -107,10 +107,9 @@ export default class CodemirrorComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import '@/assets/style/default.scss';
+@use '@/assets/style/mixin.scss' as mixin;
 :deep(.cm-scroller::-webkit-scrollbar) {
   /*滚动条整体样式*/
-  width: 10px;
-  height: 3px;
+  @include mixin.widthOrHeight(1px, 1px);
 }
 </style>

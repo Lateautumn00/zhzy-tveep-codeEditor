@@ -12,7 +12,7 @@
       <el-header>
         <HeaderComponent />
       </el-header>
-      <el-container class="eContainer">
+      <el-container class="e-container">
         <el-aside :style="{ width: asideWidth + 'px', overflow: 'hidden' }">
           <LeftComponent
             ref="leftRef"
@@ -287,24 +287,24 @@ export default class HomeComponent extends Vue {
 }
 </script>
 <style scoped lang="scss">
-@import '@/assets/style/default.scss';
+@use '@/assets/style/default.scss';
+@use '@/assets/style/extends.scss';
+@use '@/assets/style/mixin.scss' as mixin;
 .el-header {
-  -webkit-app-region: drag; /**实现拖拽窗口 */
+  @extend %drag; /**实现拖拽窗口 */
   --el-header-height: 50px;
   height: 50px;
-  display: flex;
-  align-items: center;
-  //justify-content: flex-end;
+  @include mixin.set-flex(null, center);
   border-bottom: 1px #dcdfe6 solid;
 }
-.eContainer {
+.e-container {
   height: calc(100vh - 51px);
 }
 .el-divider--vertical {
   height: auto;
   border-left: 1px #dcdfe6 solid;
   border-right: 1px #dcdfe6 solid;
-  cursor: e-resize;
+  @include mixin.set-cursor(e-resize);
 }
 .el-main {
   --el-main-padding: 0;

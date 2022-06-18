@@ -1,0 +1,11 @@
+@use '@/assets/style/mixin.scss' as mixin;
+//继承
+//不拖动
+%no-drag {
+  -webkit-app-region: no-drag;
+  @include mixin.set-cursor(pointer);
+}
+//拖动
+%drag {
+  -webkit-app-region: drag;
+}
