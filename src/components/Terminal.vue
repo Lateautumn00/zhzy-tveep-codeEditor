@@ -2,7 +2,7 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-16 15:15:50
+ * @LastEditTime: 2022-06-19 15:15:27
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -38,7 +38,7 @@
       >
         <el-icon><Position color="green" /></el-icon>
         <!-- 执行地址 -->
-        <span class="terminal-action-path">{{ dirPath }} $</span>
+        <span class="terminal-action-path">{{ newPath }} $</span>
         <!-- 命令行输入 -->
         <span
           :contenteditable="action ? false : true"
@@ -59,6 +59,7 @@
 import { Options, Vue } from 'vue-class-component'
 import { spawn } from 'child_process'
 import iconvLite from 'iconv-lite'
+import path from 'path'
 @Options({
   props: {
     dirPath: String
@@ -72,7 +73,7 @@ import iconvLite from 'iconv-lite'
   }
 })
 export default class TerminalComponent extends Vue {
-  dirPath = '' // 命令行目录
+  newPath = '' // 命令行目录
   command = '' // 用户输入命令
   handleCommand = '' // 经过处理的用户命令 比如清除首尾空格、添加获取路径的命令
   commandMsg: any = [] // 当前命令信息
@@ -82,12 +83,13 @@ export default class TerminalComponent extends Vue {
   inputDom: any // 输入框dom
   path = '' // 不同系统 获取路径的命令 mac是pwd window是chdir
   mounted() {
-    this.addGetPath()
     this.inputDom = document.querySelector('.terminal-action-contenteditable')
   }
   //切换文件夹 清空历史
-  initHandler() {
+  initHandler(newPath: string, oldPath: string) {
+    console.log('切换目录===', newPath, oldPath)
     this.isClear('clear')
+    this.newPath = newPath
   }
   // 回车执行命令
   keyFn(e: any) {
@@ -98,13 +100,12 @@ export default class TerminalComponent extends Vue {
   }
   // 执行命令
   actionCommand() {
-    const command = this.command.trim()
-    this.isClear(command)
+    this.command = this.command.trim()
+    this.isClear(this.command)
     if (this.command === '') return
     this.action = true
-    this.handleCommand = this.cdCommand(command)
-    const ls = spawn(this.handleCommand, {
-      cwd: this.dirPath, // 执行命令路径
+    const ls = spawn(this.command, {
+      cwd: this.newPath, // 执行命令路径
       shell: true, // 使用shell命令
       env: process.env
     })
@@ -129,35 +130,18 @@ export default class TerminalComponent extends Vue {
     this.commandArr.push({
       key: this.commandArr.length,
       code, // 是否执行成功
-      dirPath: this.dirPath, // 路径
+      dirPath: this.newPath, // 路径
       command: this.command, // 命令
-      commandMsg: this.commandMsg.join('\r') // 返回信息
+      commandMsg: this.command.startsWith('cd ')
+        ? ''
+        : this.commandMsg.join('\r') // 返回信息
     }) // 保存执行信息
     // 清空
-    this.updatePath(this.handleCommand, code)
+    this.updatePath(code)
     this.commandFinish()
-    console.log(`退出码 ${code}, ${code === 0 ? '成功' : '失败'}`)
-  }
-  // cd命令处理
-  cdCommand(command: any) {
-    let pathCommand = ''
-    if (this.command.startsWith('cd ')) {
-      pathCommand = this.path
-    } else if (this.command.indexOf(' cd ') !== -1) {
-      pathCommand = this.path
-    }
-    return command + pathCommand
+    code === 0 ? console.log('success') : console.error('error')
   }
 
-  // 获取不同系统下的路径
-  addGetPath() {
-    const systemName = this.getOsName()
-    if (systemName === 'Mac') {
-      this.path = ' && pwd'
-    } else if (systemName === 'Windows') {
-      this.path = ' && chdir'
-    }
-  }
   // 清空历史
   isClear(command: any) {
     if (command === 'clear') {
@@ -177,12 +161,16 @@ export default class TerminalComponent extends Vue {
       this.scrollBottom()
     })
   }
-  // 判断命令是否添加过path
-  updatePath(command: any, code: any) {
+  // 更新路径
+  updatePath(code: any) {
     if (code !== 0) return
-    const isPathChange = command.indexOf(this.path) !== -1
-    if (isPathChange) {
-      this.dirPath = this.commandMsg[this.commandMsg.length - 1]
+    if (this.command.startsWith('cd ')) {
+      if (this.commandMsg.length) {
+        this.newPath = this.commandMsg[0]
+      } else {
+        const sli = this.command.slice(2).trim()
+        this.newPath = path.resolve(this.newPath, sli)
+      }
     }
   }
   // 保存输入的命令行
@@ -208,32 +196,6 @@ export default class TerminalComponent extends Vue {
     let dom: any = document.querySelector('.terminal-app')
     dom.scrollTop = dom.scrollHeight // 滚动高度
     dom = null
-  }
-  // 获取操作系统
-  getOsName() {
-    const userAgent = navigator.userAgent.toLowerCase()
-    let systemName = ''
-    if (userAgent.indexOf('win') > -1) {
-      systemName = 'Windows'
-    } else if (userAgent.indexOf('mac') > -1) {
-      systemName = 'Mac'
-    } else if (
-      userAgent.indexOf('x11') > -1 ||
-      userAgent.indexOf('unix') > -1 ||
-      userAgent.indexOf('sunname') > -1 ||
-      userAgent.indexOf('bsd') > -1
-    ) {
-      systemName = 'Unix'
-    } else if (userAgent.indexOf('iphone') > -1) {
-      systemName = 'iPhone'
-    } else if (userAgent.indexOf('linux') > -1) {
-      if (userAgent.indexOf('android') > -1) {
-        systemName = 'Android'
-      } else {
-        systemName = 'Linux'
-      }
-    }
-    return systemName
   }
 }
 </script>
