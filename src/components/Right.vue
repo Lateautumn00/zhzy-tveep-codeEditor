@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:14:09
- * @LastEditTime: 2022-06-14 17:19:42
+ * @LastEditTime: 2022-06-19 15:44:12
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -124,14 +124,12 @@ export default class RightComponent extends Vue {
   }
 
   mounted() {
-    this.$nextTick(() => {
-      //拖动命令行
-      const divider = document.getElementById('divider1') as any
-      this.mouseDownAndMove(divider)
-      //保存功能
-      ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
-        this.saveFile(this.tabsValues) //当前打开并展示的tab
-      })
+    //拖动命令行
+    const divider = document.getElementById('divider1') as any
+    this.mouseDownAndMove(divider)
+    //保存功能
+    ;(window as any).$electron.ipcRenderer.on('menuPreservation', () => {
+      this.saveFile(this.tabsValues) //当前打开并展示的tab
     })
   }
   tabsValueWatch(newValue: any, oldValue: any) {

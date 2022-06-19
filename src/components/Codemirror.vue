@@ -2,7 +2,7 @@
  * @Description: 代码编辑器
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-16 15:28:12
+ * @LastEditTime: 2022-06-19 15:44:47
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -57,9 +57,7 @@ export default class CodemirrorComponent extends Vue {
   extensions = [javascript(), oneDark]
   fileStatus = false //是否加载完成
   mounted() {
-    this.$nextTick(() => {
-      if (this.dataList.src) this.getFile()
-    })
+    if (this.dataList.src) this.getFile()
   }
   // 读取文件内容
   getFile() {

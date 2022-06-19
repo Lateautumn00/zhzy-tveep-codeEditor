@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-17 16:29:18
+ * @LastEditTime: 2022-06-19 15:45:40
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -185,34 +185,29 @@ export default class LeftComponent extends Vue {
     }
   }
   mounted() {
-    this.$nextTick(() => {
-      //打开新文件夹
-      ;(window as any).$electron.ipcRenderer.on(
-        'menuOpenDirectory',
-        (event: any, result: string) => {
-          getDirContentOne(result)
-            .then((res: TreeList) => {
-              this.updateTitleData(res)
-              this.dataList = res.children
-              ;(window as any).localStorage.setItem(
-                this.localStorageName,
-                result
-              ) //将本次的文件夹目录写入缓存
-              this.$emit('leftBrotherEvents', {
-                name: 'closeFileAll',
-                value: {
-                  key: '',
-                  k: 0
-                }
-              })
+    //打开新文件夹
+    ;(window as any).$electron.ipcRenderer.on(
+      'menuOpenDirectory',
+      (event: any, result: string) => {
+        getDirContentOne(result)
+          .then((res: TreeList) => {
+            this.updateTitleData(res)
+            this.dataList = res.children
+            ;(window as any).localStorage.setItem(this.localStorageName, result) //将本次的文件夹目录写入缓存
+            this.$emit('leftBrotherEvents', {
+              name: 'closeFileAll',
+              value: {
+                key: '',
+                k: 0
+              }
             })
-            .catch((error: any) => {
-              ;(this as any).$message.error(error)
-              console.error(error)
-            })
-        }
-      )
-    })
+          })
+          .catch((error: any) => {
+            ;(this as any).$message.error(error)
+            console.error(error)
+          })
+      }
+    )
   }
   allowDrop(node: any, lastNode: any, position: string) {
     //console.log(node, lastNode, position)

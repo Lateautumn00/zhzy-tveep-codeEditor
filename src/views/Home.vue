@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 10:27:49
- * @LastEditTime: 2022-06-14 17:13:28
+ * @LastEditTime: 2022-06-19 15:43:25
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -66,30 +66,27 @@ export default class HomeComponent extends Vue {
   openStorageName = 'fileList' //一打开文件缓存名称
   openData: TreeList[] = [] //已打开文件树
   mounted() {
-    this.$nextTick(() => {
-      //拖动左侧栏
-      const divider = document.getElementById('divider') as any
-      this.mouseDownAndMove(divider)
-      this.openDefaultFile()
-      //监听ipc 打开文件
-      //打开文件
-      ;(window as any).$electron.ipcRenderer.on(
-        'menuOpenFile',
-        async (event: any, result: string) => {
-          const stat = await getStat(result)
-          const tab: TreeList = {
-            index: 4,
-            key: `${stat.ino}`,
-            label: path.basename(result),
-            src: result,
-            isLeaf: true,
-            state: 0,
-            children: []
-          }
-          this.addTab(tab)
+    const divider = document.getElementById('divider') as any
+    this.mouseDownAndMove(divider) //拖动左侧栏
+    this.openDefaultFile()
+    //监听ipc 打开文件
+    //打开文件
+    ;(window as any).$electron.ipcRenderer.on(
+      'menuOpenFile',
+      async (event: any, result: string) => {
+        const stat = await getStat(result)
+        const tab: TreeList = {
+          index: 4,
+          key: `${stat.ino}`,
+          label: path.basename(result),
+          src: result,
+          isLeaf: true,
+          state: 0,
+          children: []
         }
-      )
-    })
+        this.addTab(tab)
+      }
+    )
   }
   //打开上次的文件
   openDefaultFile() {

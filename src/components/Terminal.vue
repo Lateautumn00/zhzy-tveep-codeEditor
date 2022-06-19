@@ -2,7 +2,7 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-19 15:15:27
+ * @LastEditTime: 2022-06-19 15:37:26
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -87,7 +87,6 @@ export default class TerminalComponent extends Vue {
   }
   //切换文件夹 清空历史
   initHandler(newPath: string, oldPath: string) {
-    console.log('切换目录===', newPath, oldPath)
     this.isClear('clear')
     this.newPath = newPath
   }
