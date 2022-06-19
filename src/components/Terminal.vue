@@ -2,12 +2,12 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-19 15:37:26
+ * @LastEditTime: 2022-06-19 19:24:18
  * @LastEditors: lanchao
  * @Reference: 
 -->
 <template>
-  <div class="terminal-app">
+  <div class="terminal-app" ref="terminalApp">
     <div class="terminal-class">
       <!-- 历史命令行 -->
       <div v-for="item in commandArr" :key="item.key">
@@ -32,10 +32,7 @@
         <div class="terminal-command" v-else>{{ item.commandMsg }}</div>
       </div>
       <!-- 当前输入的命令行 -->
-      <div
-        class="terminal-action terminal-action-editor"
-        @mouseup="timeoutFocusInput"
-      >
+      <div class="terminal-action terminal-action-editor" @mouseup="focusInput">
         <el-icon><Position color="green" /></el-icon>
         <!-- 执行地址 -->
         <span class="terminal-action-path">{{ newPath }} $</span>
@@ -44,7 +41,6 @@
           :contenteditable="action ? false : true"
           class="terminal-action-contenteditable"
           @input="onDivInput($event)"
-          @keydown="keyFn"
         ></span>
       </div>
       <!-- 当前命令行输出 -->
@@ -78,11 +74,12 @@ export default class TerminalComponent extends Vue {
   handleCommand = '' // 经过处理的用户命令 比如清除首尾空格、添加获取路径的命令
   commandMsg: any = [] // 当前命令信息
   commandArr: any = [] // 过往命令输出
-  isActive = true // 终端是否聚焦
+  commandCount = 0 //用与上下键切换标记
   action = false // 是否正在执行命令
   inputDom: any // 输入框dom
-  path = '' // 不同系统 获取路径的命令 mac是pwd window是chdir
   mounted() {
+    let dom: any = this.$refs.terminalApp as any
+    dom.addEventListener('keyup', this.keyFn) //拖动左侧栏
     this.inputDom = document.querySelector('.terminal-action-contenteditable')
   }
   //切换文件夹 清空历史
@@ -93,15 +90,33 @@ export default class TerminalComponent extends Vue {
   // 回车执行命令
   keyFn(e: any) {
     if (e.keyCode === 13) {
+      //回车键
       this.actionCommand()
+      e.preventDefault() //阻止
+    } else if (e.keyCode === 38 || e.keyCode === 40) {
+      //上下
+      this.switchCode(e.keyCode)
       e.preventDefault() //阻止
     }
   }
+  //上下键反命令
+  switchCode(key: number) {
+    const len = this.commandArr.length //总数量
+    const c = key === 38 ? this.commandCount - 1 : this.commandCount + 1
+    if (c > len || c < 0) return false
+    this.inputDom.textContent = this.commandArr[c].command
+    this.command = this.commandArr[c].command
+    this.commandCount = c
+    this.focusInput()
+  }
   // 执行命令
   actionCommand() {
-    this.command = this.command.trim()
     this.isClear(this.command)
-    if (this.command === '') return
+    if (this.command === '') {
+      this.commandMsg = []
+      this.closeCommandAction(0)
+      return false
+    }
     this.action = true
     const ls = spawn(this.command, {
       cwd: this.newPath, // 执行命令路径
@@ -118,16 +133,19 @@ export default class TerminalComponent extends Vue {
     // 监听错误
     ls.stderr.on('data', (data) => {
       data = iconvLite.decode(data, 'cp936')
-      this.commandMsg.push(`stderr: ${data}`)
-      console.error(`stderr: ${data}`)
+      const value = data.toString().trim()
+      this.commandMsg.push(`stderr: ${value}`)
+      console.error(`stderr: ${value}`)
     })
     // 子进程关闭事件 保存信息 更新状态
     ls.on('close', this.closeCommandAction)
   }
   // 执行完毕 保存信息 更新状态
   closeCommandAction(code: any) {
+    const len = this.commandArr.length + 1
+    this.commandCount = len
     this.commandArr.push({
-      key: this.commandArr.length,
+      key: len,
       code, // 是否执行成功
       dirPath: this.newPath, // 路径
       command: this.command, // 命令
@@ -174,13 +192,8 @@ export default class TerminalComponent extends Vue {
   }
   // 保存输入的命令行
   onDivInput(e: any) {
-    this.command = e.target.textContent
-  }
-  // 点击div
-  timeoutFocusInput() {
-    setTimeout(() => {
-      this.focusInput()
-    }, 150)
+    const content = e.target.textContent.trim()
+    if (content !== '') this.command = content
   }
   // 聚焦输入
   focusInput() {
