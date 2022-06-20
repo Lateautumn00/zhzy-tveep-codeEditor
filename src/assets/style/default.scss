@@ -1,4 +1,33 @@
 $bgc: #fff;
+$color: #2c3e50; //默认字体颜色
+//背景色
+.common-layout {
+  background-color: $bgc;
+  color: $color;
+}
+.left .title {
+  background: #ecf5ff;
+}
+//左侧树
+:deep(.el-tree) {
+  background-color: $bgc;
+}
+:deep(.el-tree--highlight-current
+    .el-tree-node.is-current
+    > .el-tree-node__content) {
+  background-color: #ecf5ff;
+}
+:deep(.el-tree-node__content) {
+  &:hover {
+    background-color: #f5f7fa;
+  }
+  &:active {
+    background-color: #f5f7fa;
+  }
+}
+:deep(.el-dropdown) {
+  color: $color;
+}
 //编辑器
 :deep(.ͼo) {
   background-color: $bgc;

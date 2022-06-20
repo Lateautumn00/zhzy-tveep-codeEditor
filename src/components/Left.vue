@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: lanchao
  * @Date: 2022-05-20 17:02:45
- * @LastEditTime: 2022-06-19 15:45:40
+ * @LastEditTime: 2022-06-20 12:10:09
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -507,7 +507,6 @@ export default class LeftComponent extends Vue {
   @include mixin.widthOrHeight(1px, 1px);
 }
 .title {
-  background: #ecf5ff;
   @include mixin.widthOrHeight(null, 25px);
   @include mixin.set-flex(space-between, center);
   padding: 0 5px;
