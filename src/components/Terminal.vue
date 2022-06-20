@@ -2,7 +2,7 @@
  * @Description: 终端 命令行
  * @Author: lanchao
  * @Date: 2022-05-30 16:34:16
- * @LastEditTime: 2022-06-19 19:24:18
+ * @LastEditTime: 2022-06-20 10:42:35
  * @LastEditors: lanchao
  * @Reference: 
 -->
@@ -192,6 +192,7 @@ export default class TerminalComponent extends Vue {
   }
   // 保存输入的命令行
   onDivInput(e: any) {
+    if (!e.data) return false
     const content = e.target.textContent.trim()
     if (content !== '') this.command = content
   }
